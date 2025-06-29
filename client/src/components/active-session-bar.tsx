@@ -29,7 +29,7 @@ export default function ActiveSessionBar({ session, onEndSession }: ActiveSessio
   }, [session.startTime]);
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-green-600 text-white px-6 py-3 z-50 shadow-lg">
+    <div className="fixed top-0 left-0 right-0 bg-green-600 text-white px-6 py-3 z-[60] shadow-lg">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">

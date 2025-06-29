@@ -18,7 +18,7 @@ export default function GlobalActiveSession() {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-green-600 text-white p-3 z-50 shadow-lg">
+    <div className="fixed top-0 left-0 right-0 bg-green-600 text-white p-3 z-[60] shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">

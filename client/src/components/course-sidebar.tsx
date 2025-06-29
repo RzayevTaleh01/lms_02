@@ -53,7 +53,7 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
   ];
 
   return (
-    <div className="fixed left-0 top-0 w-80 h-full bg-white shadow-lg z-40 border-r border-gray-200">
+    <div className="fixed left-0 top-0 w-80 h-full bg-white shadow-lg z-30 border-r border-gray-200">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <Button 
