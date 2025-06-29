@@ -67,8 +67,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Bu email artıq istifadə olunub" });
       }
 
-      // Hash password
-      const hashedPassword = await hashPassword(userData.password);
+      // Store password as plain text
+      const plainPassword = hashPassword(userData.password);
       
       // Create user
       const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -78,7 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: userData.firstName,
         lastName: userData.lastName,
         role: userData.role,
-        passwordHash: hashedPassword
+        passwordHash: plainPassword
       });
 
       // Create session
@@ -111,7 +111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Verify password
-      const isValidPassword = await verifyPassword(loginData.password, user.passwordHash!);
+      const isValidPassword = verifyPassword(loginData.password, user.passwordHash!);
       if (!isValidPassword) {
         return res.status(401).json({ message: "Email və ya parol yanlışdır" });
       }
