@@ -54,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }));
 
   // Attach user to all requests
-  app.use(attachUser);
+  app.use(attachUser as any);
 
   // Auth routes
   app.post('/api/auth/register', async (req, res) => {
@@ -195,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/courses', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create courses" });
@@ -222,7 +222,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses/:courseId/lessons', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/courses/:courseId/lessons', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create lessons" });
@@ -239,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enrollment routes
-  app.get('/api/enrollments', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       const enrollments = await storage.getStudentEnrollments(req.user!.id);
       res.json(enrollments);
@@ -249,7 +249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/enrollments', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       const enrollmentData = insertEnrollmentSchema.parse({ ...req.body, studentId: req.user!.id });
       const enrollment = await storage.enrollStudent(enrollmentData);
@@ -272,7 +272,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses/:courseId/assignments', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/courses/:courseId/assignments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create assignments" });
@@ -289,7 +289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Submission routes
-  app.get('/api/submissions', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/submissions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       const submissions = await storage.getSubmissionsByStudent(req.user!.id);
       res.json(submissions);
@@ -299,7 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/assignments/:assignmentId/submissions', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/assignments/:assignmentId/submissions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can view all submissions" });
@@ -314,7 +314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/assignments/:assignmentId/submissions', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/assignments/:assignmentId/submissions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       const assignmentId = parseInt(req.params.assignmentId);
       
@@ -331,7 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/submissions/:id/grade', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.patch('/api/submissions/:id/grade', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can grade submissions" });
@@ -359,7 +359,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/blog', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/blog', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create blog posts" });
@@ -391,7 +391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/certificates', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/certificates', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can issue certificates" });
@@ -419,7 +419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Statistics routes (admin only)
-  app.get('/api/stats', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/stats', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || req.user.role !== 'admin') {
         return res.status(403).json({ message: "Only admins can view system statistics" });

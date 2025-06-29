@@ -34,30 +34,20 @@ function Router() {
 
   return (
     <Switch>
-      {!isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/courses" component={Courses} />
-          <Route path="/course/:id" component={CourseDetail} />
-          <Route path="/blog" component={Blog} />
-          <Route path="/verify" component={VerifyCertificate} />
-          <Route path="/contact" component={Contact} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/courses" component={Courses} />
-          <Route path="/course/:id" component={CourseDetail} />
-          <Route path="/blog" component={Blog} />
-          <Route path="/verify" component={VerifyCertificate} />
-          <Route path="/contact" component={Contact} />
-          
-          {/* Role-based dashboards */}
-          {user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
-          {user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
-          {user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
-        </>
-      )}
+      <Route path="/">
+        {isAuthenticated ? <Home /> : <Landing />}
+      </Route>
+      <Route path="/courses" component={Courses} />
+      <Route path="/course/:id" component={CourseDetail} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/verify" component={VerifyCertificate} />
+      <Route path="/contact" component={Contact} />
+      
+      {/* Role-based dashboards - only for authenticated users */}
+      {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
+      {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
+      
       <Route component={NotFound} />
     </Switch>
   );

@@ -20,13 +20,8 @@ export default function Navbar() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('/api/auth/logout', {
-        method: 'POST'
-      });
-
-      if (!response.ok) {
-        throw new Error('Çıxış uğursuz');
-      }
+      const response = await apiRequest('POST', '/api/auth/logout');
+      return response.json();
     },
     onSuccess: () => {
       window.location.reload();
@@ -138,13 +133,13 @@ export default function Navbar() {
                 <>
                   <Button 
                     variant="ghost" 
-                    onClick={() => setShowLoginModal(true)}
+                    onClick={() => setIsLoginModalOpen(true)}
                     className="hidden md:flex"
                   >
                     Login
                   </Button>
                   <Button 
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => setIsSignupModalOpen(true)}
                     className="bg-devcode-orange hover:bg-orange-600 hidden md:flex"
                   >
                     Sign Up
@@ -199,7 +194,7 @@ export default function Navbar() {
                         <Button 
                           variant="outline" 
                           onClick={() => {
-                            setShowLoginModal(true);
+                            setIsLoginModalOpen(true);
                             setIsMobileMenuOpen(false);
                           }}
                           className="w-full"
@@ -207,7 +202,10 @@ export default function Navbar() {
                           Login
                         </Button>
                         <Button 
-                          onClick={() => window.location.href = '/api/login'}
+                          onClick={() => {
+                            setIsSignupModalOpen(true);
+                            setIsMobileMenuOpen(false);
+                          }}
                           className="w-full bg-devcode-orange hover:bg-orange-600"
                         >
                           Sign Up

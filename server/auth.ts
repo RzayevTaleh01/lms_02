@@ -2,15 +2,16 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { storage } from './storage';
+import { User } from '@shared/schema';
 
 export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-  };
+  user?: User;
+}
+
+declare module 'express-session' {
+  interface SessionData {
+    userId: string;
+  }
 }
 
 export async function hashPassword(password: string): Promise<string> {
