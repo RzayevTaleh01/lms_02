@@ -119,8 +119,15 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
 
 ## Changelog
 
-Changelog:
-- June 29, 2025. Initial setup
+- June 29, 2025: Initial setup with PostgreSQL database and Replit Auth
+- June 29, 2025: Enhanced teacher course management system with comprehensive features:
+  - Added complete course creation and management functionality
+  - Implemented video lesson organization (Udemy-style)
+  - Created assignment system with deadlines, grading, and feedback
+  - Built attendance tracking system for offline classes
+  - Added real-time lesson session management
+  - Fixed database migration issues and commands (npm run db:push, npm run db:generate)
+  - Database structure now includes: lesson_sessions, attendance, lesson_materials, lesson_assignments tables
 
 ## User Preferences
 

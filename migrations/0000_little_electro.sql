@@ -9,6 +9,16 @@ CREATE TABLE "assignments" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
+CREATE TABLE "attendance" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"session_id" integer NOT NULL,
+	"student_id" varchar NOT NULL,
+	"course_id" integer NOT NULL,
+	"status" varchar NOT NULL,
+	"marked_at" timestamp DEFAULT now(),
+	"marked_by" varchar NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "blog_posts" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"title" varchar(255) NOT NULL,
@@ -72,6 +82,42 @@ CREATE TABLE "enrollments" (
 	"completed_at" timestamp,
 	"progress" integer DEFAULT 0,
 	"grade" numeric(5, 2)
+);
+--> statement-breakpoint
+CREATE TABLE "lesson_assignments" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"lesson_id" integer NOT NULL,
+	"course_id" integer NOT NULL,
+	"title" varchar(255) NOT NULL,
+	"description" text,
+	"due_date" timestamp,
+	"max_points" integer DEFAULT 100,
+	"is_active" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "lesson_materials" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"lesson_id" integer NOT NULL,
+	"title" varchar(255) NOT NULL,
+	"content" text,
+	"video_url" varchar,
+	"material_type" varchar DEFAULT 'video',
+	"order_index" integer DEFAULT 0,
+	"is_active" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "lesson_sessions" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"course_id" integer NOT NULL,
+	"teacher_id" varchar NOT NULL,
+	"session_name" varchar(255) NOT NULL,
+	"start_time" timestamp DEFAULT now(),
+	"end_time" timestamp,
+	"duration" integer,
+	"is_active" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "lessons" (
