@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/sidebar";
-import CourseManagement from "@/components/course-management";
+import CourseManagement from '@/pages/course-management';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -129,7 +129,7 @@ export default function TeacherDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Ümumi Tələbələr</CardTitle>
@@ -143,7 +143,7 @@ export default function TeacherDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Gözləyən Tapşırıqlar</CardTitle>
@@ -157,7 +157,7 @@ export default function TeacherDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Bu Həftə Dərslər</CardTitle>
@@ -260,7 +260,7 @@ export default function TeacherDashboard() {
                 <h2 className="text-2xl font-semibold">Mənim Kurslarım</h2>
                 <CourseManagement />
               </div>
-              
+
               {/* Courses Table */}
               <Card>
                 <CardContent className="p-0">

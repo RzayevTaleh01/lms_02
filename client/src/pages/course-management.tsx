@@ -28,7 +28,8 @@ import {
   Save,
   X,
   UserPlus,
-  Trash2
+  Trash2,
+  ArrowLeft
 } from "lucide-react";
 
 export default function CourseManagement() {
@@ -47,14 +48,13 @@ export default function CourseManagement() {
   const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
   const [isStudentDialogOpen, setIsStudentDialogOpen] = useState(false);
-  const [isAttendanceDialogOpen, setIsAttendanceDialogOpen] = useState(false);
   
   // Form states
   const [lessonForm, setLessonForm] = useState({
     title: "",
     description: "",
     videoUrl: "",
-    duration: "",
+    duration: 0,
     orderIndex: 1
   });
   
@@ -128,7 +128,7 @@ export default function CourseManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/lessons`] });
       setIsLessonDialogOpen(false);
-      setLessonForm({ title: "", description: "", videoUrl: "", duration: "", orderIndex: 1 });
+      setLessonForm({ title: "", description: "", videoUrl: "", duration: 0, orderIndex: 1 });
       toast({ title: "Dərs uğurla yaradıldı" });
     },
   });
@@ -136,6 +136,7 @@ export default function CourseManagement() {
   // Create lesson material mutation
   const createMaterialMutation = useMutation({
     mutationFn: async (materialData: any) => {
+      if (!selectedLesson) throw new Error("No lesson selected");
       const response = await fetch(`/api/lessons/${selectedLesson.id}/materials`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -145,7 +146,9 @@ export default function CourseManagement() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson.id}/materials`] });
+      if (selectedLesson) {
+        queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson.id}/materials`] });
+      }
       setIsMaterialDialogOpen(false);
       setMaterialForm({ title: "", content: "", videoUrl: "", materialType: "video", orderIndex: 0 });
       toast({ title: "Material uğurla əlavə edildi" });
@@ -155,6 +158,7 @@ export default function CourseManagement() {
   // Create lesson assignment mutation
   const createAssignmentMutation = useMutation({
     mutationFn: async (assignmentData: any) => {
+      if (!selectedLesson) throw new Error("No lesson selected");
       const response = await fetch(`/api/lessons/${selectedLesson.id}/assignments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -164,7 +168,9 @@ export default function CourseManagement() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson.id}/assignments`] });
+      if (selectedLesson) {
+        queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson.id}/assignments`] });
+      }
       setIsAssignmentDialogOpen(false);
       setAssignmentForm({ title: "", description: "", dueDate: "", maxPoints: 100 });
       toast({ title: "Tapşırıq uğurla əlavə edildi" });
@@ -292,9 +298,9 @@ export default function CourseManagement() {
     );
   }
 
-  const availableStudents = allUsers.filter(user => 
+  const availableStudents = allUsers.filter((user: any) => 
     user.role === "student" && 
-    !students.some(student => student.id === user.id)
+    !students.some((student: any) => student.id === user.id)
   );
 
   return (
@@ -313,6 +319,10 @@ export default function CourseManagement() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
+              <Button variant="outline" onClick={() => setLocation("/teacher/dashboard")} className="mb-4">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Geri
+              </Button>
               <h1 className="text-3xl font-bold text-devcode-dark">{course.title}</h1>
               <p className="text-devcode-gray">{course.description}</p>
             </div>
@@ -377,8 +387,8 @@ export default function CourseManagement() {
                         <Input
                           id="lesson-duration"
                           type="number"
-                          value={lessonForm.duration}
-                          onChange={(e) => setLessonForm(prev => ({ ...prev, duration: e.target.value }))}
+                          value={lessonForm.duration || ""}
+                          onChange={(e) => setLessonForm(prev => ({ ...prev, duration: parseInt(e.target.value) || 0 }))}
                           placeholder="45"
                         />
                       </div>
