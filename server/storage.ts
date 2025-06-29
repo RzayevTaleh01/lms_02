@@ -82,6 +82,18 @@ export interface IStorage {
     totalEnrollments: number;
     totalCertificates: number;
   }>;
+
+  getCourseStudents(courseId: number): Promise<
+    {
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      enrolledAt: Date;
+      progress: number;
+      grade: number;
+    }[]
+  >;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -302,6 +314,34 @@ export class DatabaseStorage implements IStorage {
       totalEnrollments: enrollmentCount.count,
       totalCertificates: certificateCount.count,
     };
+  }
+
+  async getCourseStudents(courseId: number): Promise<
+    {
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      enrolledAt: Date;
+      progress: number;
+      grade: number;
+    }[]
+  > {
+    const result = await db
+      .select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        enrolledAt: enrollments.enrolledAt,
+        progress: enrollments.progress,
+        grade: enrollments.grade,
+      })
+      .from(enrollments)
+      .innerJoin(users, eq(enrollments.studentId, users.id))
+      .where(eq(enrollments.courseId, courseId));
+
+    return result;
   }
 }
 

@@ -1,13 +1,19 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import CourseCard from "@/components/course-card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
 export default function Courses() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
@@ -15,6 +21,46 @@ export default function Courses() {
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ["/api/courses"],
   });
+
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ["/api/enrollments"],
+    enabled: !!user && user.role === "student",
+  });
+
+  const enrollMutation = useMutation({
+    mutationFn: async (courseId: number) => {
+      const response = await fetch("/api/enrollments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseId }),
+      });
+      if (!response.ok) throw new Error("Failed to enroll");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/enrollments"] });
+      toast({ title: "Uğurla qeydiyyatdan keçdiniz!" });
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Qeydiyyat zamanı xəta baş verdi", variant: "destructive" });
+    }
+  });
+
+  const isEnrolled = (courseId: number) => {
+    return enrollments.some((enrollment: any) => enrollment.courseId === courseId);
+  };
+
+  const handleEnroll = (courseId: number) => {
+    if (!user) {
+      toast({ title: "Giriş Tələb Olunur", description: "Kursa qeydiyyat üçün daxil olun", variant: "destructive" });
+      return;
+    }
+    if (user.role !== "student") {
+      toast({ title: "Giriş Rədd Edildi", description: "Yalnız tələbələr kurslara qeydiyyat keçə bilər", variant: "destructive" });
+      return;
+    }
+    enrollMutation.mutate(courseId);
+  };
 
   const filteredCourses = courses.filter((course: any) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -100,18 +146,67 @@ export default function Courses() {
         {filteredCourses.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">📚</div>
-            <h3 className="text-2xl font-semibold text-devcode-dark mb-2">No courses found</h3>
+            <h3 className="text-2xl font-semibold text-devcode-dark mb-2">Kurs tapılmadı</h3>
             <p className="text-devcode-gray">
               {searchTerm || categoryFilter !== "all" || levelFilter !== "all" 
-                ? "Try adjusting your filters to see more courses."
-                : "Courses will appear here once they are added to the platform."
+                ? "Axtarış şərtlərini dəyişdirərək daha çox kurs görə bilərsiniz."
+                : "Kurslar platforma əlavə edildikdən sonra burada görünəcək."
               }
             </p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((course: any) => (
-              <CourseCard key={course.id} course={course} />
+              <div key={course.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                <div className="h-48 bg-gradient-to-br from-devcode-orange to-orange-600 relative">
+                  {course.imageUrl ? (
+                    <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-6xl text-white opacity-20">📚</div>
+                    </div>
+                  )}
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full">
+                      {course.level === 'beginner' ? 'Başlanğıc' : course.level === 'intermediate' ? 'Orta' : 'İrəli'}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-devcode-gray">{course.category}</span>
+                    <span className="text-lg font-bold text-devcode-orange">{course.price} AZN</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-devcode-dark mb-2">{course.title}</h3>
+                  <p className="text-devcode-gray text-sm mb-4 line-clamp-2">{course.shortDescription || course.description}</p>
+                  
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm text-devcode-gray">👥 {course.enrollmentCount || 0} tələbə</span>
+                    <span className="text-sm text-devcode-gray">⏱️ {course.duration}</span>
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => window.location.href = `/courses/${course.id}`}
+                    >
+                      Ətraflı
+                    </Button>
+                    {user?.role === "student" && (
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-devcode-orange hover:bg-orange-600"
+                        onClick={() => handleEnroll(course.id)}
+                        disabled={isEnrolled(course.id) || enrollMutation.isPending}
+                      >
+                        {isEnrolled(course.id) ? "Qeydiyyatdan Keçmişsiniz" : enrollMutation.isPending ? "Qeydiyyat..." : "Qeydiyyat"}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         )}

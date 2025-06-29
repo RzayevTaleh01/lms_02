@@ -1,17 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/sidebar";
+import CourseManagement from "@/components/course-management";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Users, Calendar, CheckSquare, Plus, FileText, UserPlus, CalendarPlus } from "lucide-react";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
 export default function TeacherDashboard() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("overview");
+
+  // Fetch courses for statistics
+  const { data: courses = [] } = useQuery({
+    queryKey: ["/api/courses"],
+  });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -91,143 +99,180 @@ export default function TeacherDashboard() {
       <div className="flex-1 p-8 ml-64">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-devcode-dark">Dashboard Overview</h1>
+          <h1 className="text-3xl font-bold text-devcode-dark">Müəllim Paneli</h1>
           <p className="text-devcode-gray">
-            Welcome back, {user.firstName || 'Teacher'}! Here's what's happening with your classes today.
+            Xoş gəlmisiniz, {user.firstName || 'Müəllim'}! Kurslarınızı idarə edin və tələbələrinizlə əlaqə saxlayın.
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">6</div>
-              <p className="text-xs text-muted-foreground">+2 from last semester</p>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mt-2">
-                <BookOpen className="w-6 h-6 text-blue-600" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">142</div>
-              <p className="text-xs text-muted-foreground">Across all courses</p>
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mt-2">
-                <Users className="w-6 h-6 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Tasks</CardTitle>
-              <CheckSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground">Due this week</p>
-              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mt-2">
-                <CheckSquare className="w-6 h-6 text-yellow-600" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Today's Classes</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">4</div>
-              <p className="text-xs text-muted-foreground">Next at 10:00 AM</p>
-              <div className="w-12 h-12 bg-devcode-orange bg-opacity-20 rounded-xl flex items-center justify-center mt-2">
-                <Calendar className="w-6 h-6 text-devcode-orange" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Navigation Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Ümumi Baxış</TabsTrigger>
+            <TabsTrigger value="courses">Kurs İdarəçiliyi</TabsTrigger>
+            <TabsTrigger value="analytics">Analitika</TabsTrigger>
+          </TabsList>
 
-        {/* Quick Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3">
-              <Button className="bg-devcode-dark text-white hover:bg-gray-800">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Course
-              </Button>
-              <Button variant="outline">
-                <FileText className="w-4 h-4 mr-2" />
-                New Assignment
-              </Button>
-              <Button variant="outline">
-                <UserPlus className="w-4 h-4 mr-2" />
-                Add Student
-              </Button>
-              <Button variant="outline">
-                <CalendarPlus className="w-4 h-4 mr-2" />
-                Schedule Class
-              </Button>
+          <TabsContent value="overview" className="space-y-6 mt-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Ümumi Kurslar</CardTitle>
+                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{courses.length}</div>
+                  <p className="text-xs text-muted-foreground">Aktiv kurslar</p>
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mt-2">
+                    <BookOpen className="w-6 h-6 text-blue-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Ümumi Tələbələr</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{courses.reduce((acc: number, course: any) => acc + (course.enrollmentCount || 0), 0)}</div>
+                  <p className="text-xs text-muted-foreground">Bütün kurslarda</p>
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mt-2">
+                    <Users className="w-6 h-6 text-green-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Gözləyən Tapşırıqlar</CardTitle>
+                  <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">12</div>
+                  <p className="text-xs text-muted-foreground">Qiymətləndirilməyən</p>
+                  <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mt-2">
+                    <CheckSquare className="w-6 h-6 text-yellow-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Bu Həftə Dərslər</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">8</div>
+                  <p className="text-xs text-muted-foreground">Planlaşdırılmış</p>
+                  <div className="w-12 h-12 bg-devcode-orange bg-opacity-20 rounded-xl flex items-center justify-center mt-2">
+                    <Calendar className="w-6 h-6 text-devcode-orange" />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Recent Courses */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Courses</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {mockCourses.map((course) => (
-                <div key={course.id} className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${course.color}`}>
-                    <span className="font-semibold">{course.code}</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-devcode-dark">{course.title}</h3>
-                    <p className="text-sm text-devcode-gray">{course.students} students • {course.room}</p>
-                  </div>
-                  <span className="text-sm text-devcode-gray">{course.time}</span>
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Tez Əməliyyatlar</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-3">
+                  <Button 
+                    className="bg-devcode-orange text-white hover:bg-orange-600"
+                    onClick={() => setActiveTab("courses")}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Yeni Kurs
+                  </Button>
+                  <Button variant="outline" onClick={() => setActiveTab("courses")}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Tapşırıq Əlavə Et
+                  </Button>
+                  <Button variant="outline" onClick={() => setActiveTab("courses")}>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Tələbə Əlavə Et
+                  </Button>
+                  <Button variant="outline" onClick={() => setActiveTab("courses")}>
+                    <CalendarPlus className="w-4 h-4 mr-2" />
+                    Dərs Planlaşdır
+                  </Button>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* This Week Schedule */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>This Week</CardTitle>
-                <Button variant="link" size="sm" className="text-devcode-orange hover:text-orange-600">
-                  View Full Calendar
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {mockSchedule.map((item, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <div className={`w-2 h-2 rounded-full ${item.color}`}></div>
-                  <div className="flex-1">
-                    <div className="font-medium text-devcode-dark">{item.name}</div>
-                    <div className="text-sm text-devcode-gray">{item.time}</div>
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Recent Courses */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Son Kurslar</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {courses.length === 0 ? (
+                    <p className="text-center text-devcode-gray py-4">Hələ kurs yaratmamısınız.</p>
+                  ) : (
+                    courses.slice(0, 3).map((course: any) => (
+                      <div key={course.id} className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-devcode-orange text-white">
+                          <span className="font-semibold">{course.title.charAt(0)}</span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-devcode-dark">{course.title}</h3>
+                          <p className="text-sm text-devcode-gray">{course.enrollmentCount || 0} tələbə • {course.level}</p>
+                        </div>
+                        <span className="text-sm text-devcode-gray">{course.price} AZN</span>
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* This Week Schedule */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Bu Həftə</CardTitle>
+                    <Button variant="link" size="sm" className="text-devcode-orange hover:text-orange-600">
+                      Tam Təqvimi Gör
+                    </Button>
                   </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {mockSchedule.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <div className={`w-2 h-2 rounded-full ${item.color}`}></div>
+                      <div className="flex-1">
+                        <div className="font-medium text-devcode-dark">{item.name}</div>
+                        <div className="text-sm text-devcode-gray">{item.time}</div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="courses" className="mt-6">
+            <CourseManagement />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Analitika və Hesabatlar</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-16 text-devcode-gray">
+                  <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-semibold mb-2">Analitika Bölməsi</h3>
+                  <p>Tələbə performansı və kurs statistikaları burada göstəriləcək.</p>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
