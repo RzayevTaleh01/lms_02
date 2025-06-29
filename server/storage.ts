@@ -31,48 +31,50 @@ import { db } from "./db";
 import { eq, desc, like, and, count, sql } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations (required for Replit Auth)
+  // User operations
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(userData: UpsertUser & { passwordHash: string }): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
-  
+
   // Course operations
   getAllCourses(): Promise<Course[]>;
   getCourse(id: number): Promise<Course | undefined>;
   getCoursesByInstructor(instructorId: string): Promise<Course[]>;
   createCourse(course: InsertCourse): Promise<Course>;
   updateCourse(id: number, course: Partial<InsertCourse>): Promise<Course | undefined>;
-  
+
   // Lesson operations
   getLessonsByCourse(courseId: number): Promise<Lesson[]>;
   createLesson(lesson: InsertLesson): Promise<Lesson>;
-  
+
   // Enrollment operations
   getStudentEnrollments(studentId: string): Promise<(Enrollment & { course: Course })[]>;
   enrollStudent(enrollment: InsertEnrollment): Promise<Enrollment>;
   updateEnrollmentProgress(id: number, progress: number): Promise<void>;
-  
+
   // Assignment operations
   getAssignmentsByCourse(courseId: number): Promise<Assignment[]>;
   getAssignment(id: number): Promise<Assignment | undefined>;
   createAssignment(assignment: InsertAssignment): Promise<Assignment>;
-  
+
   // Submission operations
   getSubmissionsByStudent(studentId: string): Promise<(Submission & { assignment: Assignment & { course: Course } })[]>;
   getSubmissionsByAssignment(assignmentId: number): Promise<(Submission & { student: User })[]>;
   createSubmission(submission: InsertSubmission): Promise<Submission>;
   gradeSubmission(id: number, grade: number, feedback: string, gradedBy: string): Promise<void>;
-  
+
   // Blog operations
   getPublishedBlogPosts(): Promise<(BlogPost & { author: User })[]>;
   createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
-  
+
   // Certificate operations
   getCertificateById(certificateId: string): Promise<(Certificate & { student: User; course: Course }) | undefined>;
   createCertificate(certificate: InsertCertificate): Promise<Certificate>;
-  
+
   // Contact operations
   createContactSubmission(contact: InsertContactSubmission): Promise<ContactSubmission>;
-  
+
   // Statistics
   getSystemStats(): Promise<{
     totalUsers: number;
@@ -86,6 +88,16 @@ export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: UpsertUser & { passwordHash: string }): Promise<User> {
+    const [user] = await db.insert(users).values(userData).returning();
     return user;
   }
 
@@ -158,13 +170,13 @@ export class DatabaseStorage implements IStorage {
 
   async enrollStudent(enrollment: InsertEnrollment): Promise<Enrollment> {
     const [newEnrollment] = await db.insert(enrollments).values(enrollment).returning();
-    
+
     // Update course enrollment count
     await db
       .update(courses)
       .set({ enrollmentCount: sql`${courses.enrollmentCount} + 1` })
       .where(eq(courses.id, enrollment.courseId));
-    
+
     return newEnrollment;
   }
 
@@ -255,9 +267,9 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(users, eq(certificates.studentId, users.id))
       .innerJoin(courses, eq(certificates.courseId, courses.id))
       .where(eq(certificates.certificateId, certificateId));
-    
+
     if (!result) return undefined;
-    
+
     return { ...result.certificates, student: result.users, course: result.courses };
   }
 
@@ -283,7 +295,7 @@ export class DatabaseStorage implements IStorage {
     const [courseCount] = await db.select({ count: count() }).from(courses);
     const [enrollmentCount] = await db.select({ count: count() }).from(enrollments);
     const [certificateCount] = await db.select({ count: count() }).from(certificates);
-    
+
     return {
       totalUsers: userCount.count,
       totalCourses: courseCount.count,

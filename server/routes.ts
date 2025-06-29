@@ -1,7 +1,11 @@
+
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import session from 'express-session';
+import { Pool } from '@neondatabase/serverless';
+import ConnectPgSimple from 'connect-pg-simple';
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { hashPassword, verifyPassword, isAuthenticated, attachUser, AuthenticatedRequest } from "./auth";
 import { 
   insertCourseSchema, 
   insertLessonSchema, 
@@ -10,29 +14,156 @@ import {
   insertSubmissionSchema,
   insertBlogPostSchema,
   insertCertificateSchema,
-  insertContactSubmissionSchema
+  insertContactSubmissionSchema,
+  insertUserSchema
 } from "@shared/schema";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  firstName: z.string().min(1, "Ad tələb olunur"),
+  lastName: z.string().min(1, "Soyad tələb olunur"),
+  email: z.string().email("Düzgün email ünvanı daxil edin"),
+  password: z.string().min(6, "Parol ən azı 6 simvol olmalıdır"),
+  role: z.enum(["student", "teacher"]).default("student")
+});
+
+const loginSchema = z.object({
+  email: z.string().email("Düzgün email ünvanı daxil edin"),
+  password: z.string().min(1, "Parol tələb olunur")
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // Session setup
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const PgSession = ConnectPgSimple(session);
+
+  app.use(session({
+    store: new PgSession({
+      pool: pool,
+      tableName: 'sessions',
+      createTableIfMissing: true,
+    }),
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  }));
+
+  // Attach user to all requests
+  app.use(attachUser);
 
   // Auth routes
-  app.get('/api/auth/user', async (req: any, res) => {
+  app.post('/api/auth/register', async (req, res) => {
     try {
-      // Check if user is authenticated
-      if (!req.isAuthenticated() || !req.user || !req.user.claims) {
+      const userData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Bu email artıq istifadə olunub" });
+      }
+
+      // Hash password
+      const hashedPassword = await hashPassword(userData.password);
+      
+      // Create user
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const user = await storage.createUser({
+        id: userId,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        role: userData.role,
+        passwordHash: hashedPassword
+      });
+
+      // Create session
+      req.session.userId = userId;
+      
+      res.status(201).json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Qeydiyyat zamanı xəta baş verdi" });
+    }
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const loginData = loginSchema.parse(req.body);
+      
+      // Find user
+      const user = await storage.getUserByEmail(loginData.email);
+      if (!user) {
+        return res.status(401).json({ message: "Email və ya parol yanlışdır" });
+      }
+
+      // Verify password
+      const isValidPassword = await verifyPassword(loginData.password, user.passwordHash!);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Email və ya parol yanlışdır" });
+      }
+
+      // Create session
+      req.session.userId = user.id;
+      
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Giriş zamanı xəta baş verdi" });
+    }
+  });
+
+  app.post('/api/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Çıxış zamanı xəta baş verdi" });
+      }
+      res.clearCookie('connect.sid');
+      res.json({ message: "Uğurla çıxış edildi" });
+    });
+  });
+
+  app.get('/api/auth/user', async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = await storage.getUser(req.session.userId);
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
       
-      res.json(user);
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -64,16 +195,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses', isAuthenticated, async (req: any, res) => {
+  app.post('/api/courses', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create courses" });
       }
 
-      const courseData = insertCourseSchema.parse({ ...req.body, instructorId: userId });
+      const courseData = insertCourseSchema.parse({ ...req.body, instructorId: req.user.id });
       const course = await storage.createCourse(courseData);
       res.status(201).json(course);
     } catch (error) {
@@ -94,16 +222,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses/:courseId/lessons', isAuthenticated, async (req: any, res) => {
+  app.post('/api/courses/:courseId/lessons', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      const courseId = parseInt(req.params.courseId);
-      
-      if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create lessons" });
       }
 
+      const courseId = parseInt(req.params.courseId);
       const lessonData = insertLessonSchema.parse({ ...req.body, courseId });
       const lesson = await storage.createLesson(lessonData);
       res.status(201).json(lesson);
@@ -114,10 +239,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enrollment routes
-  app.get('/api/enrollments', isAuthenticated, async (req: any, res) => {
+  app.get('/api/enrollments', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const enrollments = await storage.getStudentEnrollments(userId);
+      const enrollments = await storage.getStudentEnrollments(req.user!.id);
       res.json(enrollments);
     } catch (error) {
       console.error("Error fetching enrollments:", error);
@@ -125,10 +249,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/enrollments', isAuthenticated, async (req: any, res) => {
+  app.post('/api/enrollments', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const enrollmentData = insertEnrollmentSchema.parse({ ...req.body, studentId: userId });
+      const enrollmentData = insertEnrollmentSchema.parse({ ...req.body, studentId: req.user!.id });
       const enrollment = await storage.enrollStudent(enrollmentData);
       res.status(201).json(enrollment);
     } catch (error) {
@@ -149,16 +272,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses/:courseId/assignments', isAuthenticated, async (req: any, res) => {
+  app.post('/api/courses/:courseId/assignments', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      const courseId = parseInt(req.params.courseId);
-      
-      if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create assignments" });
       }
 
+      const courseId = parseInt(req.params.courseId);
       const assignmentData = insertAssignmentSchema.parse({ ...req.body, courseId });
       const assignment = await storage.createAssignment(assignmentData);
       res.status(201).json(assignment);
@@ -169,10 +289,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Submission routes
-  app.get('/api/submissions', isAuthenticated, async (req: any, res) => {
+  app.get('/api/submissions', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const submissions = await storage.getSubmissionsByStudent(userId);
+      const submissions = await storage.getSubmissionsByStudent(req.user!.id);
       res.json(submissions);
     } catch (error) {
       console.error("Error fetching submissions:", error);
@@ -180,12 +299,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/assignments/:assignmentId/submissions', isAuthenticated, async (req: any, res) => {
+  app.get('/api/assignments/:assignmentId/submissions', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can view all submissions" });
       }
 
@@ -198,15 +314,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/assignments/:assignmentId/submissions', isAuthenticated, async (req: any, res) => {
+  app.post('/api/assignments/:assignmentId/submissions', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
       const assignmentId = parseInt(req.params.assignmentId);
       
       const submissionData = insertSubmissionSchema.parse({ 
         ...req.body, 
         assignmentId, 
-        studentId: userId 
+        studentId: req.user!.id 
       });
       const submission = await storage.createSubmission(submissionData);
       res.status(201).json(submission);
@@ -216,19 +331,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/submissions/:id/grade', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/submissions/:id/grade', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can grade submissions" });
       }
 
       const id = parseInt(req.params.id);
       const { grade, feedback } = req.body;
       
-      await storage.gradeSubmission(id, grade, feedback, userId);
+      await storage.gradeSubmission(id, grade, feedback, req.user.id);
       res.json({ message: "Submission graded successfully" });
     } catch (error) {
       console.error("Error grading submission:", error);
@@ -247,16 +359,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/blog', isAuthenticated, async (req: any, res) => {
+  app.post('/api/blog', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can create blog posts" });
       }
 
-      const postData = insertBlogPostSchema.parse({ ...req.body, authorId: userId });
+      const postData = insertBlogPostSchema.parse({ ...req.body, authorId: req.user.id });
       const post = await storage.createBlogPost(postData);
       res.status(201).json(post);
     } catch (error) {
@@ -282,12 +391,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/certificates', isAuthenticated, async (req: any, res) => {
+  app.post('/api/certificates', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
         return res.status(403).json({ message: "Only teachers and admins can issue certificates" });
       }
 
@@ -313,12 +419,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Statistics routes (admin only)
-  app.get('/api/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/stats', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || user.role !== 'admin') {
+      if (!req.user || req.user.role !== 'admin') {
         return res.status(403).json({ message: "Only admins can view system statistics" });
       }
 

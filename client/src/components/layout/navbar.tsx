@@ -1,4 +1,12 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import LoginModal from "@/components/auth/login-modal";
+import SignupModal from "@/components/auth/signup-modal";
+import { useAuth } from "@/hooks/useAuth";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -9,10 +17,26 @@ import { useState } from "react";
 import LoginModal from "@/components/auth/login-modal";
 
 export default function Navbar() {
-  const { isAuthenticated, user } = useAuth();
-  const [location] = useLocation();
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [location] = useLocation();
+  const { user, isAuthenticated } = useAuth();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('/api/auth/logout', {
+        method: 'POST'
+      });
+
+      if (!response.ok) {
+        throw new Error('Çıxış uğursuz');
+      }
+    },
+    onSuccess: () => {
+      window.location.reload();
+    }
+  });
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -75,7 +99,7 @@ export default function Navbar() {
                       Dashboard
                     </Button>
                   </Link>
-                  
+
                   {/* User Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -156,7 +180,7 @@ export default function Navbar() {
                         </span>
                       </Link>
                     ))}
-                    
+
                     {isAuthenticated ? (
                       <>
                         <Link href={getDashboardLink()}>
@@ -203,7 +227,21 @@ export default function Navbar() {
         </div>
       </nav>
 
-      <LoginModal open={showLoginModal} onOpenChange={setShowLoginModal} />
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}
+        onSwitchToSignup={() => {
+          setIsLoginModalOpen(false);
+          setIsSignupModalOpen(true);
+        }}
+      />
+
+      <SignupModal 
+        open={isSignupModalOpen} 
+        onOpenChange={setIsSignupModalOpen}
+        onSwitchToLogin={() => {
+          setIsSignupModalOpen(false);
+          setIsLoginModalOpen(true);
+        }}
+      />
     </>
   );
 }
