@@ -1,4 +1,3 @@
-
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import session from 'express-session';
@@ -64,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/register', async (req, res) => {
     try {
       const userData = registerSchema.parse(req.body);
-      
+
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(userData.email);
       if (existingUser) {
@@ -73,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Store password as plain text
       const plainPassword = hashPassword(userData.password);
-      
+
       // Create user
       const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const user = await storage.createUser({
@@ -87,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create session
       req.session.userId = userId;
-      
+
       res.status(201).json({
         id: user.id,
         email: user.email,
@@ -107,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/login', async (req, res) => {
     try {
       const loginData = loginSchema.parse(req.body);
-      
+
       // Find user
       const user = await storage.getUserByEmail(loginData.email);
       if (!user) {
@@ -122,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create session
       req.session.userId = user.id;
-      
+
       res.json({
         id: user.id,
         email: user.email,
@@ -156,11 +155,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.getUser(req.session.userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       res.json({
         id: user.id,
         email: user.email,
@@ -333,7 +332,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/assignments/:assignmentId/submissions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       const assignmentId = parseInt(req.params.assignmentId);
-      
+
       const submissionData = insertSubmissionSchema.parse({ 
         ...req.body, 
         assignmentId, 
@@ -355,7 +354,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const id = parseInt(req.params.id);
       const { grade, feedback } = req.body;
-      
+
       await storage.gradeSubmission(id, grade, feedback, req.user.id);
       res.json({ message: "Submission graded successfully" });
     } catch (error) {
@@ -395,11 +394,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const certificateId = req.params.certificateId;
       const certificate = await storage.getCertificateById(certificateId);
-      
+
       if (!certificate) {
         return res.status(404).json({ message: "Certificate not found" });
       }
-      
+
       res.json(certificate);
     } catch (error) {
       console.error("Error verifying certificate:", error);
@@ -442,7 +441,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const courseId = parseInt(req.params.courseId);
-      
+
       // Check if there's already an active session
       const activeSession = await storage.getActiveLessonSession(courseId);
       if (activeSession) {
@@ -470,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const sessionId = parseInt(req.params.sessionId);
       const { duration } = req.body;
-      
+
       await storage.endLessonSession(sessionId, duration);
       res.json({ message: "Lesson session ended successfully" });
     } catch (error) {
@@ -517,18 +516,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Remove student from course
-  app.delete('/api/enrollments/:studentId/:courseId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+  app.delete('/api/enrollments/:courseId/:studentId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
-      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
-        return res.status(403).json({ message: "Only teachers can remove students" });
-      }
-
       const { studentId, courseId } = req.params;
-      await storage.removeStudentFromCourse(studentId, parseInt(courseId));
-      res.json({ message: "Student removed successfully" });
+      await storage.removeStudentFromCourse(parseInt(courseId), studentId);
+      res.json({ message: 'Student removed from course successfully' });
     } catch (error) {
-      console.error("Error removing student:", error);
-      res.status(500).json({ message: "Failed to remove student" });
+      console.error('Error removing student from course:', error);
+      res.status(500).json({ message: 'Failed to remove student from course' });
     }
   });
 

@@ -108,6 +108,10 @@ export default function CourseManagement() {
   const { data: lessonSessions = [] } = useQuery({
     queryKey: [`/api/courses/${id}/sessions`],
     enabled: !!id,
+    select: (data) => data.map((session: any) => ({
+      ...session,
+      attendanceRecords: session.attendanceRecords || []
+    }))
   });
 
   const { data: allUsers = [] } = useQuery({
@@ -118,7 +122,11 @@ export default function CourseManagement() {
   const startSessionMutation = useMutation({
     mutationFn: () => fetch(`/api/courses/${id}/sessions`, { 
       method: "POST",
-      credentials: "include"
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        sessionName: `${course?.title} - ${new Date().toLocaleDateString('az-AZ')}`
+      })
     }).then(res => res.json()),
     onSuccess: () => {
       toast({ title: "Dərs uğurla başladıldı" });

@@ -113,6 +113,7 @@ export interface IStorage {
   endLessonSession(sessionId: number, duration: number): Promise<void>;
   getActiveLessonSession(courseId: number): Promise<LessonSession | undefined>;
   getLessonSessions(courseId: number): Promise<LessonSession[]>;
+  getLessonSessionById(sessionId: number): Promise<LessonSession | undefined>;
 
   // Attendance operations
   markAttendance(attendance: InsertAttendance): Promise<Attendance>;
@@ -427,6 +428,14 @@ export class DatabaseStorage implements IStorage {
       .from(lessonSessions)
       .where(eq(lessonSessions.courseId, courseId))
       .orderBy(desc(lessonSessions.startTime));
+  }
+
+  async getLessonSessionById(sessionId: number): Promise<LessonSession | undefined> {
+    const [session] = await db
+      .select()
+      .from(lessonSessions)
+      .where(eq(lessonSessions.id, sessionId));
+    return session;
   }
 
   // Attendance operations
