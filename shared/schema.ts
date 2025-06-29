@@ -32,7 +32,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name").notNull(),
   lastName: varchar("last_name").notNull(),
   profileImageUrl: varchar("profile_image_url"),
-  passwordHash: varchar("password_hash").notNull(),
+  passwordHash: varchar("passwordHash").notNull(),
   role: varchar("role", { enum: ["admin", "teacher", "student"] }).notNull().default("student"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
