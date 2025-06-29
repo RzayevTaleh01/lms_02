@@ -1,188 +1,279 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import Sidebar from "@/components/layout/sidebar";
+import CourseManagement from "@/components/course-management";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { BookOpen, Users, FileText, TrendingUp, Plus, ArrowRight } from "lucide-react";
-import { Link } from "wouter";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BookOpen, Users, Calendar, CheckSquare, Plus, FileText, UserPlus, CalendarPlus } from "lucide-react";
+import { isUnauthorizedError } from "@/lib/authUtils";
 
 export default function TeacherDashboard() {
-  const { user } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("overview");
 
-  const { data: courses = [], isLoading } = useQuery({
+  // Fetch courses for statistics
+  const { data: courses = [] } = useQuery({
     queryKey: ["/api/courses"],
   });
 
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ["/api/enrollments"],
-  });
-
-  // Filter courses by current teacher
-  const myCourses = courses.filter((course: any) => course.instructorId === user?.id);
-
-  const stats = {
-    totalCourses: myCourses.length,
-    totalStudents: enrollments.length,
-    activeSessions: 0, // Will be updated with live sessions
-    completedLessons: 0
-  };
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Unauthorized",
+        description: "You are logged out. Logging in again...",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 500);
+      return;
+    }
+  }, [isAuthenticated, isLoading, toast]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex items-center justify-center py-32">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-devcode-orange"></div>
-        </div>
-        <Footer />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-devcode-orange"></div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+  if (!user || user.role !== 'teacher') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-devcode-dark mb-4">Access Denied</h1>
+          <p className="text-devcode-gray">You don't have permission to access this page.</p>
+        </div>
+      </div>
+    );
+  }
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  const mockCourses = [
+    {
+      id: 1,
+      title: "Mathematics 101",
+      students: 24,
+      room: "Room 201",
+      time: "Today 10:00 AM",
+      code: "M1",
+      color: "bg-blue-100 text-blue-600"
+    },
+    {
+      id: 2,
+      title: "Algebra II",
+      students: 18,
+      room: "Room 305",
+      time: "Today 2:00 PM",
+      code: "A2",
+      color: "bg-green-100 text-green-600"
+    },
+    {
+      id: 3,
+      title: "Calculus I",
+      students: 22,
+      room: "Room 301",
+      time: "Tomorrow 9:00 AM",
+      code: "C1",
+      color: "bg-purple-100 text-purple-600"
+    }
+  ];
+
+  const mockSchedule = [
+    { name: "Math 101", time: "10:00 - 11:30 AM", color: "bg-green-500" },
+    { name: "Algebra II", time: "2:00 - 3:30 PM", color: "bg-blue-500" },
+    { name: "Calculus I", time: "Tomorrow 9:00 AM", color: "bg-purple-500" },
+    { name: "Statistics", time: "Wed 11:00 AM", color: "bg-yellow-500" }
+  ];
+
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar userRole="teacher" />
+
+      {/* Main Content */}
+      <div className="flex-1 p-8 ml-64">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-devcode-dark mb-4">
-            Xoş Gəldiniz, {user?.firstName}!
-          </h1>
-          <p className="text-devcode-gray text-lg">
-            Kurslarınızı idarə edin və tələbələrinizin irəliləyişini izləyin.
+          <h1 className="text-3xl font-bold text-devcode-dark">Müəllim Paneli</h1>
+          <p className="text-devcode-gray">
+            Xoş gəlmisiniz, {user.firstName || 'Müəllim'}! Kurslarınızı idarə edin və tələbələrinizlə əlaqə saxlayın.
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-devcode-gray mb-1">Ümumi Kurslar</p>
-                  <p className="text-3xl font-bold text-devcode-dark">{stats.totalCourses}</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Navigation Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Ümumi Baxış</TabsTrigger>
+            <TabsTrigger value="courses">Kurs İdarəçiliyi</TabsTrigger>
+            <TabsTrigger value="analytics">Analitika</TabsTrigger>
+          </TabsList>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-devcode-gray mb-1">Tələbələr</p>
-                  <p className="text-3xl font-bold text-devcode-dark">{stats.totalStudents}</p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <TabsContent value="overview" className="space-y-6 mt-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Ümumi Kurslar</CardTitle>
+                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{courses.length}</div>
+                  <p className="text-xs text-muted-foreground">Aktiv kurslar</p>
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mt-2">
+                    <BookOpen className="w-6 h-6 text-blue-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Ümumi Tələbələr</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{courses.reduce((acc: number, course: any) => acc + (course.enrollmentCount || 0), 0)}</div>
+                  <p className="text-xs text-muted-foreground">Bütün kurslarda</p>
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mt-2">
+                    <Users className="w-6 h-6 text-green-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Gözləyən Tapşırıqlar</CardTitle>
+                  <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">12</div>
+                  <p className="text-xs text-muted-foreground">Qiymətləndirilməyən</p>
+                  <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mt-2">
+                    <CheckSquare className="w-6 h-6 text-yellow-600" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Bu Həftə Dərslər</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">8</div>
+                  <p className="text-xs text-muted-foreground">Planlaşdırılmış</p>
+                  <div className="w-12 h-12 bg-devcode-orange bg-opacity-20 rounded-xl flex items-center justify-center mt-2">
+                    <Calendar className="w-6 h-6 text-devcode-orange" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-devcode-gray mb-1">Aktiv Sessiyalar</p>
-                  <p className="text-3xl font-bold text-devcode-dark">{stats.activeSessions}</p>
-                </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-devcode-orange" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-devcode-gray mb-1">Tamamlanan Dərslər</p>
-                  <p className="text-3xl font-bold text-devcode-dark">{stats.completedLessons}</p>
-                </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-purple-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Courses Section */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Mənim Kurslarım</CardTitle>
-            <Link href="/courses">
-              <Button className="bg-devcode-orange hover:bg-orange-600">
-                <Plus className="w-4 h-4 mr-2" />
-                Yeni Kurs Yarat
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {myCourses.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="text-6xl mb-4">📚</div>
-                <h3 className="text-xl font-semibold text-devcode-dark mb-2">Hələ kurs yaratmamısınız</h3>
-                <p className="text-devcode-gray mb-4">İlk kursunuzu yaradaraq tədrisi başlayın.</p>
-                <Link href="/courses">
-                  <Button className="bg-devcode-orange hover:bg-orange-600">
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Tez Əməliyyatlar</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-3">
+                  <Button 
+                    className="bg-devcode-orange text-white hover:bg-orange-600"
+                    onClick={() => setActiveTab("courses")}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
-                    İlk Kursunuzu Yaradın
+                    Yeni Kurs
                   </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myCourses.map((course: any) => (
-                  <Card key={course.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="aspect-video bg-gradient-to-br from-devcode-orange to-orange-600 rounded-lg mb-4 flex items-center justify-center">
-                        {course.imageUrl ? (
-                          <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover rounded-lg" />
-                        ) : (
-                          <div className="text-4xl text-white opacity-50">📚</div>
-                        )}
+                  <Button variant="outline" onClick={() => setActiveTab("courses")}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Tapşırıq Əlavə Et
+                  </Button>
+                  <Button variant="outline" onClick={() => setActiveTab("courses")}>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Tələbə Əlavə Et
+                  </Button>
+                  <Button variant="outline" onClick={() => setActiveTab("courses")}>
+                    <CalendarPlus className="w-4 h-4 mr-2" />
+                    Dərs Planlaşdır
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Recent Courses */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Son Kurslar</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {courses.length === 0 ? (
+                    <p className="text-center text-devcode-gray py-4">Hələ kurs yaratmamısınız.</p>
+                  ) : (
+                    courses.slice(0, 3).map((course: any) => (
+                      <div key={course.id} className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-devcode-orange text-white">
+                          <span className="font-semibold">{course.title.charAt(0)}</span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-devcode-dark">{course.title}</h3>
+                          <p className="text-sm text-devcode-gray">{course.enrollmentCount || 0} tələbə • {course.level}</p>
+                        </div>
+                        <span className="text-sm text-devcode-gray">{course.price} AZN</span>
                       </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
 
-                      <h3 className="text-lg font-semibold text-devcode-dark mb-2">{course.title}</h3>
-                      <p className="text-sm text-devcode-gray mb-4 line-clamp-2">
-                        {course.shortDescription || course.description}
-                      </p>
-
-                      <div className="flex items-center justify-between mb-4">
-                        <Badge variant="secondary" className="capitalize">
-                          {course.level === 'beginner' ? 'Başlanğıc' : course.level === 'intermediate' ? 'Orta' : 'İrəli'}
-                        </Badge>
-                        <span className="text-sm text-devcode-gray">
-                          👥 {course.enrollmentCount || 0} tələbə
-                        </span>
+              {/* This Week Schedule */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Bu Həftə</CardTitle>
+                    <Button variant="link" size="sm" className="text-devcode-orange hover:text-orange-600">
+                      Tam Təqvimi Gör
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {mockSchedule.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <div className={`w-2 h-2 rounded-full ${item.color}`}></div>
+                      <div className="flex-1">
+                        <div className="font-medium text-devcode-dark">{item.name}</div>
+                        <div className="text-sm text-devcode-gray">{item.time}</div>
                       </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-                      <Link href={`/course/${course.id}/manage`}>
-                        <Button className="w-full bg-devcode-orange hover:bg-orange-600">
-                          İdarə Et
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          <TabsContent value="courses" className="mt-6">
+            <CourseManagement />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Analitika və Hesabatlar</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-16 text-devcode-gray">
+                  <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-semibold mb-2">Analitika Bölməsi</h3>
+                  <p>Tələbə performansı və kurs statistikaları burada göstəriləcək.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Footer />
     </div>
   );
 }

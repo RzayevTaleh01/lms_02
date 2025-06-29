@@ -124,41 +124,6 @@ export const blogPosts = pgTable("blog_posts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Live lesson sessions
-export const liveSessions = pgTable("live_sessions", {
-  id: serial("id").primaryKey(),
-  courseId: integer("course_id").notNull(),
-  lessonId: integer("lesson_id"),
-  instructorId: varchar("instructor_id").notNull(),
-  startTime: timestamp("start_time").defaultNow(),
-  endTime: timestamp("end_time"),
-  duration: integer("duration"), // in minutes
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Lesson attendance tracking
-export const attendance = pgTable("attendance", {
-  id: serial("id").primaryKey(),
-  sessionId: integer("session_id").notNull(),
-  studentId: varchar("student_id").notNull(),
-  courseId: integer("course_id").notNull(),
-  isPresent: boolean("is_present").default(false),
-  markedAt: timestamp("marked_at").defaultNow(),
-});
-
-// Lesson materials
-export const lessonMaterials = pgTable("lesson_materials", {
-  id: serial("id").primaryKey(),
-  lessonId: integer("lesson_id").notNull(),
-  title: varchar("title", { length: 255 }).notNull(),
-  content: text("content"), // rich text content
-  materialType: varchar("material_type", { enum: ["video", "text", "document"] }).notNull(),
-  orderIndex: integer("order_index").notNull(),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
 // Certificates
 export const certificates = pgTable("certificates", {
   id: serial("id").primaryKey(),
@@ -246,44 +211,6 @@ export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
   }),
 }));
 
-export const liveSessionsRelations = relations(liveSessions, ({ one, many }) => ({
-  course: one(courses, {
-    fields: [liveSessions.courseId],
-    references: [courses.id],
-  }),
-  lesson: one(lessons, {
-    fields: [liveSessions.lessonId],
-    references: [lessons.id],
-  }),
-  instructor: one(users, {
-    fields: [liveSessions.instructorId],
-    references: [users.id],
-  }),
-  attendance: many(attendance),
-}));
-
-export const attendanceRelations = relations(attendance, ({ one }) => ({
-  session: one(liveSessions, {
-    fields: [attendance.sessionId],
-    references: [liveSessions.id],
-  }),
-  student: one(users, {
-    fields: [attendance.studentId],
-    references: [users.id],
-  }),
-  course: one(courses, {
-    fields: [attendance.courseId],
-    references: [courses.id],
-  }),
-}));
-
-export const lessonMaterialsRelations = relations(lessonMaterials, ({ one }) => ({
-  lesson: one(lessons, {
-    fields: [lessonMaterials.lessonId],
-    references: [lessons.id],
-  }),
-}));
-
 export const certificatesRelations = relations(certificates, ({ one }) => ({
   student: one(users, {
     fields: [certificates.studentId],
@@ -347,21 +274,6 @@ export const insertContactSubmissionSchema = createInsertSchema(contactSubmissio
   status: true,
 });
 
-export const insertLiveSessionSchema = createInsertSchema(liveSessions).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertAttendanceSchema = createInsertSchema(attendance).omit({
-  id: true,
-  markedAt: true,
-});
-
-export const insertLessonMaterialSchema = createInsertSchema(lessonMaterials).omit({
-  id: true,
-  createdAt: true,
-});
-
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -381,9 +293,3 @@ export type Certificate = typeof certificates.$inferSelect;
 export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSubmissionSchema>;
-export type LiveSession = typeof liveSessions.$inferSelect;
-export type InsertLiveSession = z.infer<typeof insertLiveSessionSchema>;
-export type Attendance = typeof attendance.$inferSelect;
-export type InsertAttendance = z.infer<typeof insertAttendanceSchema>;
-export type LessonMaterial = typeof lessonMaterials.$inferSelect;
-export type InsertLessonMaterial = z.infer<typeof insertLessonMaterialSchema>;

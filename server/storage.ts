@@ -8,9 +8,6 @@ import {
   blogPosts,
   certificates,
   contactSubmissions,
-  liveSessions,
-  attendance,
-  lessonMaterials,
   type User,
   type UpsertUser,
   type Course,
@@ -29,12 +26,6 @@ import {
   type InsertCertificate,
   type ContactSubmission,
   type InsertContactSubmission,
-  type LiveSession,
-  type InsertLiveSession,
-  type Attendance,
-  type InsertAttendance,
-  type LessonMaterial,
-  type InsertLessonMaterial,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, like, and, count, sql } from "drizzle-orm";
@@ -83,23 +74,6 @@ export interface IStorage {
 
   // Contact operations
   createContactSubmission(contact: InsertContactSubmission): Promise<ContactSubmission>;
-
-  // Live session operations
-  startLiveSession(sessionData: InsertLiveSession): Promise<LiveSession>;
-  endLiveSession(sessionId: number): Promise<void>;
-  getActiveLiveSession(courseId: number): Promise<LiveSession | undefined>;
-  getLiveSessionsByCourse(courseId: number): Promise<LiveSession[]>;
-
-  // Attendance operations
-  markAttendance(attendanceData: InsertAttendance): Promise<Attendance>;
-  getSessionAttendance(sessionId: number): Promise<(Attendance & { student: User })[]>;
-  getCourseAttendance(courseId: number): Promise<any[]>;
-
-  // Lesson materials operations
-  createLessonMaterial(material: InsertLessonMaterial): Promise<LessonMaterial>;
-  getLessonMaterials(lessonId: number): Promise<LessonMaterial[]>;
-  updateLessonMaterial(id: number, material: Partial<InsertLessonMaterial>): Promise<LessonMaterial | undefined>;
-  deleteLessonMaterial(id: number): Promise<void>;
 
   // Statistics
   getSystemStats(): Promise<{
@@ -340,99 +314,6 @@ export class DatabaseStorage implements IStorage {
       totalEnrollments: enrollmentCount.count,
       totalCertificates: certificateCount.count,
     };
-  }
-
-  // Live session operations
-  async startLiveSession(sessionData: InsertLiveSession): Promise<LiveSession> {
-    const [session] = await db.insert(liveSessions).values(sessionData).returning();
-    return session;
-  }
-
-  async endLiveSession(sessionId: number): Promise<void> {
-    await db
-      .update(liveSessions)
-      .set({ 
-        endTime: new Date(), 
-        isActive: false,
-        duration: sql`EXTRACT(EPOCH FROM (NOW() - ${liveSessions.startTime})) / 60`
-      })
-      .where(eq(liveSessions.id, sessionId));
-  }
-
-  async getActiveLiveSession(courseId: number): Promise<LiveSession | undefined> {
-    const [session] = await db
-      .select()
-      .from(liveSessions)
-      .where(and(eq(liveSessions.courseId, courseId), eq(liveSessions.isActive, true)));
-    return session;
-  }
-
-  async getLiveSessionsByCourse(courseId: number): Promise<LiveSession[]> {
-    return await db
-      .select()
-      .from(liveSessions)
-      .where(eq(liveSessions.courseId, courseId))
-      .orderBy(desc(liveSessions.startTime));
-  }
-
-  // Attendance operations
-  async markAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
-    const [attendance_record] = await db.insert(attendance).values(attendanceData).returning();
-    return attendance_record;
-  }
-
-  async getSessionAttendance(sessionId: number): Promise<(Attendance & { student: User })[]> {
-    return await db
-      .select()
-      .from(attendance)
-      .innerJoin(users, eq(attendance.studentId, users.id))
-      .where(eq(attendance.sessionId, sessionId))
-      .then(rows => rows.map(row => ({ ...row.attendance, student: row.users })));
-  }
-
-  async getCourseAttendance(courseId: number): Promise<any[]> {
-    return await db
-      .select()
-      .from(attendance)
-      .innerJoin(users, eq(attendance.studentId, users.id))
-      .innerJoin(liveSessions, eq(attendance.sessionId, liveSessions.id))
-      .where(eq(attendance.courseId, courseId))
-      .orderBy(desc(attendance.markedAt))
-      .then(rows => rows.map(row => ({ 
-        ...row.attendance, 
-        student: row.users, 
-        session: row.live_sessions 
-      })));
-  }
-
-  // Lesson materials operations
-  async createLessonMaterial(material: InsertLessonMaterial): Promise<LessonMaterial> {
-    const [newMaterial] = await db.insert(lessonMaterials).values(material).returning();
-    return newMaterial;
-  }
-
-  async getLessonMaterials(lessonId: number): Promise<LessonMaterial[]> {
-    return await db
-      .select()
-      .from(lessonMaterials)
-      .where(and(eq(lessonMaterials.lessonId, lessonId), eq(lessonMaterials.isActive, true)))
-      .orderBy(lessonMaterials.orderIndex);
-  }
-
-  async updateLessonMaterial(id: number, material: Partial<InsertLessonMaterial>): Promise<LessonMaterial | undefined> {
-    const [updatedMaterial] = await db
-      .update(lessonMaterials)
-      .set(material)
-      .where(eq(lessonMaterials.id, id))
-      .returning();
-    return updatedMaterial;
-  }
-
-  async deleteLessonMaterial(id: number): Promise<void> {
-    await db
-      .update(lessonMaterials)
-      .set({ isActive: false })
-      .where(eq(lessonMaterials.id, id));
   }
 
   async getCourseStudents(courseId: number): Promise<
