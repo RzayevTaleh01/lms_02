@@ -17,6 +17,9 @@ import Contact from "@/pages/contact";
 // Dashboard pages
 import AdminDashboard from "@/pages/admin-dashboard";
 import TeacherDashboard from "@/pages/teacher-dashboard";
+import TeacherCourses from "@/pages/teacher-courses";
+import TeacherStudents from "@/pages/teacher-students";
+import TeacherStudentDetail from "@/pages/teacher-student-detail";
 import StudentDashboard from "@/pages/student-dashboard";
 import CourseManagementPage from "@/pages/course-management";
 
@@ -47,7 +50,10 @@ function Router() {
       {/* Role-based dashboards - only for authenticated users */}
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses" component={TeacherCourses} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses/:id" component={CourseManagementPage} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students" component={TeacherStudents} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students/:studentId" component={TeacherStudentDetail} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
       
       <Route component={NotFound} />

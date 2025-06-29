@@ -41,10 +41,6 @@ export default function Sidebar({ userRole }: SidebarProps) {
           { href: '/teacher', label: 'Dashboard', icon: LayoutDashboard },
           { href: '/teacher/courses', label: 'Courses', icon: BookOpen },
           { href: '/teacher/students', label: 'Students', icon: Users },
-          { href: '/teacher/attendance', label: 'Attendance', icon: Calendar },
-          { href: '/teacher/assignments', label: 'Assignments', icon: CheckSquare },
-          { href: '/teacher/reports', label: 'Reports', icon: BarChart3 },
-          { href: '/teacher/settings', label: 'Settings', icon: Settings },
         ];
       case 'student':
         return [
