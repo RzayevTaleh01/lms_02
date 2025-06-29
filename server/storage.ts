@@ -128,6 +128,35 @@ export interface IStorage {
   createLessonAssignment(assignment: InsertLessonAssignment): Promise<LessonAssignment>;
   getLessonAssignments(lessonId: number): Promise<LessonAssignment[]>;
   getAssignmentSubmissions(assignmentId: number): Promise<(Submission & { student: User })[]>;
+
+  // Session history operations
+  getSessionHistory(teacherId: string): Promise<{
+    id: number;
+    courseId: number;
+    courseName: string;
+    sessionName: string;
+    startTime: string;
+    endTime: string | null;
+    duration: number | null;
+    isActive: boolean;
+    attendanceCount: number;
+    totalStudents: number;
+  }[]>;
+
+  // Monthly attendance tracking
+  getMonthlyAttendance(courseId: number): Promise<{
+    month: string;
+    totalSessions: number;
+    totalAttendance: number;
+    averageAttendance: number;
+    students: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      attendedSessions: number;
+      attendancePercentage: number;
+    }[];
+  }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -491,6 +520,122 @@ export class DatabaseStorage implements IStorage {
       .where(eq(submissions.assignmentId, assignmentId))
       .orderBy(desc(submissions.submittedAt))
       .then(rows => rows.map(row => ({ ...row.submissions, student: row.users })));
+  }
+
+  // Session history operations
+  async getSessionHistory(teacherId: string) {
+    const results = await db
+      .select({
+        id: lessonSessions.id,
+        courseId: lessonSessions.courseId,
+        courseName: courses.title,
+        sessionName: lessonSessions.sessionName,
+        startTime: lessonSessions.startTime,
+        endTime: lessonSessions.endTime,
+        duration: lessonSessions.duration,
+        isActive: lessonSessions.isActive,
+        attendanceCount: sql<number>`count(${attendance.id})`,
+        totalStudents: sql<number>`count(distinct ${enrollments.studentId})`
+      })
+      .from(lessonSessions)
+      .leftJoin(courses, eq(lessonSessions.courseId, courses.id))
+      .leftJoin(attendance, eq(lessonSessions.id, attendance.sessionId))
+      .leftJoin(enrollments, eq(lessonSessions.courseId, enrollments.courseId))
+      .where(eq(courses.instructorId, teacherId))
+      .groupBy(
+        lessonSessions.id,
+        lessonSessions.courseId,
+        courses.title,
+        lessonSessions.sessionName,
+        lessonSessions.startTime,
+        lessonSessions.endTime,
+        lessonSessions.duration,
+        lessonSessions.isActive
+      )
+      .orderBy(desc(lessonSessions.startTime));
+
+    return results.map(result => ({
+      id: result.id,
+      courseId: result.courseId,
+      courseName: result.courseName || '',
+      sessionName: result.sessionName,
+      startTime: result.startTime.toISOString(),
+      endTime: result.endTime?.toISOString() || null,
+      duration: result.duration,
+      isActive: result.isActive,
+      attendanceCount: Number(result.attendanceCount) || 0,
+      totalStudents: Number(result.totalStudents) || 0
+    }));
+  }
+
+  // Monthly attendance tracking
+  async getMonthlyAttendance(courseId: number) {
+    // Get attendance data grouped by month
+    const monthlyData = await db
+      .select({
+        month: sql<string>`to_char(${lessonSessions.startTime}, 'YYYY-MM')`,
+        sessionId: lessonSessions.id,
+        attendanceCount: sql<number>`count(${attendance.id})`,
+        studentId: attendance.studentId,
+        firstName: users.firstName,
+        lastName: users.lastName
+      })
+      .from(lessonSessions)
+      .leftJoin(attendance, eq(lessonSessions.id, attendance.sessionId))
+      .leftJoin(users, eq(attendance.studentId, users.id))
+      .where(eq(lessonSessions.courseId, courseId))
+      .groupBy(
+        sql`to_char(${lessonSessions.startTime}, 'YYYY-MM')`,
+        lessonSessions.id,
+        attendance.studentId,
+        users.firstName,
+        users.lastName
+      )
+      .orderBy(sql`to_char(${lessonSessions.startTime}, 'YYYY-MM') desc`);
+
+    // Process the data to group by month
+    const monthlyMap = new Map();
+
+    for (const row of monthlyData) {
+      if (!monthlyMap.has(row.month)) {
+        monthlyMap.set(row.month, {
+          month: row.month,
+          sessions: new Set(),
+          students: new Map(),
+          totalAttendance: 0
+        });
+      }
+
+      const monthData = monthlyMap.get(row.month);
+      monthData.sessions.add(row.sessionId);
+
+      if (row.studentId) {
+        if (!monthData.students.has(row.studentId)) {
+          monthData.students.set(row.studentId, {
+            id: row.studentId,
+            firstName: row.firstName || '',
+            lastName: row.lastName || '',
+            attendedSessions: 0
+          });
+        }
+        monthData.students.get(row.studentId).attendedSessions++;
+        monthData.totalAttendance++;
+      }
+    }
+
+    // Convert to final format
+    return Array.from(monthlyMap.values()).map(monthData => ({
+      month: monthData.month,
+      totalSessions: monthData.sessions.size,
+      totalAttendance: monthData.totalAttendance,
+      averageAttendance: monthData.sessions.size > 0 ? 
+        Math.round((monthData.totalAttendance / monthData.sessions.size) * 100) / 100 : 0,
+      students: Array.from(monthData.students.values()).map(student => ({
+        ...student,
+        attendancePercentage: monthData.sessions.size > 0 ? 
+          Math.round((student.attendedSessions / monthData.sessions.size) * 100) : 0
+      }))
+    }));
   }
 }
 
