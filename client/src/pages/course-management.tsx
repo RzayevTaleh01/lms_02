@@ -30,7 +30,8 @@ import {
   UserPlus,
   Trash2,
   ArrowLeft,
-  Upload
+  Upload,
+  BarChart3
 } from "lucide-react";
 
 export default function CourseManagement() {
@@ -77,6 +78,10 @@ export default function CourseManagement() {
   const [studentForm, setStudentForm] = useState({
     studentId: ""
   });
+
+  // Attendance state for managing attendance changes
+  const [attendanceChanges, setAttendanceChanges] = useState<Record<string, "present" | "absent">>({});
+  const [attendanceSaved, setAttendanceSaved] = useState(false);
 
   // Fetch course data
   const { data: course } = useQuery({
@@ -296,13 +301,39 @@ export default function CourseManagement() {
   };
 
   const handleMarkAttendance = (studentId: string, status: "present" | "absent") => {
-    if (activeSession) {
-      markAttendanceMutation.mutate({
-        sessionId: activeSession.id,
-        studentId,
-        courseId,
-        status
-      });
+    setAttendanceChanges(prev => ({
+      ...prev,
+      [studentId]: status
+    }));
+    setAttendanceSaved(false);
+  };
+
+  const handleSaveAttendance = async () => {
+    if (activeSession && Object.keys(attendanceChanges).length > 0) {
+      try {
+        for (const [studentId, status] of Object.entries(attendanceChanges)) {
+          await fetch(`/api/sessions/${activeSession.id}/attendance`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sessionId: activeSession.id,
+              studentId,
+              courseId,
+              status
+            })
+          });
+        }
+        setAttendanceSaved(true);
+        setAttendanceChanges({});
+        toast({ title: "Davamiyyət uğurla yadda saxlanıldı" });
+        queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/sessions`] });
+      } catch (error) {
+        toast({ 
+          title: "Xəta", 
+          description: "Davamiyyət yadda saxlanılarkən xəta baş verdi",
+          variant: "destructive" 
+        });
+      }
     }
   };
 
@@ -333,15 +364,15 @@ export default function CourseManagement() {
         onTabChange={setActiveTab}
       />
 
-      {activeSession && <ActiveSessionBar session={activeSession} onEnd={handleEndSession} />}
+      {activeSession && <ActiveSessionBar session={activeSession} onEndSession={handleEndSession} />}
 
       {/* Main Content */}
-      <div className="flex-1 p-8 ml-80" style={{ marginTop: activeSession ? '80px' : '0' }}>
+      <div className="flex-1 p-8 ml-80" style={{ paddingTop: activeSession ? '100px' : '32px' }}>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <Button variant="outline" onClick={() => setLocation("/teacher/dashboard")} className="mb-4">
+              <Button variant="outline" onClick={() => setLocation("/teacher/courses")} className="mb-4">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Geri
               </Button>
@@ -369,7 +400,7 @@ export default function CourseManagement() {
         </div>
 
         {/* Content based on active tab */}
-        {activeTab === "session-history" && (
+        {(activeTab === "session-history" || activeTab === "sessions") && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Dərs Sessiyaları Tarixi</h2>
@@ -395,6 +426,7 @@ export default function CourseManagement() {
                         <TableHead>Tarix</TableHead>
                         <TableHead>Başlama Saatı</TableHead>
                         <TableHead>Müddət</TableHead>
+                        <TableHead>İştirak</TableHead>
                         <TableHead>Status</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -412,6 +444,16 @@ export default function CourseManagement() {
                           </TableCell>
                           <TableCell>
                             {session.duration ? `${Math.floor(session.duration / 60)} dəq` : "Davam edir"}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                {session.attendanceCount || 0} iştirak
+                              </Badge>
+                              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                                {(students?.length || 0) - (session.attendanceCount || 0)} yox
+                              </Badge>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Badge variant={session.endTime ? "secondary" : "default"}>
@@ -737,22 +779,30 @@ export default function CourseManagement() {
                               {activeSession && (
                                 <>
                                   <Button
-                                    variant="outline"
+                                    variant={attendanceChanges[student.id] === "present" ? "default" : "outline"}
                                     size="sm"
-                                    className="text-green-600 hover:text-green-700 hover:border-green-300"
+                                    className={`${
+                                      attendanceChanges[student.id] === "present" 
+                                        ? "bg-green-600 hover:bg-green-700 text-white" 
+                                        : "text-green-600 hover:text-green-700 hover:border-green-300"
+                                    }`}
                                     onClick={() => handleMarkAttendance(student.id, "present")}
                                   >
                                     <CheckSquare className="w-4 h-4 mr-1" />
-                                    İştirak
+                                    İştirak Edir
                                   </Button>
                                   <Button
-                                    variant="outline"
+                                    variant={attendanceChanges[student.id] === "absent" ? "default" : "outline"}
                                     size="sm"
-                                    className="text-red-600 hover:text-red-700 hover:border-red-300"
+                                    className={`${
+                                      attendanceChanges[student.id] === "absent" 
+                                        ? "bg-red-600 hover:bg-red-700 text-white" 
+                                        : "text-red-600 hover:text-red-700 hover:border-red-300"
+                                    }`}
                                     onClick={() => handleMarkAttendance(student.id, "absent")}
                                   >
                                     <X className="w-4 h-4 mr-1" />
-                                    Qeyb
+                                    Yoxdur
                                   </Button>
                                 </>
                               )}
@@ -763,6 +813,154 @@ export default function CourseManagement() {
                     })}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+            
+            {/* Save Attendance Button - Only show when session is active and changes were made */}
+            {activeSession && Object.keys(attendanceChanges).length > 0 && (
+              <div className="flex justify-end mt-4">
+                <Button 
+                  onClick={handleSaveAttendance}
+                  className="bg-devcode-orange hover:bg-orange-600"
+                  disabled={attendanceSaved}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {attendanceSaved ? "Yadda Saxlanıldı" : "Davamiyyəti Yadda Saxla"}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "analytics" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Kurs Analitikası</h2>
+            </div>
+
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Ümumi Davamiyyət</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {students?.length > 0 ? 
+                      Math.round((lessonSessions?.reduce((acc: number, session: any) => acc + (session.attendanceCount || 0), 0) / (students.length * lessonSessions?.length || 1)) * 100) 
+                      : 0}%
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Orta davamiyyət
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Qiymətləndirilmiş Tapşırıqlar</CardTitle>
+                  <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">0</div>
+                  <p className="text-xs text-muted-foreground">
+                    Ümumi tapşırıq sayı
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Aktiv Tələbələr</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{students?.length || 0}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Qeydiyyatdan keçmiş
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="w-5 h-5" />
+                  Son Fəaliyyətlər
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {lessonSessions?.slice(0, 5).map((session: any) => (
+                    <div key={session.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-devcode-orange text-white rounded-full flex items-center justify-center text-sm font-medium">
+                          D
+                        </div>
+                        <div>
+                          <p className="font-medium">Dərs Sessiyası</p>
+                          <p className="text-sm text-devcode-gray">
+                            {new Date(session.startTime).toLocaleDateString('az-AZ')}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium">
+                          {session.attendanceCount || 0} iştirak
+                        </p>
+                        <p className="text-sm text-devcode-gray">
+                          {session.duration ? `${Math.floor(session.duration / 60)} dəq` : "Aktiv"}
+                        </p>
+                      </div>
+                    </div>
+                  )) || (
+                    <div className="text-center py-8">
+                      <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-devcode-gray">Hələ fəaliyyət yoxdur</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Session Statistics */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5" />
+                  Sessiya Statistikaları
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-devcode-gray">Ümumi sessiya sayı:</span>
+                    <span className="font-medium">{lessonSessions?.length || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-devcode-gray">Aktiv sessiyalar:</span>
+                    <span className="font-medium">
+                      {lessonSessions?.filter((s: any) => !s.endTime).length || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-devcode-gray">Bitmiş sessiyalar:</span>
+                    <span className="font-medium">
+                      {lessonSessions?.filter((s: any) => s.endTime).length || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-devcode-gray">Orta sessiya müddəti:</span>
+                    <span className="font-medium">
+                      {lessonSessions?.length > 0 ? 
+                        Math.round(lessonSessions.reduce((acc: number, s: any) => acc + (s.duration || 0), 0) / lessonSessions.length / 60) || 0
+                        : 0} dəq
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
