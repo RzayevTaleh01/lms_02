@@ -1,11 +1,8 @@
 
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import session from 'express-session';
-import { Pool } from '@neondatabase/serverless';
-import ConnectPgSimple from 'connect-pg-simple';
 import { storage } from "./storage";
-import { hashPassword, verifyPassword, isAuthenticated, attachUser, AuthenticatedRequest } from "./auth";
+import { isAuthenticated } from "./replitAuth";
 import { 
   insertCourseSchema, 
   insertLessonSchema, 
