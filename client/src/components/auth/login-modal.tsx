@@ -22,11 +22,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
 
   const loginMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      const response = await apiRequest('POST', '/api/auth/login', data);
       
       if (!response.ok) {
         const error = await response.json();

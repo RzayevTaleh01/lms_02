@@ -26,11 +26,7 @@ export default function SignupModal({ open, onOpenChange, onSwitchToLogin }: Sig
 
   const registerMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      const response = await apiRequest('POST', '/api/auth/register', data);
       
       if (!response.ok) {
         const error = await response.json();
