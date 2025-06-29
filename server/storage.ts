@@ -128,6 +128,12 @@ export interface IStorage {
   createLessonAssignment(assignment: InsertLessonAssignment): Promise<LessonAssignment>;
   getLessonAssignments(lessonId: number): Promise<LessonAssignment[]>;
   getAssignmentSubmissions(assignmentId: number): Promise<(Submission & { student: User })[]>;
+
+  // Course enrollment operations
+  removeStudentFromCourse(courseId: number, studentId: string): Promise<void>;
+
+  // Active session operations
+  getAllActiveSessions(): Promise<(LessonSession & { courseName: string })[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -491,6 +497,34 @@ export class DatabaseStorage implements IStorage {
       .where(eq(submissions.assignmentId, assignmentId))
       .orderBy(desc(submissions.submittedAt))
       .then(rows => rows.map(row => ({ ...row.submissions, student: row.users })));
+  }
+
+  async removeStudentFromCourse(courseId: number, studentId: string): Promise<void> {
+    await db.delete(enrollments)
+      .where(and(
+        eq(enrollments.courseId, courseId),
+        eq(enrollments.studentId, studentId)
+      ));
+  }
+
+  async getAllActiveSessions(): Promise<(LessonSession & { courseName: string })[]> {
+    const activeSessions = await db.select({
+      id: lessonSessions.id,
+      courseId: lessonSessions.courseId,
+      teacherId: lessonSessions.teacherId,
+      sessionName: lessonSessions.sessionName,
+      startTime: lessonSessions.startTime,
+      endTime: lessonSessions.endTime,
+      duration: lessonSessions.duration,
+      isActive: lessonSessions.isActive,
+      createdAt: lessonSessions.createdAt,
+      courseName: courses.title
+    })
+    .from(lessonSessions)
+    .innerJoin(courses, eq(lessonSessions.courseId, courses.id))
+    .where(eq(lessonSessions.isActive, true));
+
+    return activeSessions;
   }
 }
 

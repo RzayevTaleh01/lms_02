@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/sidebar";
 import CourseManagement from '@/pages/course-management';
+import GlobalActiveSession from "@/components/global-active-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -93,10 +94,11 @@ export default function TeacherDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
+      <GlobalActiveSession />
       <Sidebar userRole="teacher" />
 
       {/* Main Content */}
-      <div className="flex-1 p-8 ml-64">
+      <div className="flex-1 p-8 ml-64 pt-16">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-devcode-dark">Müəllim Paneli</h1>

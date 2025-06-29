@@ -650,6 +650,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Remove student from course (delete enrollment)
+  app.delete('/api/enrollments/:courseId/:studentId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { courseId, studentId } = req.params;
+      await storage.removeStudentFromCourse(parseInt(courseId), studentId);
+      res.json({ message: 'Student removed from course successfully' });
+    } catch (error) {
+      console.error('Error removing student from course:', error);
+      res.status(500).json({ message: 'Failed to remove student from course' });
+    }
+  });
+
+  // Get all active sessions
+  app.get('/api/active-sessions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const activeSessions = await storage.getAllActiveSessions();
+      res.json(activeSessions);
+    } catch (error) {
+      console.error('Error fetching active sessions:', error);
+      res.status(500).json({ message: 'Failed to fetch active sessions' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

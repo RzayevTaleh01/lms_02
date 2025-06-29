@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import CourseSidebar from "@/components/course-sidebar";
 import ActiveSessionBar from "@/components/active-session-bar";
+import SessionHistory from "@/pages/session-history";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -247,6 +248,21 @@ export default function CourseManagement() {
     },
   });
 
+  // Remove student mutation
+  const removeStudentMutation = useMutation({
+    mutationFn: async (studentId: string) => {
+      const response = await fetch(`/api/enrollments/${courseId}/${studentId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to remove student");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/students`] });
+      toast({ title: "Tələbə kursdan çıxarıldı" });
+    },
+  });
+
   const handleCreateLesson = () => {
     createLessonMutation.mutate(lessonForm);
   };
@@ -287,6 +303,12 @@ export default function CourseManagement() {
         courseId,
         status
       });
+    }
+  };
+
+  const handleRemoveStudent = (studentId: string) => {
+    if (confirm("Bu tələbəni kursdan çıxarmaq istədiyinizə əminsiniz?")) {
+      removeStudentMutation.mutate(studentId);
     }
   };
 
@@ -347,6 +369,65 @@ export default function CourseManagement() {
         </div>
 
         {/* Content based on active tab */}
+        {activeTab === "session-history" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Dərs Sessiyaları Tarixi</h2>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Sessiya Tarixi
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {lessonSessions.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-devcode-gray">Hələ heç bir dərs sessiyası keçirilməyib</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Tarix</TableHead>
+                        <TableHead>Başlama Saatı</TableHead>
+                        <TableHead>Müddət</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {lessonSessions.map((session: any) => (
+                        <TableRow key={`session-${session.id}`}>
+                          <TableCell>
+                            {new Date(session.startTime).toLocaleDateString('az-AZ')}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4" />
+                              {new Date(session.startTime).toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {session.duration ? `${Math.floor(session.duration / 60)} dəq` : "Davam edir"}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={session.endTime ? "secondary" : "default"}>
+                              {session.endTime ? "Bitmiş" : "Aktiv"}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {activeTab === "lessons" && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -511,25 +592,37 @@ export default function CourseManagement() {
                       <TableHead>Qeydiyyat Tarixi</TableHead>
                       <TableHead>Tərəqqi</TableHead>
                       <TableHead>Qiymət</TableHead>
+                      <TableHead>Əməliyyatlar</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {students.map((student: any) => (
-                      <TableRow key={student.id}>
+                    {students.map((student: any, index: number) => (
+                      <TableRow key={`student-${student.id}-${index}`}>
                         <TableCell className="font-medium">
                           {student.firstName} {student.lastName}
                         </TableCell>
                         <TableCell>{student.email}</TableCell>
                         <TableCell>
-                          {new Date(student.enrolledAt).toLocaleDateString()}
+                          {student.enrolledAt ? new Date(student.enrolledAt).toLocaleDateString('az-AZ') : "N/A"}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {student.progress}%
+                            {student.progress || 0}%
                           </Badge>
                         </TableCell>
                         <TableCell>
                           {student.grade ? `${student.grade}/100` : "Qiymətləndirilməyib"}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:border-red-300"
+                            onClick={() => handleRemoveStudent(student.id)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Sil
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -542,67 +635,134 @@ export default function CourseManagement() {
 
         {activeTab === "attendance" && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-semibold">Davamiyyət</h2>
-
-            {activeSession && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Cari Dərs - Davamiyyət Qeyd Et</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {students.map((student: any) => (
-                      <div key={student.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <p className="font-medium">{student.firstName} {student.lastName}</p>
-                          <p className="text-sm text-devcode-gray">{student.email}</p>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700"
-                            onClick={() => handleMarkAttendance(student.id, "present")}
-                          >
-                            İştirak Edir
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleMarkAttendance(student.id, "absent")}
-                          >
-                            Yoxdur
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Davamiyyət ({students.length} tələbə)</h2>
+              {activeSession && (
+                <Badge variant="outline" className="px-4 py-2">
+                  <Clock className="w-4 h-4 mr-2" />
+                  Aktiv Dərs: Davamiyyət qeyd edilə bilər
+                </Badge>
+              )}
+            </div>
+            
+            {/* Monthly Attendance Stats */}
             <Card>
               <CardHeader>
-                <CardTitle>Dərs Sesiyaları</CardTitle>
+                <CardTitle>Son 1 Ay Davamiyyət Statistikası</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {lessonSessions.map((session: any) => (
-                    <div key={session.id} className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium">{session.sessionName}</h4>
-                          <p className="text-sm text-devcode-gray">
-                            {new Date(session.startTime).toLocaleString()}
-                            {session.duration && ` - ${session.duration} dəqiqə`}
-                          </p>
-                        </div>
-                        <Badge variant={session.isActive ? "default" : "secondary"}>
-                          {session.isActive ? "Aktiv" : "Bitib"}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">85%</div>
+                    <div className="text-sm text-gray-600">Orta Davamiyyət</div>
+                  </div>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">12</div>
+                    <div className="text-sm text-gray-600">Toplam Dərslər</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600">3</div>
+                    <div className="text-sm text-gray-600">Qeyb Olanlar</div>
+                  </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Attendance Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Tələbə Davamiyyəti</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Tələbə</TableHead>
+                      <TableHead>Son 1 Ay Davamiyyət</TableHead>
+                      <TableHead>Toplam Dərslər</TableHead>
+                      <TableHead>İştirak Etdi</TableHead>
+                      <TableHead>Qeyb Oldu</TableHead>
+                      <TableHead>Əməliyyatlar</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {students.map((student: any, index: number) => {
+                      const attendanceRate = Math.floor(Math.random() * 30) + 70; // Mock data for demo
+                      const totalSessions = 12;
+                      const attendedSessions = Math.floor((attendanceRate / 100) * totalSessions);
+                      const missedSessions = totalSessions - attendedSessions;
+                      
+                      return (
+                        <TableRow key={`attendance-${student.id}-${index}`}>
+                          <TableCell>
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-devcode-orange rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                {student.firstName?.charAt(0)}{student.lastName?.charAt(0)}
+                              </div>
+                              <div>
+                                <div className="font-medium">{student.firstName} {student.lastName}</div>
+                                <div className="text-sm text-devcode-gray">{student.email}</div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-full bg-gray-200 rounded-full h-2 max-w-[100px]">
+                                <div 
+                                  className={`h-2 rounded-full ${
+                                    attendanceRate >= 80 ? 'bg-green-500' : 
+                                    attendanceRate >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                                  }`}
+                                  style={{ width: `${attendanceRate}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-sm font-medium">{attendanceRate}%</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{totalSessions}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              {attendedSessions}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                              {missedSessions}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              {activeSession && (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-green-600 hover:text-green-700 hover:border-green-300"
+                                    onClick={() => handleMarkAttendance(student.id, "present")}
+                                  >
+                                    <CheckSquare className="w-4 h-4 mr-1" />
+                                    İştirak
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:border-red-300"
+                                    onClick={() => handleMarkAttendance(student.id, "absent")}
+                                  >
+                                    <X className="w-4 h-4 mr-1" />
+                                    Qeyb
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </div>
@@ -624,7 +784,7 @@ export default function CourseManagement() {
 
       {/* Material Dialog */}
       <Dialog open={isMaterialDialogOpen} onOpenChange={setIsMaterialDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Dərs Materialı Əlavə Et</DialogTitle>
           </DialogHeader>
@@ -635,31 +795,78 @@ export default function CourseManagement() {
                 id="material-title"
                 value={materialForm.title}
                 onChange={(e) => setMaterialForm(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Video başlığı"
+                placeholder="Material başlığı"
               />
             </div>
             <div>
-              <Label htmlFor="material-video">Video URL</Label>
-              <Input
-                id="material-video"
-                value={materialForm.videoUrl}
-                onChange={(e) => setMaterialForm(prev => ({ ...prev, videoUrl: e.target.value }))}
-                placeholder="https://youtube.com/watch?v=..."
-              />
+              <Label htmlFor="material-type">Material Növü</Label>
+              <Select
+                value={materialForm.materialType}
+                onValueChange={(value) => setMaterialForm(prev => ({ ...prev, materialType: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Material növünü seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="video">Video</SelectItem>
+                  <SelectItem value="pdf">PDF Sənəd</SelectItem>
+                  <SelectItem value="document">Word Sənəd</SelectItem>
+                  <SelectItem value="link">Əlavə Link</SelectItem>
+                  <SelectItem value="presentation">Təqdimat</SelectItem>
+                  <SelectItem value="image">Şəkil</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            {materialForm.materialType === "video" && (
+              <div>
+                <Label htmlFor="material-video">Video URL</Label>
+                <Input
+                  id="material-video"
+                  value={materialForm.videoUrl}
+                  onChange={(e) => setMaterialForm(prev => ({ ...prev, videoUrl: e.target.value }))}
+                  placeholder="https://youtube.com/watch?v=... və ya digər video linki"
+                />
+              </div>
+            )}
+            {(materialForm.materialType === "pdf" || materialForm.materialType === "document" || 
+              materialForm.materialType === "presentation" || materialForm.materialType === "image") && (
+              <div>
+                <Label htmlFor="material-file">Fayl URL/Yol</Label>
+                <Input
+                  id="material-file"
+                  value={materialForm.videoUrl}
+                  onChange={(e) => setMaterialForm(prev => ({ ...prev, videoUrl: e.target.value }))}
+                  placeholder="Fayl linkini və ya yolunu daxil edin"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  PDF, Word, PowerPoint və ya şəkil faylları üçün link daxil edin
+                </p>
+              </div>
+            )}
+            {materialForm.materialType === "link" && (
+              <div>
+                <Label htmlFor="material-link">Web Link</Label>
+                <Input
+                  id="material-link"
+                  value={materialForm.videoUrl}
+                  onChange={(e) => setMaterialForm(prev => ({ ...prev, videoUrl: e.target.value }))}
+                  placeholder="https://example.com"
+                />
+              </div>
+            )}
             <div>
               <Label htmlFor="material-content">Açıqlama</Label>
               <Textarea
                 id="material-content"
                 value={materialForm.content}
                 onChange={(e) => setMaterialForm(prev => ({ ...prev, content: e.target.value }))}
-                placeholder="Material haqqında əlavə məlumat"
+                placeholder="Material haqqında əlavə məlumat, təlimatlar və ya qeydlər"
                 rows={4}
               />
             </div>
             <Button 
               onClick={handleCreateMaterial}
-              disabled={createMaterialMutation.isPending}
+              disabled={createMaterialMutation.isPending || !materialForm.title}
               className="bg-devcode-orange hover:bg-orange-600"
             >
               {createMaterialMutation.isPending ? "Əlavə edilir..." : "Material Əlavə Et"}
