@@ -19,7 +19,6 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import TeacherDashboard from "@/pages/teacher-dashboard";
 import StudentDashboard from "@/pages/student-dashboard";
 import CourseManagementPage from "@/pages/course-management";
-import SessionHistory from "@/pages/session-history";
 
 import NotFound from "@/pages/not-found";
 
@@ -49,7 +48,6 @@ function Router() {
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses/:id" component={CourseManagementPage} />}
-      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/session-history" component={SessionHistory} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
       
       <Route component={NotFound} />

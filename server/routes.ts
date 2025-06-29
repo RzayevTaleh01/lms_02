@@ -604,37 +604,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Session history routes
-  app.get('/api/sessions/history', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      if (!req.user || req.user.role !== 'teacher') {
-        return res.status(403).json({ message: "Only teachers can view session history" });
-      }
-
-      const sessions = await storage.getSessionHistory(req.user.id);
-      res.json(sessions);
-    } catch (error) {
-      console.error("Error fetching session history:", error);
-      res.status(500).json({ message: "Failed to fetch session history" });
-    }
-  });
-
-  // Get monthly attendance report
-  app.get('/api/attendance/monthly/:courseId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      if (!req.user || req.user.role !== 'teacher') {
-        return res.status(403).json({ message: "Only teachers can view attendance reports" });
-      }
-
-      const courseId = parseInt(req.params.courseId);
-      const monthlyAttendance = await storage.getMonthlyAttendance(courseId);
-      res.json(monthlyAttendance);
-    } catch (error) {
-      console.error("Error fetching monthly attendance:", error);
-      res.status(500).json({ message: "Failed to fetch monthly attendance" });
-    }
-  });
-
   // Statistics routes (admin only)
   app.get('/api/stats', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
