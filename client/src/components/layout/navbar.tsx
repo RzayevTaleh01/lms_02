@@ -121,7 +121,7 @@ export default function Navbar() {
                         <span>Settings</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem 
-                        onClick={() => window.location.href = '/api/logout'}
+                        onClick={() => logoutMutation.mutate()}
                       >
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Log out</span>
@@ -183,7 +183,7 @@ export default function Navbar() {
                         </Link>
                         <Button 
                           variant="outline"
-                          onClick={() => window.location.href = '/api/logout'}
+                          onClick={() => logoutMutation.mutate()}
                           className="mx-4 mt-4"
                         >
                           Logout
