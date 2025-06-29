@@ -15,7 +15,11 @@ import {
   insertBlogPostSchema,
   insertCertificateSchema,
   insertContactSubmissionSchema,
-  insertUserSchema
+  insertUserSchema,
+  insertLessonSessionSchema,
+  insertAttendanceSchema,
+  insertLessonMaterialSchema,
+  insertLessonAssignmentSchema
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -427,6 +431,161 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating contact submission:", error);
       res.status(500).json({ message: "Failed to submit contact form" });
+    }
+  });
+
+  // Lesson session routes
+  app.post('/api/courses/:courseId/sessions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can start lessons" });
+      }
+
+      const courseId = parseInt(req.params.courseId);
+      
+      // Check if there's already an active session
+      const activeSession = await storage.getActiveLessonSession(courseId);
+      if (activeSession) {
+        return res.status(400).json({ message: "There's already an active session for this course" });
+      }
+
+      const sessionData = insertLessonSessionSchema.parse({ 
+        ...req.body, 
+        courseId, 
+        teacherId: req.user.id 
+      });
+      const session = await storage.createLessonSession(sessionData);
+      res.status(201).json(session);
+    } catch (error) {
+      console.error("Error starting lesson session:", error);
+      res.status(500).json({ message: "Failed to start lesson session" });
+    }
+  });
+
+  app.patch('/api/sessions/:sessionId/end', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can end lessons" });
+      }
+
+      const sessionId = parseInt(req.params.sessionId);
+      const { duration } = req.body;
+      
+      await storage.endLessonSession(sessionId, duration);
+      res.json({ message: "Lesson session ended successfully" });
+    } catch (error) {
+      console.error("Error ending lesson session:", error);
+      res.status(500).json({ message: "Failed to end lesson session" });
+    }
+  });
+
+  app.get('/api/courses/:courseId/active-session', async (req, res) => {
+    try {
+      const courseId = parseInt(req.params.courseId);
+      const session = await storage.getActiveLessonSession(courseId);
+      res.json(session || null);
+    } catch (error) {
+      console.error("Error fetching active session:", error);
+      res.status(500).json({ message: "Failed to fetch active session" });
+    }
+  });
+
+  app.get('/api/courses/:courseId/sessions', async (req, res) => {
+    try {
+      const courseId = parseInt(req.params.courseId);
+      const sessions = await storage.getLessonSessions(courseId);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching lesson sessions:", error);
+      res.status(500).json({ message: "Failed to fetch lesson sessions" });
+    }
+  });
+
+  // Attendance routes
+  app.post('/api/sessions/:sessionId/attendance', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can mark attendance" });
+      }
+
+      const sessionId = parseInt(req.params.sessionId);
+      const attendanceData = insertAttendanceSchema.parse({ 
+        ...req.body, 
+        sessionId,
+        markedBy: req.user.id 
+      });
+      const attendance = await storage.markAttendance(attendanceData);
+      res.status(201).json(attendance);
+    } catch (error) {
+      console.error("Error marking attendance:", error);
+      res.status(500).json({ message: "Failed to mark attendance" });
+    }
+  });
+
+  app.get('/api/sessions/:sessionId/attendance', async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const attendance = await storage.getSessionAttendance(sessionId);
+      res.json(attendance);
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+      res.status(500).json({ message: "Failed to fetch attendance" });
+    }
+  });
+
+  // Lesson materials routes
+  app.post('/api/lessons/:lessonId/materials', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can add lesson materials" });
+      }
+
+      const lessonId = parseInt(req.params.lessonId);
+      const materialData = insertLessonMaterialSchema.parse({ ...req.body, lessonId });
+      const material = await storage.createLessonMaterial(materialData);
+      res.status(201).json(material);
+    } catch (error) {
+      console.error("Error creating lesson material:", error);
+      res.status(500).json({ message: "Failed to create lesson material" });
+    }
+  });
+
+  app.get('/api/lessons/:lessonId/materials', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const materials = await storage.getLessonMaterials(lessonId);
+      res.json(materials);
+    } catch (error) {
+      console.error("Error fetching lesson materials:", error);
+      res.status(500).json({ message: "Failed to fetch lesson materials" });
+    }
+  });
+
+  // Lesson assignments routes
+  app.post('/api/lessons/:lessonId/assignments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can create lesson assignments" });
+      }
+
+      const lessonId = parseInt(req.params.lessonId);
+      const assignmentData = insertLessonAssignmentSchema.parse({ ...req.body, lessonId });
+      const assignment = await storage.createLessonAssignment(assignmentData);
+      res.status(201).json(assignment);
+    } catch (error) {
+      console.error("Error creating lesson assignment:", error);
+      res.status(500).json({ message: "Failed to create lesson assignment" });
+    }
+  });
+
+  app.get('/api/lessons/:lessonId/assignments', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const assignments = await storage.getLessonAssignments(lessonId);
+      res.json(assignments);
+    } catch (error) {
+      console.error("Error fetching lesson assignments:", error);
+      res.status(500).json({ message: "Failed to fetch lesson assignments" });
     }
   });
 

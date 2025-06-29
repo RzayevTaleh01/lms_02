@@ -146,6 +146,56 @@ export const contactSubmissions = pgTable("contact_submissions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Lesson sessions (when teacher starts a lesson)
+export const lessonSessions = pgTable("lesson_sessions", {
+  id: serial("id").primaryKey(),
+  courseId: integer("course_id").notNull(),
+  teacherId: varchar("teacher_id").notNull(),
+  sessionName: varchar("session_name", { length: 255 }).notNull(),
+  startTime: timestamp("start_time").defaultNow(),
+  endTime: timestamp("end_time"),
+  duration: integer("duration"), // in minutes
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Student attendance tracking
+export const attendance = pgTable("attendance", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").notNull(),
+  studentId: varchar("student_id").notNull(),
+  courseId: integer("course_id").notNull(),
+  status: varchar("status", { enum: ["present", "absent"] }).notNull(),
+  markedAt: timestamp("marked_at").defaultNow(),
+  markedBy: varchar("marked_by").notNull(), // teacher who marked attendance
+});
+
+// Lesson materials (video + description)
+export const lessonMaterials = pgTable("lesson_materials", {
+  id: serial("id").primaryKey(),
+  lessonId: integer("lesson_id").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content"), // rich text content
+  videoUrl: varchar("video_url"),
+  materialType: varchar("material_type", { enum: ["video", "document", "link"] }).default("video"),
+  orderIndex: integer("order_index").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Lesson assignments (assignments specific to lessons)
+export const lessonAssignments = pgTable("lesson_assignments", {
+  id: serial("id").primaryKey(),
+  lessonId: integer("lesson_id").notNull(),
+  courseId: integer("course_id").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  dueDate: timestamp("due_date"),
+  maxPoints: integer("max_points").default(100),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   coursesInstructed: many(courses, { relationName: "instructor" }),
@@ -165,13 +215,16 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
   enrollments: many(enrollments),
   assignments: many(assignments),
   certificates: many(certificates),
+  sessions: many(lessonSessions),
 }));
 
-export const lessonsRelations = relations(lessons, ({ one }) => ({
+export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   course: one(courses, {
     fields: [lessons.courseId],
     references: [courses.id],
   }),
+  materials: many(lessonMaterials),
+  assignments: many(lessonAssignments),
 }));
 
 export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
@@ -220,6 +273,52 @@ export const certificatesRelations = relations(certificates, ({ one }) => ({
     fields: [certificates.courseId],
     references: [courses.id],
   }),
+}));
+
+export const lessonSessionsRelations = relations(lessonSessions, ({ one, many }) => ({
+  course: one(courses, {
+    fields: [lessonSessions.courseId],
+    references: [courses.id],
+  }),
+  teacher: one(users, {
+    fields: [lessonSessions.teacherId],
+    references: [users.id],
+  }),
+  attendance: many(attendance),
+}));
+
+export const attendanceRelations = relations(attendance, ({ one }) => ({
+  session: one(lessonSessions, {
+    fields: [attendance.sessionId],
+    references: [lessonSessions.id],
+  }),
+  student: one(users, {
+    fields: [attendance.studentId],
+    references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [attendance.courseId],
+    references: [courses.id],
+  }),
+}));
+
+export const lessonMaterialsRelations = relations(lessonMaterials, ({ one }) => ({
+  lesson: one(lessons, {
+    fields: [lessonMaterials.lessonId],
+    references: [lessons.id],
+  }),
+}));
+
+export const lessonAssignmentsRelations = relations(lessonAssignments, ({ one, many }) => ({
+  lesson: one(lessons, {
+    fields: [lessonAssignments.lessonId],
+    references: [lessons.id],
+  }),
+  course: one(courses, {
+    fields: [lessonAssignments.courseId],
+    references: [courses.id],
+  }),
+  submissions: many(submissions),
 }));
 
 // Insert schemas
@@ -274,6 +373,27 @@ export const insertContactSubmissionSchema = createInsertSchema(contactSubmissio
   status: true,
 });
 
+export const insertLessonSessionSchema = createInsertSchema(lessonSessions).omit({
+  id: true,
+  startTime: true,
+  createdAt: true,
+});
+
+export const insertAttendanceSchema = createInsertSchema(attendance).omit({
+  id: true,
+  markedAt: true,
+});
+
+export const insertLessonMaterialSchema = createInsertSchema(lessonMaterials).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertLessonAssignmentSchema = createInsertSchema(lessonAssignments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -293,3 +413,11 @@ export type Certificate = typeof certificates.$inferSelect;
 export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSubmissionSchema>;
+export type LessonSession = typeof lessonSessions.$inferSelect;
+export type InsertLessonSession = z.infer<typeof insertLessonSessionSchema>;
+export type Attendance = typeof attendance.$inferSelect;
+export type InsertAttendance = z.infer<typeof insertAttendanceSchema>;
+export type LessonMaterial = typeof lessonMaterials.$inferSelect;
+export type InsertLessonMaterial = z.infer<typeof insertLessonMaterialSchema>;
+export type LessonAssignment = typeof lessonAssignments.$inferSelect;
+export type InsertLessonAssignment = z.infer<typeof insertLessonAssignmentSchema>;

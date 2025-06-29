@@ -18,6 +18,7 @@ import Contact from "@/pages/contact";
 import AdminDashboard from "@/pages/admin-dashboard";
 import TeacherDashboard from "@/pages/teacher-dashboard";
 import StudentDashboard from "@/pages/student-dashboard";
+import CourseManagementPage from "@/pages/course-management";
 
 import NotFound from "@/pages/not-found";
 
@@ -46,6 +47,7 @@ function Router() {
       {/* Role-based dashboards - only for authenticated users */}
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses/:id" component={CourseManagementPage} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
       
       <Route component={NotFound} />

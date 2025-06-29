@@ -255,7 +255,103 @@ export default function TeacherDashboard() {
           </TabsContent>
 
           <TabsContent value="courses" className="mt-6">
-            <CourseManagement />
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold">Mənim Kurslarım</h2>
+                <CourseManagement />
+              </div>
+              
+              {/* Courses Table */}
+              <Card>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Kurs
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Tələbələr
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Səviyyə
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Qiymət
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Əməliyyatlar
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {courses.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="px-6 py-8 text-center text-devcode-gray">
+                              Hələ kurs yaratmamısınız
+                            </td>
+                          </tr>
+                        ) : (
+                          courses.map((course: any) => (
+                            <tr key={course.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center">
+                                  <div className="w-10 h-10 bg-devcode-orange rounded-lg flex items-center justify-center text-white font-semibold mr-3">
+                                    {course.title.charAt(0)}
+                                  </div>
+                                  <div>
+                                    <div className="text-sm font-medium text-devcode-dark">
+                                      {course.title}
+                                    </div>
+                                    <div className="text-sm text-devcode-gray">
+                                      {course.category}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-devcode-gray">
+                                {course.enrollmentCount || 0}
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full capitalize">
+                                  {course.level}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-devcode-dark font-medium">
+                                {course.price} AZN
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                  course.isActive 
+                                    ? "bg-green-100 text-green-800" 
+                                    : "bg-red-100 text-red-800"
+                                }`}>
+                                  {course.isActive ? "Aktiv" : "Deaktiv"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.location.href = `/teacher/courses/${course.id}`}
+                                  className="text-devcode-orange border-devcode-orange hover:bg-orange-50"
+                                >
+                                  İdarə Et
+                                </Button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">

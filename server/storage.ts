@@ -8,6 +8,10 @@ import {
   blogPosts,
   certificates,
   contactSubmissions,
+  lessonSessions,
+  attendance,
+  lessonMaterials,
+  lessonAssignments,
   type User,
   type UpsertUser,
   type Course,
@@ -26,6 +30,14 @@ import {
   type InsertCertificate,
   type ContactSubmission,
   type InsertContactSubmission,
+  type LessonSession,
+  type InsertLessonSession,
+  type Attendance,
+  type InsertAttendance,
+  type LessonMaterial,
+  type InsertLessonMaterial,
+  type LessonAssignment,
+  type InsertLessonAssignment,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, like, and, count, sql } from "drizzle-orm";
@@ -94,6 +106,27 @@ export interface IStorage {
       grade: number;
     }[]
   >;
+
+  // Lesson session operations
+  createLessonSession(session: InsertLessonSession): Promise<LessonSession>;
+  endLessonSession(sessionId: number, duration: number): Promise<void>;
+  getActiveLessonSession(courseId: number): Promise<LessonSession | undefined>;
+  getLessonSessions(courseId: number): Promise<LessonSession[]>;
+
+  // Attendance operations
+  markAttendance(attendance: InsertAttendance): Promise<Attendance>;
+  getSessionAttendance(sessionId: number): Promise<(Attendance & { student: User })[]>;
+  getStudentAttendance(courseId: number, studentId: string): Promise<Attendance[]>;
+
+  // Lesson materials operations
+  createLessonMaterial(material: InsertLessonMaterial): Promise<LessonMaterial>;
+  getLessonMaterials(lessonId: number): Promise<LessonMaterial[]>;
+  updateLessonMaterial(id: number, material: Partial<InsertLessonMaterial>): Promise<LessonMaterial | undefined>;
+
+  // Lesson assignments operations
+  createLessonAssignment(assignment: InsertLessonAssignment): Promise<LessonAssignment>;
+  getLessonAssignments(lessonId: number): Promise<LessonAssignment[]>;
+  getAssignmentSubmissions(assignmentId: number): Promise<(Submission & { student: User })[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -342,6 +375,109 @@ export class DatabaseStorage implements IStorage {
       .where(eq(enrollments.courseId, courseId));
 
     return result;
+  }
+
+  // Lesson session operations
+  async createLessonSession(session: InsertLessonSession): Promise<LessonSession> {
+    const [newSession] = await db.insert(lessonSessions).values(session).returning();
+    return newSession;
+  }
+
+  async endLessonSession(sessionId: number, duration: number): Promise<void> {
+    await db
+      .update(lessonSessions)
+      .set({ 
+        endTime: new Date(), 
+        duration,
+        isActive: false 
+      })
+      .where(eq(lessonSessions.id, sessionId));
+  }
+
+  async getActiveLessonSession(courseId: number): Promise<LessonSession | undefined> {
+    const [session] = await db
+      .select()
+      .from(lessonSessions)
+      .where(and(eq(lessonSessions.courseId, courseId), eq(lessonSessions.isActive, true)));
+    return session;
+  }
+
+  async getLessonSessions(courseId: number): Promise<LessonSession[]> {
+    return await db
+      .select()
+      .from(lessonSessions)
+      .where(eq(lessonSessions.courseId, courseId))
+      .orderBy(desc(lessonSessions.startTime));
+  }
+
+  // Attendance operations
+  async markAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
+    const [newAttendance] = await db.insert(attendance).values(attendanceData).returning();
+    return newAttendance;
+  }
+
+  async getSessionAttendance(sessionId: number): Promise<(Attendance & { student: User })[]> {
+    return await db
+      .select()
+      .from(attendance)
+      .innerJoin(users, eq(attendance.studentId, users.id))
+      .where(eq(attendance.sessionId, sessionId))
+      .then(rows => rows.map(row => ({ ...row.attendance, student: row.users })));
+  }
+
+  async getStudentAttendance(courseId: number, studentId: string): Promise<Attendance[]> {
+    return await db
+      .select()
+      .from(attendance)
+      .where(and(eq(attendance.courseId, courseId), eq(attendance.studentId, studentId)))
+      .orderBy(desc(attendance.markedAt));
+  }
+
+  // Lesson materials operations
+  async createLessonMaterial(material: InsertLessonMaterial): Promise<LessonMaterial> {
+    const [newMaterial] = await db.insert(lessonMaterials).values(material).returning();
+    return newMaterial;
+  }
+
+  async getLessonMaterials(lessonId: number): Promise<LessonMaterial[]> {
+    return await db
+      .select()
+      .from(lessonMaterials)
+      .where(and(eq(lessonMaterials.lessonId, lessonId), eq(lessonMaterials.isActive, true)))
+      .orderBy(lessonMaterials.orderIndex);
+  }
+
+  async updateLessonMaterial(id: number, material: Partial<InsertLessonMaterial>): Promise<LessonMaterial | undefined> {
+    const [updatedMaterial] = await db
+      .update(lessonMaterials)
+      .set(material)
+      .where(eq(lessonMaterials.id, id))
+      .returning();
+    return updatedMaterial;
+  }
+
+  // Lesson assignments operations
+  async createLessonAssignment(assignment: InsertLessonAssignment): Promise<LessonAssignment> {
+    const [newAssignment] = await db.insert(lessonAssignments).values(assignment).returning();
+    return newAssignment;
+  }
+
+  async getLessonAssignments(lessonId: number): Promise<LessonAssignment[]> {
+    return await db
+      .select()
+      .from(lessonAssignments)
+      .where(and(eq(lessonAssignments.lessonId, lessonId), eq(lessonAssignments.isActive, true)))
+      .orderBy(desc(lessonAssignments.createdAt));
+  }
+
+  async getAssignmentSubmissions(assignmentId: number): Promise<(Submission & { student: User })[]> {
+    return await db
+      .select()
+      .from(submissions)
+      .innerJoin(users, eq(submissions.studentId, users.id))
+      .where(eq(submissions.assignmentId, assignmentId))
+      .orderBy(desc(submissions.submittedAt))
+      .then(rows => rows.map(row => ({ ...row.submissions, student: row.users })));
   }
 }
 
