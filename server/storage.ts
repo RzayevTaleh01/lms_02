@@ -8,7 +8,6 @@ import {
   blogPosts,
   certificates,
   contactSubmissions,
-  attendance,
   type User,
   type UpsertUser,
   type Course,
@@ -27,8 +26,6 @@ import {
   type InsertCertificate,
   type ContactSubmission,
   type InsertContactSubmission,
-  type Attendance,
-  type InsertAttendance,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, like, and, count, sql } from "drizzle-orm";
@@ -77,11 +74,6 @@ export interface IStorage {
 
   // Contact operations
   createContactSubmission(contact: InsertContactSubmission): Promise<ContactSubmission>;
-
-  // Attendance operations
-  getAttendanceByCourse(courseId: number): Promise<(Attendance & { student: User })[]>;
-  recordAttendance(attendance: InsertAttendance): Promise<Attendance>;
-  getStudentsInCourse(courseId: number): Promise<User[]>;
 
   // Statistics
   getSystemStats(): Promise<{
@@ -247,7 +239,7 @@ export class DatabaseStorage implements IStorage {
   async gradeSubmission(id: number, grade: number, feedback: string, gradedBy: string): Promise<void> {
     await db
       .update(submissions)
-      .set({ grade: String(grade), feedback, gradedBy, gradedAt: new Date() })
+      .set({ grade, feedback, gradedBy, gradedAt: new Date() })
       .where(eq(submissions.id, id));
   }
 
@@ -292,31 +284,7 @@ export class DatabaseStorage implements IStorage {
     return newContact;
   }
 
-  // Attendance operations
-  async getAttendanceByCourse(courseId: number): Promise<(Attendance & { student: User })[]> {
-    return await db
-      .select()
-      .from(attendance)
-      .innerJoin(users, eq(attendance.studentId, users.id))
-      .where(eq(attendance.courseId, courseId))
-      .orderBy(desc(attendance.date))
-      .then(rows => rows.map(row => ({ ...row.attendance, student: row.users })));
-  }
-
-  async recordAttendance(attendanceRecord: InsertAttendance): Promise<Attendance> {
-    const [newAttendance] = await db.insert(attendance).values(attendanceRecord).returning();
-    return newAttendance;
-  }
-
-  async getStudentsInCourse(courseId: number): Promise<User[]> {
-    return await db
-      .select({ id: users.id, email: users.email, firstName: users.firstName, lastName: users.lastName, role: users.role, passwordHash: users.passwordHash, profileImageUrl: users.profileImageUrl, createdAt: users.createdAt, updatedAt: users.updatedAt })
-      .from(enrollments)
-      .innerJoin(users, eq(enrollments.studentId, users.id))
-      .where(eq(enrollments.courseId, courseId))
-      .orderBy(users.firstName, users.lastName);
-  }
-
+  // Statistics
   async getSystemStats(): Promise<{
     totalUsers: number;
     totalCourses: number;

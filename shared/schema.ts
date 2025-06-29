@@ -146,18 +146,6 @@ export const contactSubmissions = pgTable("contact_submissions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Attendance tracking
-export const attendance = pgTable("attendance", {
-  id: serial("id").primaryKey(),
-  courseId: integer("course_id").notNull(),
-  lessonId: integer("lesson_id"),
-  studentId: varchar("student_id").notNull(),
-  date: timestamp("date").defaultNow(),
-  status: varchar("status", { enum: ["present", "absent"] }).notNull(),
-  recordedBy: varchar("recorded_by").notNull(), // teacher who recorded attendance
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   coursesInstructed: many(courses, { relationName: "instructor" }),
@@ -234,25 +222,6 @@ export const certificatesRelations = relations(certificates, ({ one }) => ({
   }),
 }));
 
-export const attendanceRelations = relations(attendance, ({ one }) => ({
-  course: one(courses, {
-    fields: [attendance.courseId],
-    references: [courses.id],
-  }),
-  lesson: one(lessons, {
-    fields: [attendance.lessonId],
-    references: [lessons.id],
-  }),
-  student: one(users, {
-    fields: [attendance.studentId],
-    references: [users.id],
-  }),
-  recorder: one(users, {
-    fields: [attendance.recordedBy],
-    references: [users.id],
-  }),
-}));
-
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
@@ -305,11 +274,6 @@ export const insertContactSubmissionSchema = createInsertSchema(contactSubmissio
   status: true,
 });
 
-export const insertAttendanceSchema = createInsertSchema(attendance).omit({
-  id: true,
-  createdAt: true,
-});
-
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -329,5 +293,3 @@ export type Certificate = typeof certificates.$inferSelect;
 export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSubmissionSchema>;
-export type Attendance = typeof attendance.$inferSelect;
-export type InsertAttendance = z.infer<typeof insertAttendanceSchema>;

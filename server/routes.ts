@@ -15,8 +15,7 @@ import {
   insertBlogPostSchema,
   insertCertificateSchema,
   insertContactSubmissionSchema,
-  insertUserSchema,
-  insertAttendanceSchema
+  insertUserSchema
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -416,56 +415,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating contact submission:", error);
       res.status(500).json({ message: "Failed to submit contact form" });
-    }
-  });
-
-  // Attendance routes
-  app.get('/api/courses/:courseId/attendance', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
-        return res.status(403).json({ message: "Only teachers and admins can view attendance" });
-      }
-
-      const courseId = parseInt(req.params.courseId);
-      const attendance = await storage.getAttendanceByCourse(courseId);
-      res.json(attendance);
-    } catch (error) {
-      console.error("Error fetching attendance:", error);
-      res.status(500).json({ message: "Failed to fetch attendance" });
-    }
-  });
-
-  app.get('/api/courses/:courseId/students', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
-        return res.status(403).json({ message: "Only teachers and admins can view enrolled students" });
-      }
-
-      const courseId = parseInt(req.params.courseId);
-      const students = await storage.getStudentsInCourse(courseId);
-      res.json(students);
-    } catch (error) {
-      console.error("Error fetching students:", error);
-      res.status(500).json({ message: "Failed to fetch students" });
-    }
-  });
-
-  app.post('/api/attendance', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
-        return res.status(403).json({ message: "Only teachers and admins can record attendance" });
-      }
-
-      const attendanceData = insertAttendanceSchema.parse({
-        ...req.body,
-        recordedBy: req.user.id
-      });
-      
-      const attendance = await storage.recordAttendance(attendanceData);
-      res.status(201).json(attendance);
-    } catch (error) {
-      console.error("Error recording attendance:", error);
-      res.status(500).json({ message: "Failed to record attendance" });
     }
   });
 
