@@ -38,12 +38,6 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
       count: null
     },
     {
-      id: "session-history",
-      label: "Sessiya Tarixi",
-      icon: History,
-      count: null
-    },
-    {
       id: "analytics",
       label: "Analitika",
       icon: BarChart3,
