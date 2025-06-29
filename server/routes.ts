@@ -418,6 +418,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Live session routes
+  app.get('/api/courses/:courseId/live-session', async (req, res) => {
+    try {
+      const courseId = parseInt(req.params.courseId);
+      const session = await storage.getActiveLiveSession(courseId);
+      res.json(session);
+    } catch (error) {
+      console.error("Error fetching live session:", error);
+      res.status(500).json({ message: "Failed to fetch live session" });
+    }
+  });
+
+  app.post('/api/courses/:courseId/live-session', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can start live sessions" });
+      }
+
+      const courseId = parseInt(req.params.courseId);
+      const sessionData = { courseId, instructorId: req.user.id };
+      const session = await storage.startLiveSession(sessionData);
+      res.status(201).json(session);
+    } catch (error) {
+      console.error("Error starting live session:", error);
+      res.status(500).json({ message: "Failed to start live session" });
+    }
+  });
+
+  app.patch('/api/courses/:courseId/live-session', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can end live sessions" });
+      }
+
+      const courseId = parseInt(req.params.courseId);
+      const activeSession = await storage.getActiveLiveSession(courseId);
+      
+      if (!activeSession) {
+        return res.status(404).json({ message: "No active session found" });
+      }
+
+      await storage.endLiveSession(activeSession.id);
+      res.json({ message: "Session ended successfully" });
+    } catch (error) {
+      console.error("Error ending live session:", error);
+      res.status(500).json({ message: "Failed to end live session" });
+    }
+  });
+
+  // Lesson materials routes
+  app.get('/api/lessons/:lessonId/materials', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const materials = await storage.getLessonMaterials(lessonId);
+      res.json(materials);
+    } catch (error) {
+      console.error("Error fetching lesson materials:", error);
+      res.status(500).json({ message: "Failed to fetch lesson materials" });
+    }
+  });
+
+  app.post('/api/lessons/:lessonId/materials', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can create lesson materials" });
+      }
+
+      const lessonId = parseInt(req.params.lessonId);
+      const materialData = { ...req.body, lessonId };
+      const material = await storage.createLessonMaterial(materialData);
+      res.status(201).json(material);
+    } catch (error) {
+      console.error("Error creating lesson material:", error);
+      res.status(500).json({ message: "Failed to create lesson material" });
+    }
+  });
+
+  // Attendance routes
+  app.post('/api/courses/:courseId/attendance', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can mark attendance" });
+      }
+
+      const courseId = parseInt(req.params.courseId);
+      const attendanceData = { ...req.body, courseId };
+      const attendance = await storage.markAttendance(attendanceData);
+      res.status(201).json(attendance);
+    } catch (error) {
+      console.error("Error marking attendance:", error);
+      res.status(500).json({ message: "Failed to mark attendance" });
+    }
+  });
+
+  app.get('/api/courses/:courseId/attendance', async (req, res) => {
+    try {
+      const courseId = parseInt(req.params.courseId);
+      const attendance = await storage.getCourseAttendance(courseId);
+      res.json(attendance);
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+      res.status(500).json({ message: "Failed to fetch attendance" });
+    }
+  });
+
   // Contact routes
   app.post('/api/contact', async (req, res) => {
     try {

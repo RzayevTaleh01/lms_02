@@ -38,17 +38,17 @@ function Router() {
         {isAuthenticated ? <Home /> : <Landing />}
       </Route>
       <Route path="/courses" component={Courses} />
-      <Route path="/course/:id" component={CourseDetail} />
+      <Route path="/courses/:id" component={CourseDetail} />
+      <Route path="/course/:id/manage" component={() => import("@/pages/course-management")} />
       <Route path="/blog" component={Blog} />
-      <Route path="/verify" component={VerifyCertificate} />
       <Route path="/contact" component={Contact} />
-      
+      <Route path="/verify/:certificateId" component={VerifyCertificate} />
+      <Route component={NotFound} />
+
       {/* Role-based dashboards - only for authenticated users */}
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
-      
-      <Route component={NotFound} />
     </Switch>
   );
 }
