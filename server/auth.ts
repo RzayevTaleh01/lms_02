@@ -1,5 +1,4 @@
 
-import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { storage } from './storage';
 import { User } from '@shared/schema';
@@ -14,13 +13,14 @@ declare module 'express-session' {
   }
 }
 
-export async function hashPassword(password: string): Promise<string> {
-  const saltRounds = 12;
-  return bcrypt.hash(password, saltRounds);
+export function hashPassword(password: string): string {
+  // Store password as plain text
+  return password;
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+export function verifyPassword(password: string, storedPassword: string): boolean {
+  // Simple plain text comparison
+  return password === storedPassword;
 }
 
 export function isAuthenticated(req: AuthenticatedRequest, res: Response, next: NextFunction) {
