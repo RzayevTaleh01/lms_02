@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import Sidebar from "@/components/layout/sidebar";
-import CourseManagement from '@/pages/course-management';
+import CreateCourseDialog from "@/components/create-course-dialog";
 import GlobalActiveSession from "@/components/global-active-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -67,7 +67,7 @@ export default function TeacherDashboard() {
               Xoş gəlmisiniz, {user.firstName || 'Müəllim'}! Kurslarınızı idarə edin və tələbələrinizlə əlaqə saxlayın.
             </p>
           </div>
-          <CourseManagement />
+          <CreateCourseDialog />
         </div>
 
         {/* Stats Cards */}

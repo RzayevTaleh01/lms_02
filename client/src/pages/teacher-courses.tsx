@@ -3,12 +3,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/sidebar";
-import CourseManagement from '@/pages/course-management';
+import CreateCourseDialog from "@/components/create-course-dialog";
 import GlobalActiveSession from "@/components/global-active-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Users, Clock, Calendar } from "lucide-react";
+import { BookOpen, Users, Clock } from "lucide-react";
 
 export default function TeacherCourses() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -67,7 +67,7 @@ export default function TeacherCourses() {
               Bütün kurslarınızı burada idarə edin və yenilərini yaradın.
             </p>
           </div>
-          <CourseManagement />
+          <CreateCourseDialog />
         </div>
 
         {/* Courses Grid */}
@@ -79,7 +79,7 @@ export default function TeacherCourses() {
                   <BookOpen className="w-16 h-16 mx-auto mb-4 text-devcode-gray opacity-50" />
                   <h3 className="text-lg font-semibold text-devcode-dark mb-2">Hələ kurs yaratmamısınız</h3>
                   <p className="text-devcode-gray mb-6">İlk kursunuzu yaratmaq üçün yuxarıdakı "Yeni Kurs" düyməsini basın.</p>
-                  <CourseManagement />
+                  <CreateCourseDialog />
                 </CardContent>
               </Card>
             </div>
