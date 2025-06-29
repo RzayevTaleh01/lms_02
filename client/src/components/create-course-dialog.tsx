@@ -14,7 +14,7 @@ interface CourseForm {
   description: string;
   category: string;
   level: string;
-  price: number;
+  price: string;
   duration: string;
 }
 
@@ -28,7 +28,7 @@ export default function CreateCourseDialog() {
     description: "",
     category: "",
     level: "",
-    price: 0,
+    price: "0.00",
     duration: "",
   });
 
@@ -60,7 +60,7 @@ export default function CreateCourseDialog() {
         description: "",
         category: "",
         level: "",
-        price: 0,
+        price: "0.00",
         duration: "",
       });
       // Redirect to the new course management page
@@ -90,7 +90,7 @@ export default function CreateCourseDialog() {
     createCourseMutation.mutate(form);
   };
 
-  const updateForm = (field: keyof CourseForm, value: string | number) => {
+  const updateForm = (field: keyof CourseForm, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
@@ -171,7 +171,7 @@ export default function CreateCourseDialog() {
                   id="price"
                   type="number"
                   value={form.price}
-                  onChange={(e) => updateForm("price", parseFloat(e.target.value) || 0)}
+                  onChange={(e) => updateForm("price", e.target.value)}
                   placeholder="0"
                   min="0"
                   step="0.01"
