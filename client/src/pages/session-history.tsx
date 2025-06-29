@@ -5,26 +5,26 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Users } from "lucide-react";
 import { format } from "date-fns";
 
-export default function SessionHistory() {
+interface SessionHistoryProps {
+  courseId?: number;
+}
+
+export default function SessionHistory({ courseId }: SessionHistoryProps) {
   const { data: sessions = [], isLoading } = useQuery({
-    queryKey: ["/api/sessions/history"],
+    queryKey: courseId ? [`/api/courses/${courseId}/sessions`] : ["/api/sessions/history"],
+    enabled: true,
   });
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-32">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-devcode-orange"></div>
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-devcode-orange"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-devcode-dark">Dərs Sessiyalarının Tarixi</h1>
-        <p className="text-devcode-gray">Bütün keçmiş dərs sessiyalarını görün</p>
-      </div>
-
       <div className="grid gap-4">
         {sessions.length === 0 ? (
           <Card>

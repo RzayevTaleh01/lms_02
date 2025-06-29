@@ -109,10 +109,32 @@ export default function CourseManagement() {
   const { data: lessonSessions = [] } = useQuery({
     queryKey: [`/api/courses/${id}/sessions`],
     enabled: !!id,
-    select: (data) => data.map((session: any) => ({
-      ...session,
-      attendanceRecords: session.attendanceRecords || []
-    }))
+  });
+
+  // Get attendance data for each session
+  const { data: attendanceData = {} } = useQuery({
+    queryKey: [`/api/courses/${id}/all-attendance`],
+    queryFn: async () => {
+      const attendanceMap: { [sessionId: number]: any[] } = {};
+      
+      for (const session of lessonSessions) {
+        try {
+          const response = await fetch(`/api/sessions/${session.id}/attendance`, {
+            credentials: "include"
+          });
+          if (response.ok) {
+            const sessionAttendance = await response.json();
+            attendanceMap[session.id] = sessionAttendance;
+          }
+        } catch (error) {
+          console.error(`Error fetching attendance for session ${session.id}:`, error);
+          attendanceMap[session.id] = [];
+        }
+      }
+      
+      return attendanceMap;
+    },
+    enabled: lessonSessions.length > 0,
   });
 
   const { data: allUsers = [] } = useQuery({
@@ -681,11 +703,19 @@ export default function CourseManagement() {
                   </TableHeader>
                   <TableBody>
                     {students.map((student: any) => {
-                      const attendanceCount = lessonSessions.filter((session: any) => 
-                        session.attendanceRecords?.some((record: any) => 
+                      let attendanceCount = 0;
+                      
+                      // Count attendance for this student across all sessions
+                      lessonSessions.forEach((session: any) => {
+                        const sessionAttendance = attendanceData[session.id] || [];
+                        const studentAttendance = sessionAttendance.find((record: any) => 
                           record.studentId === student.id && record.status === "present"
-                        )
-                      ).length;
+                        );
+                        if (studentAttendance) {
+                          attendanceCount++;
+                        }
+                      });
+                      
                       const attendancePercentage = lessonSessions.length > 0 ? 
                         Math.round((attendanceCount / lessonSessions.length) * 100) : 0;
 
@@ -695,7 +725,8 @@ export default function CourseManagement() {
                             {student.firstName} {student.lastName}
                           </TableCell>
                           {lessonSessions.map((session: any) => {
-                            const attendance = session.attendanceRecords?.find((record: any) => 
+                            const sessionAttendance = attendanceData[session.id] || [];
+                            const attendance = sessionAttendance.find((record: any) => 
                               record.studentId === student.id
                             );
                             return (
@@ -749,9 +780,19 @@ export default function CourseManagement() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {students?.length > 0 ? 
-                      Math.round((lessonSessions?.reduce((acc: number, session: any) => acc + (session.attendanceCount || 0), 0) / (students.length * lessonSessions?.length || 1)) * 100) 
-                      : 0}%
+                    {(() => {
+                      if (!students?.length || !lessonSessions?.length) return "0%";
+                      
+                      let totalPresentCount = 0;
+                      const totalPossibleAttendance = students.length * lessonSessions.length;
+                      
+                      lessonSessions.forEach((session: any) => {
+                        const sessionAttendance = attendanceData[session.id] || [];
+                        totalPresentCount += sessionAttendance.filter((record: any) => record.status === "present").length;
+                      });
+                      
+                      return Math.round((totalPresentCount / totalPossibleAttendance) * 100) + "%";
+                    })()}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Bütün dərslərdə orta davamiyyət

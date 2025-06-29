@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
@@ -64,7 +63,7 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
           <ArrowLeft className="w-4 h-4 mr-2" />
           Kurslar
         </Button>
-        
+
         <div>
           <h2 className="text-xl font-bold text-devcode-dark mb-2">{course.title}</h2>
           <div className="space-y-1 text-sm text-devcode-gray">
@@ -90,7 +89,7 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
-            
+
             return (
               <Button
                 key={item.id}
