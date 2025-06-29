@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -27,21 +26,35 @@ export default function SignupModal({ open, onOpenChange, onSwitchToLogin }: Sig
   const registerMutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await apiRequest('POST', '/api/auth/register', data);
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Qeydiyyat uğursuz');
       }
-      
+
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (userData) => {
       toast({
-        title: "Uğurlu qeydiyyat",
-        description: "Hesabınız yaradıldı və daxil oldunuz"
+        title: "Uğurla qeydiyyat",
+        description: "Hesabınız yaradıldı!"
       });
       onOpenChange(false);
-      window.location.reload();
+
+      // Redirect to appropriate dashboard based on user role
+      switch (userData.role) {
+        case 'admin':
+          window.location.href = '/admin';
+          break;
+        case 'teacher':
+          window.location.href = '/teacher';
+          break;
+        case 'student':
+          window.location.href = '/student';
+          break;
+        default:
+          window.location.reload();
+      }
     },
     onError: (error: Error) => {
       toast({
@@ -54,7 +67,7 @@ export default function SignupModal({ open, onOpenChange, onSwitchToLogin }: Sig
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       toast({
         title: "Xəta",
@@ -86,7 +99,7 @@ export default function SignupModal({ open, onOpenChange, onSwitchToLogin }: Sig
           <DialogTitle className="text-2xl font-bold text-devcode-dark">Qeydiyyat</DialogTitle>
           <p className="text-devcode-gray">Öyrənmə səyahətinizə başlayın</p>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="firstName">Ad</Label>
@@ -111,7 +124,7 @@ export default function SignupModal({ open, onOpenChange, onSwitchToLogin }: Sig
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -162,7 +175,7 @@ export default function SignupModal({ open, onOpenChange, onSwitchToLogin }: Sig
               </SelectContent>
             </Select>
           </div>
-          
+
           <Button 
             type="submit"
             className="w-full bg-devcode-orange hover:bg-orange-600"
@@ -171,7 +184,7 @@ export default function SignupModal({ open, onOpenChange, onSwitchToLogin }: Sig
             {registerMutation.isPending ? "Qeydiyyat edilir..." : "Qeydiyyat"}
           </Button>
         </form>
-        
+
         <div className="text-center text-sm">
           <span className="text-devcode-gray">Artıq hesabınız var? </span>
           <Button 

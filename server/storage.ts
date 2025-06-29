@@ -306,3 +306,54 @@ export class DatabaseStorage implements IStorage {
 }
 
 export const storage = new DatabaseStorage();
+
+export async function createDefaultUsers() {
+  try {
+    // Check if default users already exist
+    const existingAdmin = await storage.getUserByEmail('admin@devcode.az');
+    const existingTeacher = await storage.getUserByEmail('teacher@devcode.az');
+    const existingStudent = await storage.getUserByEmail('student@devcode.az');
+
+    if (existingAdmin && existingTeacher && existingStudent) {
+      console.log('Default users already exist');
+      return;
+    }
+
+    const defaultUsers = [
+      {
+        id: `admin_${Date.now()}`,
+        email: 'admin@devcode.az',
+        firstName: 'Admin',
+        lastName: 'User',
+        role: 'admin' as const,
+        passwordHash: 'admin123'
+      },
+      {
+        id: `teacher_${Date.now()}`,
+        email: 'teacher@devcode.az',
+        firstName: 'Teacher',
+        lastName: 'User',
+        role: 'teacher' as const,
+        passwordHash: 'teacher123'
+      },
+      {
+        id: `student_${Date.now()}`,
+        email: 'student@devcode.az',
+        firstName: 'Student',
+        lastName: 'User',
+        role: 'student' as const,
+        passwordHash: 'student123'
+      }
+    ];
+
+    for (const userData of defaultUsers) {
+      const existing = await storage.getUserByEmail(userData.email);
+      if (!existing) {
+        await storage.createUser(userData);
+        console.log(`Created default ${userData.role}: ${userData.email}`);
+      }
+    }
+  } catch (error) {
+    console.error('Error creating default users:', error);
+  }
+}

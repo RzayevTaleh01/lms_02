@@ -31,13 +31,27 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
       
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (userData) => {
       toast({
         title: "Uğurlu giriş",
         description: "Xoş gəlmisiniz!"
       });
       onOpenChange(false);
-      window.location.reload();
+      
+      // Redirect to appropriate dashboard based on user role
+      switch (userData.role) {
+        case 'admin':
+          window.location.href = '/admin';
+          break;
+        case 'teacher':
+          window.location.href = '/teacher';
+          break;
+        case 'student':
+          window.location.href = '/student';
+          break;
+        default:
+          window.location.reload();
+      }
     },
     onError: (error: Error) => {
       toast({
