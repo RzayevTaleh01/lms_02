@@ -24,7 +24,7 @@ export default function Navbar() {
       return response.json();
     },
     onSuccess: () => {
-      window.location.reload();
+      window.location.href = '/';
     }
   });
 

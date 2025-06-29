@@ -24,7 +24,7 @@ interface SidebarProps {
 
 export default function Sidebar({ userRole }: SidebarProps) {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const getNavigationItems = () => {
     switch (userRole) {
@@ -92,6 +92,15 @@ export default function Sidebar({ userRole }: SidebarProps) {
   const navigationItems = getNavigationItems();
   const userInfo = getUserInfo();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-sm border-r border-gray-200 z-40">
       <div className="p-6">
@@ -104,7 +113,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
             <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
           </div>
         </Link>
-        
+
         {/* User Profile */}
         <div className="mb-6">
           <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
@@ -119,13 +128,13 @@ export default function Sidebar({ userRole }: SidebarProps) {
             </div>
           </div>
         </div>
-        
+
         {/* Navigation */}
         <nav className="space-y-2">
           {navigationItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = location === item.href;
-            
+
             return (
               <Link key={item.href} href={item.href}>
                 <div className={cn(
@@ -140,6 +149,13 @@ export default function Sidebar({ userRole }: SidebarProps) {
               </Link>
             );
           })}
+           <div
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer text-devcode-gray hover:text-devcode-dark hover:bg-gray-50"
+                onClick={handleLogout}
+              >
+                <Clock className="w-5 h-5" />
+                <span>Logout</span>
+              </div>
         </nav>
       </div>
     </div>
