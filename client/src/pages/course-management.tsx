@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useParams, useLocation } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -8,7 +7,7 @@ import CourseSidebar from "@/components/course-sidebar";
 import ActiveSessionBar from "@/components/active-session-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,7 +28,8 @@ import {
   X,
   UserPlus,
   Trash2,
-  ArrowLeft
+  ArrowLeft,
+  Upload
 } from "lucide-react";
 
 export default function CourseManagement() {
@@ -38,17 +38,17 @@ export default function CourseManagement() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const courseId = parseInt(id || "0");
   const [activeTab, setActiveTab] = useState("lessons");
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
-  
+
   // Dialog states
   const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
   const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
   const [isStudentDialogOpen, setIsStudentDialogOpen] = useState(false);
-  
+
   // Form states
   const [lessonForm, setLessonForm] = useState({
     title: "",
@@ -57,7 +57,7 @@ export default function CourseManagement() {
     duration: 0,
     orderIndex: 1
   });
-  
+
   const [materialForm, setMaterialForm] = useState({
     title: "",
     content: "",
@@ -65,7 +65,7 @@ export default function CourseManagement() {
     materialType: "video",
     orderIndex: 0
   });
-  
+
   const [assignmentForm, setAssignmentForm] = useState({
     title: "",
     description: "",
@@ -310,7 +310,7 @@ export default function CourseManagement() {
         activeTab={activeTab} 
         onTabChange={setActiveTab}
       />
-      
+
       {activeSession && <ActiveSessionBar session={activeSession} onEnd={handleEndSession} />}
 
       {/* Main Content */}
@@ -543,7 +543,7 @@ export default function CourseManagement() {
         {activeTab === "attendance" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Davamiyyət</h2>
-            
+
             {activeSession && (
               <Card>
                 <CardHeader>
@@ -744,7 +744,7 @@ function LessonDetailView({
   onCreateAssignment: () => void;
 }) {
   const [activeSubTab, setActiveSubTab] = useState("materials");
-  
+
   const { data: materials = [] } = useQuery({
     queryKey: [`/api/lessons/${lesson.id}/materials`],
   });
@@ -800,7 +800,7 @@ function LessonDetailView({
               Material Əlavə Et
             </Button>
           </div>
-          
+
           <div className="grid gap-4">
             {materials.map((material: any) => (
               <Card key={material.id}>
@@ -842,7 +842,7 @@ function LessonDetailView({
               Tapşırıq Əlavə Et
             </Button>
           </div>
-          
+
           <div className="grid gap-4">
             {assignments.map((assignment: any) => (
               <Card key={assignment.id}>

@@ -8,7 +8,8 @@ import {
   BarChart3,
   ArrowLeft,
   Play,
-  Clock
+  Clock,
+  History
 } from "lucide-react";
 
 interface CourseSidebarProps {
@@ -35,6 +36,12 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
       id: "attendance",
       label: "Davamiyyət", 
       icon: CalendarCheck,
+      count: null
+    },
+    {
+      id: "sessions",
+      label: "Sessiya Tarixi",
+      icon: History,
       count: null
     },
     {

@@ -501,6 +501,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get session history for teacher
+  app.get('/api/sessions/history', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can view session history" });
+      }
+
+      const sessions = await storage.getTeacherSessionHistory(req.user.id);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching session history:", error);
+      res.status(500).json({ message: "Failed to fetch session history" });
+    }
+  });
+
+  // Remove student from course
+  app.delete('/api/enrollments/:studentId/:courseId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can remove students" });
+      }
+
+      const { studentId, courseId } = req.params;
+      await storage.removeStudentFromCourse(studentId, parseInt(courseId));
+      res.json({ message: "Student removed successfully" });
+    } catch (error) {
+      console.error("Error removing student:", error);
+      res.status(500).json({ message: "Failed to remove student" });
+    }
+  });
+
   // Attendance routes
   app.post('/api/sessions/:sessionId/attendance', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
