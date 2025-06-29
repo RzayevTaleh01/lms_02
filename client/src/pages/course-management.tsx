@@ -112,7 +112,7 @@ export default function CourseManagement() {
   });
 
   // Get attendance data for each session
-  const { data: attendanceData = {} } = useQuery({
+  const { data: allSessionsAttendance = {} } = useQuery({
     queryKey: [`/api/courses/${id}/all-attendance`],
     queryFn: async () => {
       const attendanceMap: { [sessionId: number]: any[] } = {};
@@ -707,7 +707,7 @@ export default function CourseManagement() {
                       
                       // Count attendance for this student across all sessions
                       lessonSessions.forEach((session: any) => {
-                        const sessionAttendance = attendanceData[session.id] || [];
+                        const sessionAttendance = allSessionsAttendance[session.id] || [];
                         const studentAttendance = sessionAttendance.find((record: any) => 
                           record.studentId === student.id && record.status === "present"
                         );
@@ -725,7 +725,7 @@ export default function CourseManagement() {
                             {student.firstName} {student.lastName}
                           </TableCell>
                           {lessonSessions.map((session: any) => {
-                            const sessionAttendance = attendanceData[session.id] || [];
+                            const sessionAttendance = allSessionsAttendance[session.id] || [];
                             const attendance = sessionAttendance.find((record: any) => 
                               record.studentId === student.id
                             );
@@ -787,7 +787,7 @@ export default function CourseManagement() {
                       const totalPossibleAttendance = students.length * lessonSessions.length;
                       
                       lessonSessions.forEach((session: any) => {
-                        const sessionAttendance = attendanceData[session.id] || [];
+                        const sessionAttendance = allSessionsAttendance[session.id] || [];
                         totalPresentCount += sessionAttendance.filter((record: any) => record.status === "present").length;
                       });
                       
