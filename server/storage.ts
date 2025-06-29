@@ -392,7 +392,8 @@ export class DatabaseStorage implements IStorage {
       })
       .from(enrollments)
       .innerJoin(users, eq(enrollments.studentId, users.id))
-      .where(eq(enrollments.courseId, courseId));
+      .where(and(eq(enrollments.courseId, courseId), eq(users.role, 'student')))
+      .orderBy(users.firstName, users.lastName);
 
     return result;
   }

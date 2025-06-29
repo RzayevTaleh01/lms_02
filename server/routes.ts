@@ -254,7 +254,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
-      const enrollmentData = insertEnrollmentSchema.parse({ ...req.body, studentId: req.user!.id });
+      // If studentId is provided in body (for teachers adding students), use it
+      // Otherwise use the current user's ID (for students enrolling themselves)
+      const studentId = req.body.studentId || req.user!.id;
+      const enrollmentData = insertEnrollmentSchema.parse({ ...req.body, studentId });
       const enrollment = await storage.enrollStudent(enrollmentData);
       res.status(201).json(enrollment);
     } catch (error) {

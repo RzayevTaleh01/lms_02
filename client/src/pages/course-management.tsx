@@ -152,13 +152,26 @@ export default function CourseManagement() {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ courseId: parseInt(id!), studentId }),
-    }).then(res => res.json()),
+    }).then(res => {
+      if (!res.ok) {
+        throw new Error('Failed to add student');
+      }
+      return res.json();
+    }),
     onSuccess: () => {
       toast({ title: "Tələbə uğurla əlavə edildi" });
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/students`] });
       setIsAddStudentOpen(false);
       setSelectedStudentId("");
     },
+    onError: (error) => {
+      console.error("Error adding student:", error);
+      toast({ 
+        title: "Xəta", 
+        description: "Tələbə əlavə edilərkən xəta baş verdi",
+        variant: "destructive" 
+      });
+    }
   });
 
   const removeStudentMutation = useMutation({
@@ -315,10 +328,10 @@ export default function CourseManagement() {
     saveAttendanceMutation.mutate();
   };
 
-    const availableStudents = allUsers.filter((user: any) =>
+    const availableStudents = Array.isArray(allUsers) ? allUsers.filter((user: any) =>
         user.role === "student" &&
         !students.some((student: any) => student.id === user.id)
-    );
+    ) : [];
 
     const handleMarkAttendance = (studentId: string, status: "present" | "absent") => {
         setAttendanceData(prev => ({
@@ -515,11 +528,17 @@ export default function CourseManagement() {
                         <SelectValue placeholder="Tələbə seçin" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableStudents.map((student: any) => (
-                          <SelectItem key={student.id} value={student.id}>
-                            {student.firstName} {student.lastName} ({student.email})
+                        {availableStudents.length > 0 ? (
+                          availableStudents.map((student: any) => (
+                            <SelectItem key={student.id} value={student.id}>
+                              {student.firstName} {student.lastName} ({student.email})
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="no-students" disabled>
+                            Əlavə ediləcək tələbə yoxdur
                           </SelectItem>
-                        ))}
+                        )}
                       </SelectContent>
                     </Select>
                     <Button onClick={handleAddStudent} disabled={!selectedStudentId || addStudentMutation.isPending} className="bg-devcode-orange hover:bg-orange-600">
