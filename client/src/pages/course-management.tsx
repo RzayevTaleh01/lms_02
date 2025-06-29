@@ -83,6 +83,7 @@ export default function CourseManagement() {
     studentId: ""
   });
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [isAttendanceDisabled, setIsAttendanceDisabled] = useState(false);
 
   // Data fetching
   const { data: course } = useQuery({
@@ -215,18 +216,44 @@ export default function CourseManagement() {
   });
 
   const saveAttendanceMutation = useMutation({
-    mutationFn: () => fetch(`/api/sessions/${activeSession.id}/attendance`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ attendance: attendanceData }),
-    }).then(res => res.json()),
-    onSuccess: () => {
-      toast({ title: "Davamiyyət uğurla yadda saxlanıldı" });
-      setAttendanceSaved(true);
-      setTimeout(() => setAttendanceSaved(false), 3000);
-    },
-  });
+        mutationFn: async () => {
+            if (!activeSession) throw new Error("No active session");
+
+            const attendancePromises = Object.entries(attendanceData).map(([studentId, status]) => 
+                fetch(`/api/sessions/${activeSession.id}/attendance`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ 
+                        studentId, 
+                        status,
+                        courseId: parseInt(id!)
+                    })
+                }).then(res => {
+                    if (!res.ok) {
+                        throw new Error('Failed to mark attendance');
+                    }
+                    return res.json();
+                })
+            );
+
+            return Promise.all(attendancePromises);
+        },
+        onSuccess: () => {
+            toast({ title: "Davamiyyət uğurla yadda saxlanıldı" });
+            setAttendanceData({});
+            setIsAttendanceDisabled(true);
+            queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/sessions`] });
+        },
+        onError: (error) => {
+            console.error("Error saving attendance:", error);
+            toast({ 
+                title: "Xəta", 
+                description: "Davamiyyət yadda saxlanarkən xəta baş verdi",
+                variant: "destructive" 
+            });
+        }
+    });
 
     // Create lesson material mutation
     const createMaterialMutation = useMutation({
@@ -626,7 +653,7 @@ export default function CourseManagement() {
                     ))}
                     <Button
                       onClick={handleSaveAttendance}
-                      disabled={attendanceSaved || Object.keys(attendanceData).length === 0}
+                      disabled={isAttendanceDisabled || Object.keys(attendanceData).length === 0}
                       className="w-full bg-devcode-orange hover:bg-orange-600"
                     >
                       {attendanceSaved ? "Yadda Saxlanıldı" : "Davamiyyəti Yadda Saxla"}
@@ -703,7 +730,7 @@ export default function CourseManagement() {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Sessiya Tarixi</h2>
             </div>
-            <SessionHistory />
+            <SessionHistory courseId={parseInt(id!)}/>
           </div>
         )}
 

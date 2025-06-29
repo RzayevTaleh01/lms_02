@@ -424,11 +424,28 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLessonSessions(courseId: number): Promise<LessonSession[]> {
-    return await db
+    const sessions = await db
       .select()
       .from(lessonSessions)
       .where(eq(lessonSessions.courseId, courseId))
       .orderBy(desc(lessonSessions.startTime));
+
+    // Add attendance count for each session
+    const sessionsWithAttendance = await Promise.all(
+      sessions.map(async (session) => {
+        const attendanceCount = await db
+          .select({ count: count() })
+          .from(attendance)
+          .where(eq(attendance.sessionId, session.id));
+        
+        return {
+          ...session,
+          attendanceCount: attendanceCount[0]?.count || 0
+        };
+      })
+    );
+
+    return sessionsWithAttendance;
   }
 
   async getLessonSessionById(sessionId: number): Promise<LessonSession | undefined> {
@@ -535,6 +552,42 @@ export class DatabaseStorage implements IStorage {
     .where(eq(lessonSessions.isActive, true));
 
     return activeSessions;
+  }
+
+  async getTeacherSessionHistory(teacherId: string): Promise<(LessonSession & { courseName: string; attendanceCount?: number })[]> {
+    const sessions = await db.select({
+      id: lessonSessions.id,
+      courseId: lessonSessions.courseId,
+      teacherId: lessonSessions.teacherId,
+      sessionName: lessonSessions.sessionName,
+      startTime: lessonSessions.startTime,
+      endTime: lessonSessions.endTime,
+      duration: lessonSessions.duration,
+      isActive: lessonSessions.isActive,
+      createdAt: lessonSessions.createdAt,
+      courseName: courses.title
+    })
+    .from(lessonSessions)
+    .innerJoin(courses, eq(lessonSessions.courseId, courses.id))
+    .where(eq(lessonSessions.teacherId, teacherId))
+    .orderBy(desc(lessonSessions.startTime));
+
+    // Add attendance count for each session
+    const sessionsWithAttendance = await Promise.all(
+      sessions.map(async (session) => {
+        const attendanceCount = await db
+          .select({ count: count() })
+          .from(attendance)
+          .where(eq(attendance.sessionId, session.id));
+        
+        return {
+          ...session,
+          attendanceCount: attendanceCount[0]?.count || 0
+        };
+      })
+    );
+
+    return sessionsWithAttendance;
   }
 }
 
