@@ -12,9 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Play, 
   Plus, 
@@ -26,7 +26,9 @@ import {
   Clock,
   Edit,
   Save,
-  X
+  X,
+  UserPlus,
+  Trash2
 } from "lucide-react";
 
 export default function CourseManagement() {
@@ -44,6 +46,7 @@ export default function CourseManagement() {
   const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
   const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
+  const [isStudentDialogOpen, setIsStudentDialogOpen] = useState(false);
   const [isAttendanceDialogOpen, setIsAttendanceDialogOpen] = useState(false);
   
   // Form states
@@ -70,6 +73,10 @@ export default function CourseManagement() {
     maxPoints: 100
   });
 
+  const [studentForm, setStudentForm] = useState({
+    studentId: ""
+  });
+
   // Fetch course data
   const { data: course } = useQuery({
     queryKey: [`/api/courses/${courseId}`],
@@ -88,11 +95,23 @@ export default function CourseManagement() {
     enabled: !!courseId,
   });
 
+  // Fetch all users for adding students
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ["/api/users"],
+    enabled: isStudentDialogOpen,
+  });
+
   // Fetch active session
   const { data: activeSession } = useQuery({
     queryKey: [`/api/courses/${courseId}/active-session`],
     enabled: !!courseId,
-    refetchInterval: 5000, // Refetch every 5 seconds
+    refetchInterval: 5000,
+  });
+
+  // Fetch lesson sessions for attendance
+  const { data: lessonSessions = [] } = useQuery({
+    queryKey: [`/api/courses/${courseId}/sessions`],
+    enabled: !!courseId && activeTab === "attendance",
   });
 
   // Create lesson mutation
@@ -111,6 +130,63 @@ export default function CourseManagement() {
       setIsLessonDialogOpen(false);
       setLessonForm({ title: "", description: "", videoUrl: "", duration: "", orderIndex: 1 });
       toast({ title: "Dərs uğurla yaradıldı" });
+    },
+  });
+
+  // Create lesson material mutation
+  const createMaterialMutation = useMutation({
+    mutationFn: async (materialData: any) => {
+      const response = await fetch(`/api/lessons/${selectedLesson.id}/materials`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(materialData),
+      });
+      if (!response.ok) throw new Error("Failed to create material");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson.id}/materials`] });
+      setIsMaterialDialogOpen(false);
+      setMaterialForm({ title: "", content: "", videoUrl: "", materialType: "video", orderIndex: 0 });
+      toast({ title: "Material uğurla əlavə edildi" });
+    },
+  });
+
+  // Create lesson assignment mutation
+  const createAssignmentMutation = useMutation({
+    mutationFn: async (assignmentData: any) => {
+      const response = await fetch(`/api/lessons/${selectedLesson.id}/assignments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...assignmentData, courseId }),
+      });
+      if (!response.ok) throw new Error("Failed to create assignment");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson.id}/assignments`] });
+      setIsAssignmentDialogOpen(false);
+      setAssignmentForm({ title: "", description: "", dueDate: "", maxPoints: 100 });
+      toast({ title: "Tapşırıq uğurla əlavə edildi" });
+    },
+  });
+
+  // Enroll student mutation
+  const enrollStudentMutation = useMutation({
+    mutationFn: async (enrollmentData: any) => {
+      const response = await fetch("/api/enrollments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(enrollmentData),
+      });
+      if (!response.ok) throw new Error("Failed to enroll student");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/students`] });
+      setIsStudentDialogOpen(false);
+      setStudentForm({ studentId: "" });
+      toast({ title: "Tələbə uğurla əlavə edildi" });
     },
   });
 
@@ -144,12 +220,44 @@ export default function CourseManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/active-session`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/sessions`] });
       toast({ title: "Dərs sesiyası bitirildi" });
+    },
+  });
+
+  // Mark attendance mutation
+  const markAttendanceMutation = useMutation({
+    mutationFn: async (attendanceData: any) => {
+      const response = await fetch(`/api/sessions/${attendanceData.sessionId}/attendance`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(attendanceData),
+      });
+      if (!response.ok) throw new Error("Failed to mark attendance");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Davamiyyət qeyd edildi" });
     },
   });
 
   const handleCreateLesson = () => {
     createLessonMutation.mutate(lessonForm);
+  };
+
+  const handleCreateMaterial = () => {
+    createMaterialMutation.mutate(materialForm);
+  };
+
+  const handleCreateAssignment = () => {
+    createAssignmentMutation.mutate(assignmentForm);
+  };
+
+  const handleEnrollStudent = () => {
+    enrollStudentMutation.mutate({
+      studentId: studentForm.studentId,
+      courseId
+    });
   };
 
   const handleStartSession = () => {
@@ -160,8 +268,19 @@ export default function CourseManagement() {
   const handleEndSession = () => {
     if (activeSession) {
       const startTime = new Date(activeSession.startTime);
-      const duration = Math.floor((Date.now() - startTime.getTime()) / 60000); // in minutes
+      const duration = Math.floor((Date.now() - startTime.getTime()) / 60000);
       endSessionMutation.mutate({ sessionId: activeSession.id, duration });
+    }
+  };
+
+  const handleMarkAttendance = (studentId: string, status: "present" | "absent") => {
+    if (activeSession) {
+      markAttendanceMutation.mutate({
+        sessionId: activeSession.id,
+        studentId,
+        courseId,
+        status
+      });
     }
   };
 
@@ -172,6 +291,11 @@ export default function CourseManagement() {
       </div>
     );
   }
+
+  const availableStudents = allUsers.filter(user => 
+    user.role === "student" && 
+    !students.some(student => student.id === user.id)
+  );
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -264,7 +388,7 @@ export default function CourseManagement() {
                           id="lesson-order"
                           type="number"
                           value={lessonForm.orderIndex}
-                          onChange={(e) => setLessonForm(prev => ({ ...prev, orderIndex: parseInt(e.target.value) }))}
+                          onChange={(e) => setLessonForm(prev => ({ ...prev, orderIndex: parseInt(e.target.value) || 1 }))}
                           placeholder="1"
                         />
                       </div>
@@ -324,7 +448,49 @@ export default function CourseManagement() {
 
         {activeTab === "students" && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-semibold">Tələbələr ({students.length})</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Tələbələr ({students.length})</h2>
+              <Dialog open={isStudentDialogOpen} onOpenChange={setIsStudentDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-devcode-orange hover:bg-orange-600">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Tələbə Əlavə Et
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Kursa Tələbə Əlavə Et</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div>
+                      <Label htmlFor="student-select">Tələbə Seç</Label>
+                      <Select
+                        value={studentForm.studentId}
+                        onValueChange={(value) => setStudentForm({ studentId: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tələbə seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableStudents.map((student: any) => (
+                            <SelectItem key={student.id} value={student.id}>
+                              {student.firstName} {student.lastName} ({student.email})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button 
+                      onClick={handleEnrollStudent}
+                      disabled={enrollStudentMutation.isPending || !studentForm.studentId}
+                      className="bg-devcode-orange hover:bg-orange-600"
+                    >
+                      {enrollStudentMutation.isPending ? "Əlavə edilir..." : "Tələbə Əlavə Et"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
             <Card>
               <CardContent className="p-0">
                 <Table>
@@ -367,11 +533,65 @@ export default function CourseManagement() {
         {activeTab === "attendance" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Davamiyyət</h2>
+            
+            {activeSession && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Cari Dərs - Davamiyyət Qeyd Et</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {students.map((student: any) => (
+                      <div key={student.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <p className="font-medium">{student.firstName} {student.lastName}</p>
+                          <p className="text-sm text-devcode-gray">{student.email}</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => handleMarkAttendance(student.id, "present")}
+                          >
+                            İştirak Edir
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleMarkAttendance(student.id, "absent")}
+                          >
+                            Yoxdur
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
-              <CardContent className="p-6">
-                <div className="text-center py-8 text-devcode-gray">
-                  <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>Davamiyyət sistemi hazırlanmaqdadır</p>
+              <CardHeader>
+                <CardTitle>Dərs Sesiyaları</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {lessonSessions.map((session: any) => (
+                    <div key={session.id} className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">{session.sessionName}</h4>
+                          <p className="text-sm text-devcode-gray">
+                            {new Date(session.startTime).toLocaleString()}
+                            {session.duration && ` - ${session.duration} dəqiqə`}
+                          </p>
+                        </div>
+                        <Badge variant={session.isActive ? "default" : "secondary"}>
+                          {session.isActive ? "Aktiv" : "Bitib"}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -386,15 +606,133 @@ export default function CourseManagement() {
               setSelectedLesson(null);
               setActiveTab("lessons");
             }}
+            onCreateMaterial={() => setIsMaterialDialogOpen(true)}
+            onCreateAssignment={() => setIsAssignmentDialogOpen(true)}
           />
         )}
       </div>
+
+      {/* Material Dialog */}
+      <Dialog open={isMaterialDialogOpen} onOpenChange={setIsMaterialDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dərs Materialı Əlavə Et</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div>
+              <Label htmlFor="material-title">Material Adı</Label>
+              <Input
+                id="material-title"
+                value={materialForm.title}
+                onChange={(e) => setMaterialForm(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Video başlığı"
+              />
+            </div>
+            <div>
+              <Label htmlFor="material-video">Video URL</Label>
+              <Input
+                id="material-video"
+                value={materialForm.videoUrl}
+                onChange={(e) => setMaterialForm(prev => ({ ...prev, videoUrl: e.target.value }))}
+                placeholder="https://youtube.com/watch?v=..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="material-content">Açıqlama</Label>
+              <Textarea
+                id="material-content"
+                value={materialForm.content}
+                onChange={(e) => setMaterialForm(prev => ({ ...prev, content: e.target.value }))}
+                placeholder="Material haqqında əlavə məlumat"
+                rows={4}
+              />
+            </div>
+            <Button 
+              onClick={handleCreateMaterial}
+              disabled={createMaterialMutation.isPending}
+              className="bg-devcode-orange hover:bg-orange-600"
+            >
+              {createMaterialMutation.isPending ? "Əlavə edilir..." : "Material Əlavə Et"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assignment Dialog */}
+      <Dialog open={isAssignmentDialogOpen} onOpenChange={setIsAssignmentDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dərs Tapşırığı Əlavə Et</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div>
+              <Label htmlFor="assignment-title">Tapşırıq Adı</Label>
+              <Input
+                id="assignment-title"
+                value={assignmentForm.title}
+                onChange={(e) => setAssignmentForm(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="HTML səhifə yaradın"
+              />
+            </div>
+            <div>
+              <Label htmlFor="assignment-description">Tapşırıq Təsviri</Label>
+              <Textarea
+                id="assignment-description"
+                value={assignmentForm.description}
+                onChange={(e) => setAssignmentForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Tapşırığın ətraflı təsviri"
+                rows={4}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="assignment-due">Son Tarix</Label>
+                <Input
+                  id="assignment-due"
+                  type="datetime-local"
+                  value={assignmentForm.dueDate}
+                  onChange={(e) => setAssignmentForm(prev => ({ ...prev, dueDate: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="assignment-points">Max Qiymət</Label>
+                <Input
+                  id="assignment-points"
+                  type="number"
+                  value={assignmentForm.maxPoints}
+                  onChange={(e) => setAssignmentForm(prev => ({ ...prev, maxPoints: parseInt(e.target.value) || 100 }))}
+                  placeholder="100"
+                />
+              </div>
+            </div>
+            <Button 
+              onClick={handleCreateAssignment}
+              disabled={createAssignmentMutation.isPending}
+              className="bg-devcode-orange hover:bg-orange-600"
+            >
+              {createAssignmentMutation.isPending ? "Əlavə edilir..." : "Tapşırıq Əlavə Et"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
 // Lesson Detail Component
-function LessonDetailView({ lesson, courseId, onBack }: { lesson: any; courseId: number; onBack: () => void }) {
+function LessonDetailView({ 
+  lesson, 
+  courseId, 
+  onBack, 
+  onCreateMaterial, 
+  onCreateAssignment 
+}: { 
+  lesson: any; 
+  courseId: number; 
+  onBack: () => void;
+  onCreateMaterial: () => void;
+  onCreateAssignment: () => void;
+}) {
   const [activeSubTab, setActiveSubTab] = useState("materials");
   
   const { data: materials = [] } = useQuery({
@@ -418,16 +756,36 @@ function LessonDetailView({ lesson, courseId, onBack }: { lesson: any; courseId:
         </div>
       </div>
 
-      <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
-        <TabsList>
-          <TabsTrigger value="materials">Materiallar</TabsTrigger>
-          <TabsTrigger value="assignments">Tapşırıqlar</TabsTrigger>
-        </TabsList>
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8">
+          <button
+            onClick={() => setActiveSubTab("materials")}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeSubTab === "materials"
+                ? "border-devcode-orange text-devcode-orange"
+                : "border-transparent text-devcode-gray hover:text-devcode-dark"
+            }`}
+          >
+            Materiallar
+          </button>
+          <button
+            onClick={() => setActiveSubTab("assignments")}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeSubTab === "assignments"
+                ? "border-devcode-orange text-devcode-orange"
+                : "border-transparent text-devcode-gray hover:text-devcode-dark"
+            }`}
+          >
+            Tapşırıqlar
+          </button>
+        </nav>
+      </div>
 
-        <TabsContent value="materials" className="space-y-4">
+      {activeSubTab === "materials" && (
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Dərs Materialları</h3>
-            <Button className="bg-devcode-orange hover:bg-orange-600">
+            <Button onClick={onCreateMaterial} className="bg-devcode-orange hover:bg-orange-600">
               <Plus className="w-4 h-4 mr-2" />
               Material Əlavə Et
             </Button>
@@ -439,21 +797,37 @@ function LessonDetailView({ lesson, courseId, onBack }: { lesson: any; courseId:
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
                     <Video className="w-8 h-8 text-devcode-orange" />
-                    <div>
+                    <div className="flex-1">
                       <h4 className="font-medium">{material.title}</h4>
                       <p className="text-sm text-devcode-gray">{material.materialType}</p>
+                      {material.videoUrl && (
+                        <a href={material.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">
+                          Video linki
+                        </a>
+                      )}
+                      {material.content && (
+                        <p className="text-sm mt-2">{material.content}</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
+            {materials.length === 0 && (
+              <div className="text-center py-8 text-devcode-gray">
+                <Video className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <p>Hələ material əlavə edilməyib</p>
+              </div>
+            )}
           </div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="assignments" className="space-y-4">
+      {activeSubTab === "assignments" && (
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Dərs Tapşırıqları</h3>
-            <Button className="bg-devcode-orange hover:bg-orange-600">
+            <Button onClick={onCreateAssignment} className="bg-devcode-orange hover:bg-orange-600">
               <Plus className="w-4 h-4 mr-2" />
               Tapşırıq Əlavə Et
             </Button>
@@ -476,6 +850,9 @@ function LessonDetailView({ lesson, courseId, onBack }: { lesson: any; courseId:
                             Son tarix: {new Date(assignment.dueDate).toLocaleDateString()}
                           </p>
                         )}
+                        {assignment.description && (
+                          <p className="text-sm mt-2">{assignment.description}</p>
+                        )}
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
@@ -485,9 +862,15 @@ function LessonDetailView({ lesson, courseId, onBack }: { lesson: any; courseId:
                 </CardContent>
               </Card>
             ))}
+            {assignments.length === 0 && (
+              <div className="text-center py-8 text-devcode-gray">
+                <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <p>Hələ tapşırıq əlavə edilməyib</p>
+              </div>
+            )}
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
     </div>
   );
 }
