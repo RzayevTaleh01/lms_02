@@ -50,6 +50,8 @@ export default function EnhancedLessonManagement({
   const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
   const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
+  const [isSubmissionsDialogOpen, setIsSubmissionsDialogOpen] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
   
   // Form states
   const [lessonForm, setLessonForm] = useState({
@@ -76,6 +78,11 @@ export default function EnhancedLessonManagement({
     maxPoints: 100
   });
 
+  const [gradingForm, setGradingForm] = useState({
+    grade: "",
+    feedback: ""
+  });
+
   // Fetch lessons
   const { data: lessons = [] } = useQuery({
     queryKey: [`/api/courses/${courseId}/lessons`],
@@ -92,6 +99,12 @@ export default function EnhancedLessonManagement({
   const { data: assignments = [] } = useQuery({
     queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`],
     enabled: !!selectedLesson?.id,
+  });
+
+  // Fetch submissions for selected assignment
+  const { data: submissions = [] } = useQuery({
+    queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`],
+    enabled: !!selectedAssignment?.id,
   });
 
   // Create lesson mutation
@@ -143,6 +156,25 @@ export default function EnhancedLessonManagement({
     },
     onError: () => {
       toast({ title: "Xəta", description: "Tapşırıq əlavə edilərkən xəta baş verdi", variant: "destructive" });
+    }
+  });
+
+  // Grade submission mutation
+  const gradeSubmissionMutation = useMutation({
+    mutationFn: async ({ submissionId, grade, feedback }: { submissionId: number, grade: number, feedback: string }) => {
+      return apiRequest("PATCH", `/api/submissions/${submissionId}/grade`, {
+        grade,
+        feedback,
+        gradedBy: user?.id
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`] });
+      setGradingForm({ grade: "", feedback: "" });
+      toast({ title: "Qiymət uğurla verildi!" });
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Qiymət verərkən xəta baş verdi", variant: "destructive" });
     }
   });
 
@@ -680,7 +712,14 @@ export default function EnhancedLessonManagement({
                       </div>
                       <div className="flex items-center space-x-2">
                         {user?.role === "teacher" && (
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedAssignment(assignment);
+                              setIsSubmissionsDialogOpen(true);
+                            }}
+                          >
                             <FileText className="w-4 h-4 mr-1" />
                             Cavabları Gör
                           </Button>
@@ -700,6 +739,131 @@ export default function EnhancedLessonManagement({
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Submissions Dialog */}
+      <Dialog open={isSubmissionsDialogOpen} onOpenChange={setIsSubmissionsDialogOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedAssignment ? `"${selectedAssignment.title}" tapşırığının cavabları` : "Tapşırıq cavabları"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="max-h-[600px] overflow-y-auto">
+            {submissions.length === 0 ? (
+              <div className="text-center py-10">
+                <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Bu tapşırığa hələ cavab verilməyib</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {submissions.map((submission: any) => (
+                  <Card key={submission.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h4 className="font-semibold">
+                              {submission.student.firstName} {submission.student.lastName}
+                            </h4>
+                            <Badge variant="secondary">{submission.student.email}</Badge>
+                            {submission.grade && (
+                              <Badge variant="default">{submission.grade} bal</Badge>
+                            )}
+                          </div>
+                          
+                          {submission.content && (
+                            <div className="mb-3">
+                              <p className="text-sm font-medium mb-1">Cavab məzmunu:</p>
+                              <p className="text-sm text-muted-foreground">{submission.content}</p>
+                            </div>
+                          )}
+                          
+                          {submission.githubUrl && (
+                            <div className="mb-3">
+                              <p className="text-sm font-medium mb-1">GitHub linki:</p>
+                              <a 
+                                href={submission.githubUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-600 hover:underline"
+                              >
+                                {submission.githubUrl}
+                              </a>
+                            </div>
+                          )}
+                          
+                          {submission.fileUrl && (
+                            <div className="mb-3">
+                              <p className="text-sm font-medium mb-1">Yüklənmiş fayl:</p>
+                              <a 
+                                href={submission.fileUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-600 hover:underline"
+                              >
+                                Faylı yüklə
+                              </a>
+                            </div>
+                          )}
+                          
+                          {submission.feedback && (
+                            <div className="mb-3">
+                              <p className="text-sm font-medium mb-1">Müəllim rəyi:</p>
+                              <p className="text-sm text-muted-foreground">{submission.feedback}</p>
+                            </div>
+                          )}
+                          
+                          <p className="text-xs text-muted-foreground">
+                            Təqdim olunub: {new Date(submission.submittedAt).toLocaleString('az-AZ')}
+                          </p>
+                        </div>
+                        
+                        {!submission.grade && (
+                          <div className="flex flex-col space-y-2 ml-4">
+                            <div className="space-y-2">
+                              <input
+                                type="number"
+                                placeholder="Qiymət (bal)"
+                                value={gradingForm.grade}
+                                onChange={(e) => setGradingForm(prev => ({ ...prev, grade: e.target.value }))}
+                                className="w-24 px-2 py-1 text-sm border rounded"
+                                max={selectedAssignment?.maxPoints}
+                              />
+                              <textarea
+                                placeholder="Rəy və təklif..."
+                                value={gradingForm.feedback}
+                                onChange={(e) => setGradingForm(prev => ({ ...prev, feedback: e.target.value }))}
+                                className="w-full px-2 py-1 text-sm border rounded"
+                                rows={2}
+                              />
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  if (gradingForm.grade) {
+                                    gradeSubmissionMutation.mutate({
+                                      submissionId: submission.id,
+                                      grade: parseFloat(gradingForm.grade),
+                                      feedback: gradingForm.feedback
+                                    });
+                                  }
+                                }}
+                                disabled={!gradingForm.grade || gradeSubmissionMutation.isPending}
+                              >
+                                {gradeSubmissionMutation.isPending ? "Saxlanılır..." : "Qiymət Ver"}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
