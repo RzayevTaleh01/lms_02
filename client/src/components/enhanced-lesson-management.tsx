@@ -1,17 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Plus, 
   Edit, 
@@ -26,7 +23,8 @@ import {
   Clock,
   Video,
   File,
-  Link
+  Link,
+  ArrowLeft
 } from "lucide-react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -45,14 +43,14 @@ export default function EnhancedLessonManagement({
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   // Dialog states
   const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
   const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
   const [isSubmissionsDialogOpen, setIsSubmissionsDialogOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
-  
+
   // Form states
   const [lessonForm, setLessonForm] = useState({
     title: "",
@@ -61,7 +59,7 @@ export default function EnhancedLessonManagement({
     videoUrl: "",
     duration: ""
   });
-  
+
   const [materialForm, setMaterialForm] = useState({
     title: "",
     content: "",
@@ -70,7 +68,7 @@ export default function EnhancedLessonManagement({
     fileUrl: "",
     orderIndex: 0
   });
-  
+
   const [assignmentForm, setAssignmentForm] = useState({
     title: "",
     description: "",
@@ -183,7 +181,7 @@ export default function EnhancedLessonManagement({
       toast({ title: "Xəta", description: "Dərs başlığını daxil edin", variant: "destructive" });
       return;
     }
-    
+
     createLessonMutation.mutate({
       title: lessonForm.title,
       description: lessonForm.description,
@@ -198,7 +196,7 @@ export default function EnhancedLessonManagement({
       toast({ title: "Xəta", description: "Material başlığını daxil edin", variant: "destructive" });
       return;
     }
-    
+
     createMaterialMutation.mutate(materialForm);
   };
 
@@ -207,7 +205,7 @@ export default function EnhancedLessonManagement({
       toast({ title: "Xəta", description: "Tapşırıq başlığını daxil edin", variant: "destructive" });
       return;
     }
-    
+
     createAssignmentMutation.mutate({
       ...assignmentForm,
       dueDate: assignmentForm.dueDate ? new Date(assignmentForm.dueDate).toISOString() : null
@@ -261,7 +259,7 @@ export default function EnhancedLessonManagement({
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="lessonDescription">Qısa Təsvir</Label>
                     <Textarea
@@ -748,7 +746,7 @@ export default function EnhancedLessonManagement({
               {selectedAssignment ? `"${selectedAssignment.title}" tapşırığının cavabları` : "Tapşırıq cavabları"}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="max-h-[600px] overflow-y-auto">
             {submissions.length === 0 ? (
               <div className="text-center py-10">
@@ -771,14 +769,14 @@ export default function EnhancedLessonManagement({
                               <Badge variant="default">{submission.grade} bal</Badge>
                             )}
                           </div>
-                          
+
                           {submission.content && (
                             <div className="mb-3">
                               <p className="text-sm font-medium mb-1">Cavab məzmunu:</p>
                               <p className="text-sm text-muted-foreground">{submission.content}</p>
                             </div>
                           )}
-                          
+
                           {submission.githubUrl && (
                             <div className="mb-3">
                               <p className="text-sm font-medium mb-1">GitHub linki:</p>
@@ -792,7 +790,7 @@ export default function EnhancedLessonManagement({
                               </a>
                             </div>
                           )}
-                          
+
                           {submission.fileUrl && (
                             <div className="mb-3">
                               <p className="text-sm font-medium mb-1">Yüklənmiş fayl:</p>
@@ -806,19 +804,19 @@ export default function EnhancedLessonManagement({
                               </a>
                             </div>
                           )}
-                          
+
                           {submission.feedback && (
                             <div className="mb-3">
                               <p className="text-sm font-medium mb-1">Müəllim rəyi:</p>
                               <p className="text-sm text-muted-foreground">{submission.feedback}</p>
                             </div>
                           )}
-                          
+
                           <p className="text-xs text-muted-foreground">
                             Təqdim olunub: {new Date(submission.submittedAt).toLocaleString('az-AZ')}
                           </p>
                         </div>
-                        
+
                         {!submission.grade && (
                           <div className="flex flex-col space-y-2 ml-4">
                             <div className="space-y-2">
@@ -867,3 +865,423 @@ export default function EnhancedLessonManagement({
     </div>
   );
 }
+
+interface LessonDetailViewProps {
+  lesson: any;
+  materials: any[];
+  assignments: any[];
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  onBack: () => void;
+  onCreateMaterial: () => void;
+  onCreateAssignment: () => void;
+  materialForm: any;
+  setMaterialForm: (form: any) => void;
+  assignmentForm: any;
+  setAssignmentForm: (form: any) => void;
+  isMaterialDialogOpen: boolean;
+  setIsMaterialDialogOpen: (open: boolean) => void;
+  isAssignmentDialogOpen: boolean;
+  setIsAssignmentDialogOpen: (open: boolean) => void;
+  handleCreateMaterial: () => void;
+  handleCreateAssignment: () => void;
+  createMaterialMutation: any;
+  createAssignmentMutation: any;
+}
+
+const LessonDetailView: React.FC<LessonDetailViewProps> = ({
+  lesson,
+  materials,
+  assignments,
+  activeTab,
+  onTabChange,
+  onBack,
+  onCreateMaterial,
+  onCreateAssignment,
+  materialForm,
+  setMaterialForm,
+  assignmentForm,
+  setAssignmentForm,
+  isMaterialDialogOpen,
+  setIsMaterialDialogOpen,
+  isAssignmentDialogOpen,
+  setIsAssignmentDialogOpen,
+  handleCreateMaterial,
+  handleCreateAssignment,
+  createMaterialMutation,
+  createAssignmentMutation,
+}) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Extract YouTube video ID
+  const extractYouTubeId = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <Button variant="outline" onClick={onBack} className="mb-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Dərslər Siyahısı
+          </Button>
+          <h2 className="text-2xl font-semibold">{lesson.title}</h2>
+          {lesson.description && (
+            <p className="text-muted-foreground mt-1">{lesson.description}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Video Section */}
+      {lesson.videoUrl && (
+        <Card>
+          <CardContent className="p-0">
+            <div className="aspect-video">
+              {extractYouTubeId(lesson.videoUrl) ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${extractYouTubeId(lesson.videoUrl)}`}
+                  className="w-full h-full rounded-t-lg"
+                  allowFullScreen
+                  title={lesson.title}
+                />
+              ) : (
+                <div className="w-full h-full bg-muted rounded-t-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <Video className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground">Video yüklənmir</p>
+                    <a
+                      href={lesson.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-devcode-orange hover:underline"
+                    >
+                      Birbaşa baxın
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Lesson Content */}
+      {lesson.content && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Dərs Məzmunu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: lesson.content }}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Tabs for Materials and Assignments */}
+      {/* Tabs for Materials and Assignments */}
+      <Tabs defaultValue={activeTab} className="w-full" onValueChange={onTabChange}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
+          <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="materials" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Dərs Materialları</h3>
+            {user?.role === "teacher" && (
+              <Dialog open={isMaterialDialogOpen} onOpenChange={setIsMaterialDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-devcode-orange hover:bg-orange-600" onClick={onCreateMaterial}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Material Əlavə Et
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Yeni Material Əlavə Et</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="materialTitle">Başlıq *</Label>
+                        <Input
+                          id="materialTitle"
+                          value={materialForm.title}
+                          onChange={(e) => setMaterialForm({ ...materialForm, title: e.target.value })}
+                          placeholder="Material başlığı"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="materialType">Material Növü</Label>
+                        <Select
+                          value={materialForm.materialType}
+                          onValueChange={(value: "video" | "document" | "link") =>
+                            setMaterialForm({ ...materialForm, materialType: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="video">Video</SelectItem>
+                            <SelectItem value="document">Sənəd/PDF</SelectItem>
+                            <SelectItem value="link">Xarici Link</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {materialForm.materialType === "video" && (
+                      <div>
+                        <Label htmlFor="materialVideoUrl">Video URL</Label>
+                        <Input
+                          id="materialVideoUrl"
+                          value={materialForm.videoUrl}
+                          onChange={(e) => setMaterialForm({ ...materialForm, videoUrl: e.target.value })}
+                          placeholder="https://youtube.com/watch?v=..."
+                        />
+                      </div>
+                    )}
+
+                    {(materialForm.materialType === "document" || materialForm.materialType === "link") && (
+                      <div>
+                        <Label htmlFor="materialFileUrl">
+                          {materialForm.materialType === "document" ? "Fayl URL" : "Link URL"}
+                        </Label>
+                        <Input
+                          id="materialFileUrl"
+                          value={materialForm.fileUrl}
+                          onChange={(e) => setMaterialForm({ ...materialForm, fileUrl: e.target.value })}
+                          placeholder={materialForm.materialType === "document" ? "PDF və ya digər fayl linki" : "Xarici sayt linki"}
+                        />
+                      </div>
+                    )}
+
+                    <div>
+                      <Label>Material Təsviri</Label>
+                      <div className="mt-2">
+                        <ReactQuill
+                          theme="snow"
+                          value={materialForm.content}
+                          onChange={(content) => setMaterialForm({ ...materialForm, content })}
+                          modules={{
+                            toolbar: [
+                              [{ 'header': [1, 2, 3, false] }],
+                              ['bold', 'italic', 'underline'],
+                              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                              ['link', 'blockquote'],
+                              ['clean']
+                            ]
+                          }}
+                          style={{ height: '150px', marginBottom: '50px' }}
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={handleCreateMaterial}
+                      disabled={createMaterialMutation.isPending}
+                      className="bg-devcode-orange hover:bg-orange-600 w-full"
+                    >
+                      {createMaterialMutation.isPending ? "Əlavə edilir..." : "Material Əlavə Et"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+
+          <div className="grid gap-4">
+            {materials.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-10">
+                  <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Bu dərsə hələ material əlavə edilməyib</p>
+                </CardContent>
+              </Card>
+            ) : (
+              materials.map((material: any) => (
+                <Card key={material.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-10 h-10 bg-devcode-orange/10 rounded-lg flex items-center justify-center">
+                          {material.materialType === "video" && <Video className="w-5 h-5 text-devcode-orange" />}
+                          {material.materialType === "document" && <File className="w-5 h-5 text-devcode-orange" />}
+                          {material.materialType === "link" && <Link className="w-5 h-5 text-devcode-orange" />}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold">{material.title}</h4>
+                          {material.content && (
+                            <div
+                              className="text-sm text-muted-foreground mt-2 prose prose-sm"
+                              dangerouslySetInnerHTML={{ __html: material.content }}
+                            />
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {material.videoUrl && (
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={material.videoUrl} target="_blank" rel="noopener noreferrer">
+                              <Play className="w-4 h-4 mr-1" />
+                              İzlə
+                            </a>
+                          </Button>
+                        )}
+                        {material.fileUrl && (
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={material.fileUrl} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="w-4 h-4 mr-1" />
+                              Aç
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="assignments" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Dərs Tapşırıqları</h3>
+            {user?.role === "teacher" && (
+              <Dialog open={isAssignmentDialogOpen} onOpenChange={setIsAssignmentDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-devcode-orange hover:bg-orange-600" onClick={onCreateAssignment}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Tapşırıq Əlavə Et
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Yeni Tapşırıq Əlavə Et</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="assignmentTitle">Tapşırıq Adı *</Label>
+                        <Input
+                          id="assignmentTitle"
+                          value={assignmentForm.title}
+                          onChange={(e) => setAssignmentForm({ ...assignmentForm, title: e.target.value })}
+                          placeholder="Tapşırıq başlığı"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="assignmentPoints">Maksimum Bal</Label>
+                        <Input
+                          id="assignmentPoints"
+                          type="number"
+                          value={assignmentForm.maxPoints}
+                          onChange={(e) => setAssignmentForm({ ...assignmentForm, maxPoints: parseInt(e.target.value) || 100 })}
+                          placeholder="100"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="assignmentDueDate">Son Tarix</Label>
+                      <Input
+                        id="assignmentDueDate"
+                        type="datetime-local"
+                        value={assignmentForm.dueDate}
+                        onChange={(e) => setAssignmentForm({ ...assignmentForm, dueDate: e.target.value })}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Tapşırıq Təsviri</Label>
+                      <div className="mt-2">
+                        <ReactQuill
+                          theme="snow"
+                          value={assignmentForm.description}
+                          onChange={(description) => setAssignmentForm({ ...assignmentForm, description })}
+                          modules={{
+                            toolbar: [
+                              [{ 'header': [1, 2, 3, false] }],
+                              ['bold', 'italic', 'underline'],
+                              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                              ['link', 'blockquote'],
+                              ['clean']
+                            ]
+                          }}
+                          style={{ height: '150px', marginBottom: '50px' }}
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={handleCreateAssignment}
+                      disabled={createAssignmentMutation.isPending}
+                      className="bg-devcode-orange hover:bg-orange-600 w-full"
+                    >
+                      {createAssignmentMutation.isPending ? "Əlavə edilir..." : "Tapşırıq Əlavə Et"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+
+          <div className="grid gap-4">
+            {assignments.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-10">
+                  <CheckCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Bu dərsə hələ tapşırıq əlavə edilməyib</p>
+                </CardContent>
+              </Card>
+            ) : (
+              assignments.map((assignment: any) => (
+                <Card key={assignment.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h4 className="font-semibold">{assignment.title}</h4>
+                          <Badge variant="secondary">{assignment.maxPoints} bal</Badge>
+                          {assignment.dueDate && (
+                            <Badge variant="outline">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
+                            </Badge>
+                          )}
+                        </div>
+                        {assignment.description && (
+                          <div
+                            className="text-sm text-muted-foreground prose prose-sm"
+                            dangerouslySetInnerHTML={{ __html: assignment.description }}
+                          />
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {/* <Button variant="outline" size="sm">
+                          <Upload className="w-4 h-4 mr-1" />
+                          Cavab Yüklə
+                        </Button> */}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
