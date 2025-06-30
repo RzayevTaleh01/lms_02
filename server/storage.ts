@@ -12,6 +12,7 @@ import {
   attendance,
   lessonMaterials,
   lessonAssignments,
+  lessonProgress,
   type User,
   type UpsertUser,
   type Course,
@@ -935,5 +936,4 @@ export async function createDefaultUsers() {
   }
 }
 
-// Define lessonProgress table schema
-import { pgTable, integer, boolean, date, primaryKey, foreignKey } from "drizzle-orm/pg-core";
+
