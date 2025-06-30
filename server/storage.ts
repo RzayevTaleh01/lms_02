@@ -41,7 +41,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { courses, lessons, enrollments, assignments, submissions, users, blogPosts, certificates, contactSubmissions, lessonSessions, attendance, lessonMaterials, lessonAssignments } from "@shared/schema";
-import { eq, and, desc, asc, sql } from "drizzle-orm";
+import { eq, and, desc, asc, sql, count } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
