@@ -21,6 +21,7 @@ import TeacherCourses from "@/pages/teacher-courses";
 import TeacherStudents from "@/pages/teacher-students";
 import TeacherStudentDetail from "@/pages/teacher-student-detail";
 import StudentDashboard from "@/pages/student-dashboard";
+import StudentCourse from "@/pages/student-course";
 import CourseManagementPage from "@/pages/course-management";
 import LessonDetail from "@/pages/lesson-detail";
 
@@ -57,6 +58,7 @@ function Router() {
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students" component={TeacherStudents} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students/:studentId" component={TeacherStudentDetail} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
+      {isAuthenticated && user?.role === 'student' && <Route path="/student/course/:id" component={StudentCourse} />}
       
       <Route component={NotFound} />
     </Switch>
