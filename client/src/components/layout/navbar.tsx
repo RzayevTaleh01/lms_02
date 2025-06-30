@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, navigate } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,14 +15,16 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
+
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (isAuthenticated) {
       const dashboardLink = getDashboardLink();
       if (location === "/") {
-        navigate(dashboardLink, { replace: true });
+        setLocation(dashboardLink);
       }
     }
   }, [isAuthenticated, location]);
@@ -243,7 +245,7 @@ export default function Navbar() {
         }}
         onLoginSuccess={() => {
           const dashboardLink = getDashboardLink();
-          navigate(dashboardLink, { replace: true });
+          setLocation(dashboardLink);
         }}
       />
 
@@ -256,7 +258,7 @@ export default function Navbar() {
         }}
         onSignupSuccess={() => {
           const dashboardLink = getDashboardLink();
-          navigate(dashboardLink, { replace: true });
+          setLocation(dashboardLink);
         }}
       />
     </>
