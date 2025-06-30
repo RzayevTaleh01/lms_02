@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Calendar, Trophy, Target, Clock, Users, Menu, FileText } from "lucide-react";
+import { BookOpen, Calendar, Trophy, Target, Clock, Users, Menu, FileText, Award } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 import { StudentSidebar } from "@/components/student-sidebar";
