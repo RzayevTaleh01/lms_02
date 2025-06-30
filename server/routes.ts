@@ -213,6 +213,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update a course
+  app.put('/api/courses/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can update courses" });
+      }
+
+      const courseId = parseInt(req.params.id);
+      const courseData = insertCourseSchema.parse(req.body);
+
+      const updatedCourse = await storage.updateCourse(courseId, courseData);
+
+      if (!updatedCourse) {
+        return res.status(404).json({ message: 'Course not found' });
+      }
+
+      res.json(updatedCourse);
+    } catch (error) {
+      console.error('Error updating course:', error);
+      res.status(500).json({ message: 'Failed to update course' });
+    }
+  });
+
+  // Delete a course
+  app.delete('/api/courses/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can delete courses" });
+      }
+
+      const courseId = parseInt(req.params.id);
+
+      await storage.deleteCourse(courseId);
+      res.json({ message: 'Course deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      res.status(500).json({ message: 'Failed to delete course' });
+    }
+  });
+
   // Lesson routes
   app.get('/api/courses/:courseId/lessons', async (req, res) => {
     try {
@@ -674,6 +714,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to remove student from course' });
     }
   });
+
+    // Get enrollments for a specific course
+  app.get('/api/courses/:id/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can view enrollments" });
+      }
+      const courseId = parseInt(req.params.id);
+      const enrollments = await storage.getCourseEnrollments(courseId);
+      res.json(enrollments);
+    } catch (error) {
+      console.error('Error fetching course enrollments:', error);
+      res.status(500).json({ message: 'Failed to fetch course enrollments' });
+    }
+  });
+
+  // Delete an enrollment
+  app.delete('/api/enrollments/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can delete enrollments" });
+      }
+
+      const enrollmentId = parseInt(req.params.id);
+      await storage.deleteEnrollment(enrollmentId);
+      res.json({ message: 'Enrollment deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting enrollment:', error);
+      res.status(500).json({ message: 'Failed to delete enrollment' });
+    }
+  });
+
 
   // Get all active sessions
   app.get('/api/active-sessions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {

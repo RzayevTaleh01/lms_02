@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import Sidebar from "@/components/layout/sidebar";
 import GlobalActiveSession from "@/components/global-active-session";
@@ -9,11 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Users, Search, User, BookOpen, Calendar, TrendingUp } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Users, Search, User, BookOpen, Calendar, TrendingUp, UserMinus } from "lucide-react";
 
 export default function TeacherStudents() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all users to find students enrolled in this teacher's courses
@@ -36,6 +39,32 @@ export default function TeacherStudents() {
       }
       return response.json();
     }
+  });
+
+  // Remove student mutation
+  const removeStudentMutation = useMutation({
+    mutationFn: async (enrollmentId: number) => {
+      const response = await fetch(`/api/enrollments/${enrollmentId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to remove student');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/all-enrollments"] });
+      toast({
+        title: "Success",
+        description: "Tələbə uğurla kursdan çıxarıldı",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Tələbə çıxarılarkən xəta baş verdi",
+        variant: "destructive",
+      });
+    },
   });
 
   useEffect(() => {
@@ -130,6 +159,12 @@ export default function TeacherStudents() {
     );
   });
 
+  const handleRemoveStudent = (enrollmentId: number, studentName: string) => {
+    if (window.confirm(`${studentName} adlı tələbəni kursdan çıxarmaq istədiyinizə əminsiniz?`)) {
+      removeStudentMutation.mutate(enrollmentId);
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <GlobalActiveSession />
@@ -166,92 +201,118 @@ export default function TeacherStudents() {
           </Card>
         </div>
 
-        {/* Students Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredStudents.length === 0 ? (
-            <div className="col-span-full">
-              <Card>
-                <CardContent className="p-16 text-center">
-                  <Users className="w-16 h-16 mx-auto mb-4 text-devcode-gray opacity-50" />
-                  <h3 className="text-lg font-semibold text-devcode-dark mb-2">
-                    {searchTerm ? "Axtarış nəticəsi tapılmadı" : "Hələ tələbəniz yoxdur"}
-                  </h3>
-                  <p className="text-devcode-gray">
-                    {searchTerm 
-                      ? "Axtarış şərtlərini dəyişdirərək yenidən cəhd edin."
-                      : "Tələbələr kurslarınıza qeydiyyatdan keçdikdən sonra burada görünəcəklər."
-                    }
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            filteredStudents.map((student: any) => (
-              <Card key={student.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-devcode-orange rounded-full flex items-center justify-center text-white font-semibold">
-                      {student.firstName?.charAt(0)}{student.lastName?.charAt(0)}
-                    </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{student.firstName} {student.lastName}</CardTitle>
-                      <p className="text-sm text-devcode-gray">{student.email}</p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Student Stats */}
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div>
-                      <div className="text-lg font-bold text-devcode-dark">{student.totalCourses}</div>
-                      <div className="text-xs text-devcode-gray">Kurs</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-devcode-dark">{Math.round(student.averageProgress)}%</div>
-                      <div className="text-xs text-devcode-gray">Tərəqqi</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-devcode-dark">{Math.round(student.averageGrade)}</div>
-                      <div className="text-xs text-devcode-gray">Bal</div>
-                    </div>
-                  </div>
-
-                  {/* Student Courses */}
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-devcode-dark">Kurslar:</h4>
-                    <div className="space-y-1">
-                      {student.courses.slice(0, 2).map((course: any) => (
-                        <div key={course.id} className="flex items-center justify-between text-sm">
-                          <span className="text-devcode-gray truncate">{course.title}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {course.progress}%
-                          </Badge>
+        {/* Students Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Users className="w-5 h-5 mr-2" />
+              Tələbələr Siyahısı
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {filteredStudents.length === 0 ? (
+              <div className="text-center py-16">
+                <Users className="w-16 h-16 mx-auto mb-4 text-devcode-gray opacity-50" />
+                <h3 className="text-lg font-semibold text-devcode-dark mb-2">
+                  {searchTerm ? "Axtarış nəticəsi tapılmadı" : "Hələ tələbəniz yoxdur"}
+                </h3>
+                <p className="text-devcode-gray">
+                  {searchTerm 
+                    ? "Axtarış şərtlərini dəyişdirərək yenidən cəhd edin."
+                    : "Tələbələr kurslarınıza qeydiyyatdan keçdikdən sonra burada görünəcəklər."
+                  }
+                </p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Tələbə</TableHead>
+                    <TableHead>Kurslar</TableHead>
+                    <TableHead>Orta Tərəqqi</TableHead>
+                    <TableHead>Orta Bal</TableHead>
+                    <TableHead>Əməliyyatlar</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStudents.map((student: any) => (
+                    <TableRow key={student.id}>
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-devcode-orange rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            {student.firstName?.charAt(0)}{student.lastName?.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="font-medium">{student.firstName} {student.lastName}</div>
+                            <div className="text-sm text-devcode-gray">{student.email}</div>
+                          </div>
                         </div>
-                      ))}
-                      {student.courses.length > 2 && (
-                        <div className="text-xs text-devcode-gray">
-                          +{student.courses.length - 2} əlavə kurs
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          {student.courses.slice(0, 2).map((course: any) => (
+                            <div key={course.id} className="flex items-center justify-between">
+                              <span className="text-sm text-devcode-gray truncate max-w-xs">
+                                {course.title}
+                              </span>
+                              <Badge variant="outline" className="text-xs ml-2">
+                                {course.progress}%
+                              </Badge>
+                            </div>
+                          ))}
+                          {student.courses.length > 2 && (
+                            <div className="text-xs text-devcode-gray">
+                              +{student.courses.length - 2} əlavə kurs
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  <Link href={`/teacher/students/${student.id}`}>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full text-devcode-orange border-devcode-orange hover:bg-orange-50"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Ətraflı Bax
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <div className="text-lg font-bold text-devcode-dark">
+                            {Math.round(student.averageProgress)}%
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-lg font-bold text-devcode-dark">
+                          {Math.round(student.averageGrade)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <Link href={`/teacher/students/${student.id}`}>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-devcode-orange border-devcode-orange hover:bg-orange-50"
+                            >
+                              <User className="w-4 h-4 mr-1" />
+                              Ətraflı
+                            </Button>
+                          </Link>
+                          {student.courses.map((course: any) => (
+                            <Button
+                              key={course.enrollmentId}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRemoveStudent(course.enrollmentId, `${student.firstName} ${student.lastName}`)}
+                              className="text-red-600 border-red-600 hover:bg-red-50"
+                              disabled={removeStudentMutation.isPending}
+                              title={`${course.title} kursundan çıxar`}
+                            >
+                              <UserMinus className="w-4 h-4" />
+                            </Button>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
