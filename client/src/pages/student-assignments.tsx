@@ -351,6 +351,7 @@ export default function StudentAssignments() {
                   </CardContent>
                 </Card>
               ))
+            )}
           </div>
         </div>
       </div>
