@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { lazy } from "react";
 
 // Public pages
 import Landing from "@/pages/landing";
@@ -50,7 +51,7 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/verify" component={VerifyCertificate} />
       <Route path="/contact" component={Contact} />
-      
+
       {/* Role-based dashboards - only for authenticated users */}
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
@@ -59,9 +60,12 @@ function Router() {
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students" component={TeacherStudents} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students/:studentId" component={TeacherStudentDetail} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
-      {isAuthenticated && user?.role === 'student' && <Route path="/student/courses" component={StudentCourses} />}
-      {isAuthenticated && user?.role === 'student' && <Route path="/student/course/:id" component={StudentCourse} />}
-      
+      <Route path="/student/courses" component={StudentCourses} />
+      <Route path="/student/course/:id" component={StudentCourse} />
+      <Route path="/student/attendance" component={lazy(() => import("./pages/student-attendance"))} />
+      <Route path="/student/grades" component={lazy(() => import("./pages/student-grades"))} />
+      <Route path="/student/profile" component={lazy(() => import("./pages/student-profile"))} />
+
       <Route component={NotFound} />
     </Switch>
   );
