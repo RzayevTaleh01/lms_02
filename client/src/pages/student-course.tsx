@@ -1,4 +1,4 @@
-import { useParams } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
@@ -23,15 +23,110 @@ import {
   PlayCircle,
   ChevronRight,
   Award,
-  Link2
+  Link2,
+  Menu,
+  Home,
+  GraduationCap,
+  ClipboardList,
+  User,
+  LogOut
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+
+const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const [location] = useLocation();
+  const { user, logout } = useAuth();
+
+  const menuItems = [
+    { icon: Home, label: "Ana Səhifə", href: "/student", exact: true },
+    { icon: GraduationCap, label: "Kurslarım", href: "/student/courses" },
+    { icon: ClipboardList, label: "Davamiyyət", href: "/student/attendance" },
+    { icon: Award, label: "Qiymətlərim", href: "/student/grades" },
+    { icon: User, label: "Profil", href: "/student/profile" },
+  ];
+
+  return (
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={cn(
+        "fixed left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50",
+        isOpen ? "translate-x-0" : "-translate-x-full",
+        "lg:translate-x-0 lg:relative lg:z-0"
+      )}>
+        {/* Header */}
+        <div className="p-6 border-b">
+          <h2 className="text-xl font-bold text-gray-900">DevCode Academy</h2>
+          <p className="text-sm text-gray-600">Tələbə Paneli</p>
+        </div>
+
+        {/* User Info */}
+        <div className="p-4 border-b bg-gray-50">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">{user?.firstName} {user?.lastName}</p>
+              <p className="text-xs text-gray-600">{user?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="p-4 space-y-2">
+          {menuItems.map((item) => {
+            const isActive = item.exact 
+              ? location === item.href 
+              : location.startsWith(item.href);
+            
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
+                  isActive 
+                    ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
+                    : "text-gray-700 hover:bg-gray-50"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Logout */}
+        <div className="absolute bottom-4 left-4 right-4">
+          <button
+            onClick={logout}
+            className="flex items-center space-x-3 px-3 py-2 w-full text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Çıxış</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default function StudentCourse() {
   const { id } = useParams();
   const { user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [submissionForm, setSubmissionForm] = useState({
@@ -148,13 +243,36 @@ export default function StudentCourse() {
   }
 
   return (
-    <div className="h-screen flex">
-      {/* Left Sidebar - Course Content */}
-      <div className="w-80 border-r bg-background">
-        <div className="p-4 border-b">
-          <h1 className="text-lg font-semibold">{course.title}</h1>
-          <p className="text-sm text-muted-foreground">{course.description}</p>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Main Sidebar */}
+      <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Main Content */}
+      <div className="flex-1 lg:ml-0 flex">
+        {/* Top Navigation */}
+        <div className="absolute top-0 left-0 right-0 bg-white shadow-sm border-b z-30 lg:left-64">
+          <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">{course.title}</h1>
+                <p className="text-gray-600">Kurs Məzmunu</p>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Course Content Sidebar */}
+        <div className="w-80 border-r bg-background mt-16">
+          <div className="p-4 border-b">
+            <h2 className="text-lg font-semibold">Dərslər</h2>
+            <p className="text-sm text-muted-foreground">Kursun məzmunu</p>
+          </div>
         
         <ScrollArea className="h-[calc(100vh-80px)]">
           <div className="p-4 space-y-2">
@@ -197,7 +315,7 @@ export default function StudentCourse() {
             )}
           </div>
         </ScrollArea>
-      </div>
+        </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
@@ -455,6 +573,7 @@ export default function StudentCourse() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
