@@ -34,7 +34,8 @@ import {
   Upload,
   BarChart3,
   UserCheck,
-  UserX
+  UserX,
+  RotateCcw
 } from "lucide-react";
 
 export default function CourseManagement() {
@@ -119,7 +120,7 @@ export default function CourseManagement() {
     queryKey: [`/api/courses/${id}/all-attendance`],
     queryFn: async () => {
       const attendanceMap: { [sessionId: number]: any[] } = {};
-      
+
       for (const session of lessonSessions) {
         try {
           const response = await fetch(`/api/sessions/${session.id}/attendance`, {
@@ -134,7 +135,7 @@ export default function CourseManagement() {
           attendanceMap[session.id] = [];
         }
       }
-      
+
       return attendanceMap;
     },
     enabled: lessonSessions.length > 0,
@@ -605,7 +606,7 @@ export default function CourseManagement() {
                   <TableBody>
                     {students.map((student: any) => {
                       let attendanceCount = 0;
-                      
+
                       // Count attendance for this student across all sessions
                       lessonSessions.forEach((session: any) => {
                         const sessionAttendance = allSessionsAttendance[session.id] || [];
@@ -616,7 +617,7 @@ export default function CourseManagement() {
                           attendanceCount++;
                         }
                       });
-                      
+
                       const attendancePercentage = lessonSessions.length > 0 ? 
                         Math.round((attendanceCount / lessonSessions.length) * 100) : 0;
 
@@ -683,15 +684,15 @@ export default function CourseManagement() {
                   <div className="text-2xl font-bold">
                     {(() => {
                       if (!students?.length || !lessonSessions?.length) return "0%";
-                      
+
                       let totalPresentCount = 0;
                       const totalPossibleAttendance = students.length * lessonSessions.length;
-                      
+
                       lessonSessions.forEach((session: any) => {
                         const sessionAttendance = allSessionsAttendance[session.id] || [];
                         totalPresentCount += sessionAttendance.filter((record: any) => record.status === "present").length;
                       });
-                      
+
                       return Math.round((totalPresentCount / totalPossibleAttendance) * 100) + "%";
                     })()}
                   </div>
@@ -851,7 +852,8 @@ export default function CourseManagement() {
                     </div>
                     <Button
                         onClick={handleCreateMaterial}
-                        disabled={createMaterialMutation.isPending || !materialForm.title}
+                        ```text
+disabled={createMaterialMutation.isPending || !materialForm.title}
                         className="bg-devcode-orange hover:bg-orange-600"
                     >
                         {createMaterialMutation.isPending ? "Əlavə edilir..." : "Material Əlavə Et"}

@@ -1,9 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Calendar, Clock, FileText, Award, CheckCircle, AlertCircle, Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar, Clock, FileText, Award, CheckCircle, AlertCircle, Menu, RotateCcw } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -26,25 +32,92 @@ const getStatusBadge = (submission: any) => {
   if (submission.grade !== null) {
     return <Badge variant="default">Qiymətləndirildi</Badge>;
   }
+  if (submission.feedback && submission.grade === null) {
+    return <Badge variant="destructive">Düzəliş Tələb Olunur</Badge>;
+  }
   return <Badge variant="outline">Gözləyir</Badge>;
 };
 
 export default function StudentAssignments() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Resubmit state
+  const [resubmitDialog, setResubmitDialog] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
+  const [resubmitForm, setResubmitForm] = useState({
+    content: "",
+    githubUrl: "",
+    fileUrl: ""
+  });
 
   const { data: submissions = [], isLoading } = useQuery({
     queryKey: ["/api/submissions"],
     enabled: !!user
   });
 
+  // Resubmit mutation
+  const resubmitMutation = useMutation({
+    mutationFn: async (data: { submissionId: number; content: string; githubUrl?: string; fileUrl?: string }) => {
+      const response = await fetch(`/api/submissions/${data.submissionId}/resubmit`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: data.content,
+          githubUrl: data.githubUrl,
+          fileUrl: data.fileUrl
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to resubmit');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
+      setResubmitDialog(false);
+      setSelectedSubmission(null);
+      setResubmitForm({ content: "", githubUrl: "", fileUrl: "" });
+      toast({ title: "Tapşırıq yenidən göndərildi" });
+    },
+    onError: () => {
+      toast({ 
+        title: "Xəta", 
+        description: "Tapşırıq göndərilərkən xəta baş verdi",
+        variant: "destructive" 
+      });
+    },
+  });
+
   // Get assignment statistics
   const totalAssignments = submissions.length;
   const gradedAssignments = submissions.filter((s: any) => s.grade !== null);
   const pendingAssignments = submissions.filter((s: any) => s.grade === null);
+  const needsRevision = submissions.filter((s: any) => s.feedback && s.grade === null);
   const averageGrade = gradedAssignments.length > 0 
     ? gradedAssignments.reduce((sum: number, s: any) => sum + s.grade, 0) / gradedAssignments.length 
     : 0;
+
+  const handleResubmit = (submission: any) => {
+    setSelectedSubmission(submission);
+    setResubmitForm({
+      content: submission.content || "",
+      githubUrl: submission.githubUrl || "",
+      fileUrl: submission.fileUrl || ""
+    });
+    setResubmitDialog(true);
+  };
+
+  const submitResubmission = () => {
+    if (selectedSubmission && resubmitForm.content.trim()) {
+      resubmitMutation.mutate({
+        submissionId: selectedSubmission.id,
+        content: resubmitForm.content,
+        githubUrl: resubmitForm.githubUrl,
+        fileUrl: resubmitForm.fileUrl
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -84,7 +157,7 @@ export default function StudentAssignments() {
 
         <div className="p-6">
           {/* Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Ümumi Tapşırıq</CardTitle>
@@ -120,10 +193,25 @@ export default function StudentAssignments() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-yellow-600">
-                  {pendingAssignments.length}
+                  {pendingAssignments.length - needsRevision.length}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Qiymətləndirmə gözləyir
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Düzəliş Tələb</CardTitle>
+                <RotateCcw className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {needsRevision.length}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Düzəliş edilməlidir
                 </p>
               </CardContent>
             </Card>
@@ -235,6 +323,19 @@ export default function StudentAssignments() {
                             Qiymətləndirmə tarixi: {new Date(submission.gradedAt).toLocaleString('az-AZ')}
                           </div>
                         )}
+
+                        {/* Resubmit button for tasks that need revision */}
+                        {submission.feedback && submission.grade === null && (
+                          <div className="mt-3">
+                            <Button 
+                              onClick={() => handleResubmit(submission)}
+                              className="bg-orange-500 hover:bg-orange-600"
+                            >
+                              <RotateCcw className="w-4 h-4 mr-2" />
+                              Düzəliş Et və Yenidən Göndər
+                            </Button>
+                          </div>
+                        )}
                       </div>
 
                       <div className="ml-6">
@@ -268,6 +369,68 @@ export default function StudentAssignments() {
           </div>
         </div>
       </div>
+
+      {/* Resubmit Dialog */}
+      <Dialog open={resubmitDialog} onOpenChange={setResubmitDialog}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Tapşırığı Düzəliş Et</DialogTitle>
+          </DialogHeader>
+          {selectedSubmission && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium">{selectedSubmission.assignment?.title}</h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  Müəllim rəyi: {selectedSubmission.feedback}
+                </p>
+              </div>
+              
+              <div>
+                <Label htmlFor="resubmit-content">Yeni Cavab</Label>
+                <Textarea
+                  id="resubmit-content"
+                  value={resubmitForm.content}
+                  onChange={(e) => setResubmitForm({...resubmitForm, content: e.target.value})}
+                  placeholder="Düzəliş edilmiş cavabınızı yazın..."
+                  rows={4}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="resubmit-github">GitHub Linki (İstəyə bağlı)</Label>
+                <Input
+                  id="resubmit-github"
+                  value={resubmitForm.githubUrl}
+                  onChange={(e) => setResubmitForm({...resubmitForm, githubUrl: e.target.value})}
+                  placeholder="https://github.com/..."
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="resubmit-file">Fayl Linki (İstəyə bağlı)</Label>
+                <Input
+                  id="resubmit-file"
+                  value={resubmitForm.fileUrl}
+                  onChange={(e) => setResubmitForm({...resubmitForm, fileUrl: e.target.value})}
+                  placeholder="Fayl linki..."
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setResubmitDialog(false)}>
+                  Ləğv Et
+                </Button>
+                <Button 
+                  onClick={submitResubmission}
+                  disabled={!resubmitForm.content.trim() || resubmitMutation.isPending}
+                >
+                  {resubmitMutation.isPending ? 'Göndərilir...' : 'Yenidən Göndər'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

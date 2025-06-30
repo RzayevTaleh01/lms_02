@@ -935,6 +935,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Allow student to resubmit after revision
+  app.patch('/api/submissions/:id/resubmit', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const submissionId = parseInt(req.params.id);
+      const { content, githubUrl, fileUrl } = req.body;
+
+      await storage.resubmitAssignment(submissionId, content, githubUrl, fileUrl, req.user!.id);
+      res.json({ message: "Assignment resubmitted successfully" });
+    } catch (error) {
+      console.error("Error resubmitting assignment:", error);
+      res.status(500).json({ message: "Failed to resubmit assignment" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

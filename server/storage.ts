@@ -149,6 +149,8 @@ export interface IStorage {
   getAllActiveSessions(): Promise<(LessonSession & { courseName: string })[]>;
 
   getTeacherSessionHistory(teacherId: string): Promise<(LessonSession & { courseName: string; attendanceCount?: number })[]>;
+
+  resubmitAssignment(submissionId: number, content: string, githubUrl?: string, fileUrl?: string, studentId?: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -870,14 +872,29 @@ export class DatabaseStorage implements IStorage {
     await db.delete(lessonAssignments).where(eq(lessonAssignments.id, assignmentId));
   }
 
-  async returnSubmissionForRevision(submissionId: number, feedback: string, teacherId: string): Promise<void> {
+  async returnSubmissionForRevision(submissionId: number, feedback: string, teacherId: string) {
     await db
       .update(submissions)
       .set({
         feedback,
         gradedBy: teacherId,
         gradedAt: new Date(),
-        grade: null, // Remove grade so student can resubmit
+        grade: null // Clear any existing grade
+      })
+      .where(eq(submissions.id, submissionId));
+  }
+
+  async resubmitAssignment(submissionId: number, content: string, githubUrl?: string, fileUrl?: string, studentId?: string) {
+    await db
+      .update(submissions)
+      .set({
+        content,
+        githubUrl,
+        fileUrl,
+        submittedAt: new Date(),
+        grade: null,
+        gradedAt: null,
+        gradedBy: null
       })
       .where(eq(submissions.id, submissionId));
   }
@@ -888,7 +905,7 @@ export const storage = new DatabaseStorage();
 export async function createDefaultUsers() {
   try {
     // Check if default users already exist
-    const existingAdmin = await storage.getUserByEmail('admin@devcode.az');
+    const existingAdmin = awaitstorage.getUserByEmail('admin@devcode.az');
     const existingTeacher = await storage.getUserByEmail('teacher@devcode.az');
     const existingStudent = await storage.getUserByEmail('student@devcode.az');
 
@@ -935,5 +952,3 @@ export async function createDefaultUsers() {
     console.error('Error creating default users:', error);
   }
 }
-
-

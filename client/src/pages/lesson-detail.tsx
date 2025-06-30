@@ -1,548 +1,524 @@
+
 import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { apiRequest } from "@/lib/queryClient";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
-  ArrowLeft, 
   Play, 
   FileText, 
-  Download, 
-  ExternalLink,
-  Calendar,
-  CheckCircle,
-  Upload,
-  Clock,
+  Link as LinkIcon, 
+  Calendar, 
+  Award, 
+  Download,
   Edit,
   Trash2,
-  Link as LinkIcon,
+  Plus,
   Video,
-  FileIcon,
-  AlertCircle
+  File,
+  ExternalLink
 } from "lucide-react";
-
-interface Material {
-  id: number;
-  lessonId: number;
-  title: string;
-  content: string;
-  videoUrl?: string;
-  materialType: 'video' | 'document' | 'link';
-  orderIndex: number;
-  isActive: boolean;
-  createdAt: string;
-}
-
-interface Assignment {
-  id: number;
-  lessonId: number;
-  courseId: number;
-  title: string;
-  description: string;
-  dueDate?: string;
-  maxPoints: number;
-  isActive: boolean;
-  createdAt: string;
-}
-
-interface Lesson {
-  id: number;
-  courseId: number;
-  title: string;
-  description: string;
-  content: string;
-  videoUrl?: string;
-  duration: number;
-  orderIndex: number;
-  isActive: boolean;
-  createdAt: string;
-}
-
-interface Submission {
-  id: number;
-  assignmentId: number;
-  studentId: string;
-  content: string;
-  fileUrl?: string;
-  grade?: number;
-  feedback?: string;
-  status: 'submitted' | 'graded' | 'returned';
-  submittedAt: string;
-  gradedAt?: string;
-  student: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-}
+import { cn } from "@/lib/utils";
 
 export default function LessonDetail() {
-  const { courseId, lessonId } = useParams();
-  const [, setLocation] = useLocation();
+  const { id } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [feedback, setFeedback] = useState("");
-  const [selectedSubmission, setSelectedSubmission] = useState<number | null>(null);
+  const [, setLocation] = useLocation();
 
-  // Fetch lesson details
-  const { data: lesson, isLoading: lessonLoading } = useQuery<Lesson>({
-    queryKey: [`/api/lessons/${lessonId}`],
-    enabled: !!lessonId,
+  // State for material management
+  const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState<any>(null);
+  const [materialForm, setMaterialForm] = useState({
+    title: "",
+    content: "",
+    videoUrl: "",
+    materialType: "video"
   });
 
-  // Fetch lesson materials
-  const { data: materials = [] } = useQuery<Material[]>({
-    queryKey: [`/api/lessons/${lessonId}/materials`],
-    enabled: !!lessonId,
+  // State for assignment management
+  const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
+  const [editingAssignment, setEditingAssignment] = useState<any>(null);
+  const [assignmentForm, setAssignmentForm] = useState({
+    title: "",
+    description: "",
+    dueDate: "",
+    maxPoints: 100
   });
 
-  // Fetch lesson assignments
-  const { data: assignments = [] } = useQuery<Assignment[]>({
-    queryKey: [`/api/lessons/${lessonId}/assignments`],
-    enabled: !!lessonId,
+  // Fetch lesson data
+  const { data: lesson } = useQuery({
+    queryKey: [`/api/lessons/${id}`],
+    enabled: !!id,
   });
 
-  // Fetch submissions (for teachers)
-  const { data: submissions = [] } = useQuery<Submission[]>({
-    queryKey: [`/api/assignments/${assignments[0]?.id}/submissions`],
-    enabled: !!assignments[0]?.id && user?.role === 'teacher',
+  // Fetch materials
+  const { data: materials = [] } = useQuery({
+    queryKey: [`/api/lessons/${id}/materials`],
+    enabled: !!id,
   });
 
-  // Delete material mutation
+  // Fetch assignments
+  const { data: assignments = [] } = useQuery({
+    queryKey: [`/api/lessons/${id}/assignments`],
+    enabled: !!id,
+  });
+
+  // Material mutations
+  const createMaterialMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/lessons/${id}/materials`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create material');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${id}/materials`] });
+      setIsMaterialDialogOpen(false);
+      resetMaterialForm();
+      toast({ title: "Material uğurla əlavə edildi" });
+    },
+  });
+
   const deleteMaterialMutation = useMutation({
-    mutationFn: (materialId: number) => 
-      apiRequest(`/api/lessons/materials/${materialId}`, "DELETE"),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${lessonId}/materials`] });
-      toast({
-        title: "Material silindi",
-        description: "Material uğurla silindi",
+    mutationFn: async (materialId: number) => {
+      const response = await fetch(`/api/lessons/materials/${materialId}`, {
+        method: 'DELETE',
       });
+      if (!response.ok) throw new Error('Failed to delete material');
     },
-    onError: () => {
-      toast({
-        title: "Xəta",
-        description: "Material silinərkən xəta baş verdi",
-        variant: "destructive",
-      });
-    }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${id}/materials`] });
+      toast({ title: "Material uğurla silindi" });
+    },
   });
 
-  // Delete assignment mutation
+  // Assignment mutations
+  const createAssignmentMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/lessons/${id}/assignments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create assignment');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${id}/assignments`] });
+      setIsAssignmentDialogOpen(false);
+      resetAssignmentForm();
+      toast({ title: "Tapşırıq uğurla əlavə edildi" });
+    },
+  });
+
   const deleteAssignmentMutation = useMutation({
-    mutationFn: (assignmentId: number) => 
-      apiRequest(`/api/lessons/assignments/${assignmentId}`, "DELETE"),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${lessonId}/assignments`] });
-      toast({
-        title: "Tapşırıq silindi",
-        description: "Tapşırıq uğurla silindi",
+    mutationFn: async (assignmentId: number) => {
+      const response = await fetch(`/api/lessons/assignments/${assignmentId}`, {
+        method: 'DELETE',
       });
+      if (!response.ok) throw new Error('Failed to delete assignment');
     },
-    onError: () => {
-      toast({
-        title: "Xəta",
-        description: "Tapşırıq silinərkən xəta baş verdi",
-        variant: "destructive",
-      });
-    }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${id}/assignments`] });
+      toast({ title: "Tapşırıq uğurla silindi" });
+    },
   });
 
-  // Return task for revision mutation
-  const returnTaskMutation = useMutation({
-    mutationFn: ({ submissionId, feedback }: { submissionId: number; feedback: string }) => 
-      apiRequest(`/api/submissions/${submissionId}/return`, "PATCH", { feedback }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/assignments/${assignments[0]?.id}/submissions`] });
-      toast({
-        title: "Tapşırıq geri qaytarıldı",
-        description: "Tələbə tapşırığı düzəldə bilər",
-      });
-      setFeedback("");
-      setSelectedSubmission(null);
-    },
-    onError: () => {
-      toast({
-        title: "Xəta",
-        description: "Tapşırıq qaytarılarkən xəta baş verdi",
-        variant: "destructive",
-      });
-    }
-  });
+  const resetMaterialForm = () => {
+    setMaterialForm({
+      title: "",
+      content: "",
+      videoUrl: "",
+      materialType: "video"
+    });
+    setEditingMaterial(null);
+  };
 
-  if (lessonLoading) {
-    return <div className="flex justify-center items-center h-64">Yüklənir...</div>;
-  }
+  const resetAssignmentForm = () => {
+    setAssignmentForm({
+      title: "",
+      description: "",
+      dueDate: "",
+      maxPoints: 100
+    });
+    setEditingAssignment(null);
+  };
+
+  const handleCreateMaterial = () => {
+    if (materialForm.title.trim()) {
+      createMaterialMutation.mutate(materialForm);
+    }
+  };
+
+  const handleCreateAssignment = () => {
+    if (assignmentForm.title.trim()) {
+      const data = {
+        ...assignmentForm,
+        dueDate: assignmentForm.dueDate ? new Date(assignmentForm.dueDate) : null,
+        maxPoints: parseInt(assignmentForm.maxPoints.toString())
+      };
+      createAssignmentMutation.mutate(data);
+    }
+  };
+
+  const getMaterialIcon = (material: any) => {
+    if (material.videoUrl) {
+      return <Video className="w-5 h-5 text-red-500" />;
+    } else if (material.content && material.content.includes('.pdf')) {
+      return <File className="w-5 h-5 text-red-600" />;
+    } else {
+      return <LinkIcon className="w-5 h-5 text-blue-500" />;
+    }
+  };
+
+  const handleMaterialClick = (material: any) => {
+    if (material.videoUrl) {
+      // Open video in new tab or embed
+      window.open(material.videoUrl, '_blank');
+    } else if (material.content) {
+      // If it's a link, open it
+      if (material.content.startsWith('http')) {
+        window.open(material.content, '_blank');
+      } else if (material.content.includes('.pdf')) {
+        // Open PDF
+        window.open(material.content, '_blank');
+      }
+    }
+  };
+
+  const isTeacher = user?.role === 'teacher' || user?.role === 'admin';
 
   if (!lesson) {
-    return <div className="text-center text-red-500">Dərs tapılmadı</div>;
+    return <div className="p-6">Dərs tapılmadı</div>;
   }
 
-  const getYouTubeEmbedUrl = (url: string) => {
-    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
-    return videoId ? `https://www.youtube.com/embed/${videoId[1]}` : null;
-  };
-
-  const getMaterialIcon = (materialType: string) => {
-    switch (materialType) {
-      case 'video':
-        return <Video className="h-5 w-5 text-blue-500" />;
-      case 'document':
-        return <FileIcon className="h-5 w-5 text-green-500" />;
-      case 'link':
-        return <LinkIcon className="h-5 w-5 text-purple-500" />;
-      default:
-        return <FileText className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
-  const openMaterial = (material: Material) => {
-    if (material.materialType === 'link' && material.videoUrl) {
-      window.open(material.videoUrl, '_blank');
-    } else if (material.materialType === 'document' && material.videoUrl) {
-      // For PDF documents, open in new tab for download
-      window.open(material.videoUrl, '_blank');
-    }
-  };
-
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            if (user?.role === 'teacher') {
-              setLocation(`/teacher/course/${courseId}`);
-            } else {
-              setLocation(`/student/course/${courseId}`);
-            }
-          }}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Geriyə
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{lesson.title}</h1>
-          <p className="text-gray-600 mt-1">{lesson.description}</p>
-        </div>
-      </div>
+    <div className="max-w-4xl mx-auto p-6">
+      {/* Back button */}
+      <Button 
+        variant="outline" 
+        onClick={() => setLocation(`/student/courses/${lesson.courseId}`)}
+        className="mb-6"
+      >
+        ← Kursa Qayıt
+      </Button>
 
-      {/* Video Section */}
-      {lesson.videoUrl && (
-        <Card className="mb-6">
-          <CardContent className="p-6">
+      {/* Lesson Header */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-2xl">{lesson.title}</CardTitle>
+          {lesson.description && (
+            <div 
+              className="text-gray-600 prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: lesson.description }}
+            />
+          )}
+        </CardHeader>
+        {lesson.videoUrl && (
+          <CardContent>
             <div className="aspect-video bg-black rounded-lg overflow-hidden">
-              {getYouTubeEmbedUrl(lesson.videoUrl) ? (
+              {lesson.videoUrl.includes('youtube.com') || lesson.videoUrl.includes('youtu.be') ? (
                 <iframe
-                  src={getYouTubeEmbedUrl(lesson.videoUrl)!}
-                  title={lesson.title}
+                  src={lesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
                   className="w-full h-full"
                   allowFullScreen
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-white">
-                  <div className="text-center">
-                    <Play className="h-16 w-16 mx-auto mb-4" />
-                    <p>Video mövcud deyil</p>
-                  </div>
+                <div className="w-full h-full flex items-center justify-center">
+                  <Button size="lg" className="rounded-full">
+                    <Play className="w-8 h-8 ml-1" />
+                  </Button>
                 </div>
               )}
             </div>
-            {lesson.duration && (
-              <div className="flex items-center gap-2 mt-4 text-sm text-gray-600">
-                <Clock className="h-4 w-4" />
-                <span>{lesson.duration} dəqiqə</span>
-              </div>
-            )}
           </CardContent>
-        </Card>
-      )}
+        )}
+      </Card>
 
-      {/* Lesson Content */}
-      {lesson.content && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Dərs Məzmunu</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div 
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: lesson.content }}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Materials and Assignments Tabs */}
+      {/* Content Tabs */}
       <Tabs defaultValue="materials" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
           <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
         </TabsList>
 
-        {/* Materials Tab */}
         <TabsContent value="materials" className="space-y-4">
-          {materials.length === 0 ? (
-            <Card>
-              <CardContent className="p-6 text-center text-gray-500">
-                Hələlik material yoxdur
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {materials.map((material) => (
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold">Dərs Materialları</h3>
+            {isTeacher && (
+              <Dialog open={isMaterialDialogOpen} onOpenChange={setIsMaterialDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-orange-500 hover:bg-orange-600">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Material Əlavə Et
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Yeni Material</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Başlıq</Label>
+                      <Input
+                        value={materialForm.title}
+                        onChange={(e) => setMaterialForm({...materialForm, title: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Tip</Label>
+                      <Select value={materialForm.materialType} onValueChange={(value) => setMaterialForm({...materialForm, materialType: value})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="video">Video</SelectItem>
+                          <SelectItem value="document">Sənəd</SelectItem>
+                          <SelectItem value="link">Link</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {materialForm.materialType === 'video' && (
+                      <div>
+                        <Label>Video URL</Label>
+                        <Input
+                          value={materialForm.videoUrl}
+                          onChange={(e) => setMaterialForm({...materialForm, videoUrl: e.target.value})}
+                          placeholder="https://youtube.com/..."
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <Label>Məzmun/Link</Label>
+                      <Textarea
+                        value={materialForm.content}
+                        onChange={(e) => setMaterialForm({...materialForm, content: e.target.value})}
+                        placeholder="Material təsviri və ya link"
+                      />
+                    </div>
+                    <Button onClick={handleCreateMaterial} className="w-full">
+                      Material Əlavə Et
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            {materials.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                Hələ material əlavə edilməyib
+              </div>
+            ) : (
+              materials.map((material: any) => (
                 <Card key={material.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
-                        {getMaterialIcon(material.materialType)}
+                      <div className="flex items-center space-x-3 flex-1">
+                        {getMaterialIcon(material)}
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{material.title}</h3>
+                          <h4 className="font-medium">{material.title}</h4>
                           {material.content && (
-                            <div 
-                              className="text-sm text-gray-600 mt-1"
-                              dangerouslySetInnerHTML={{ __html: material.content }}
-                            />
+                            <p className="text-sm text-gray-600 mt-1">{material.content}</p>
                           )}
                         </div>
-                        
-                        {/* Student Actions */}
-                        {user?.role === 'student' && (
-                          <div className="flex gap-2">
-                            {material.materialType === 'link' && material.videoUrl && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openMaterial(material)}
-                              >
-                                <ExternalLink className="h-4 w-4 mr-1" />
-                                Aç
-                              </Button>
-                            )}
-                            {material.materialType === 'document' && material.videoUrl && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openMaterial(material)}
-                              >
-                                <Download className="h-4 w-4 mr-1" />
-                                Yüklə
-                              </Button>
-                            )}
-                            {material.materialType === 'video' && material.videoUrl && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openMaterial(material)}
-                              >
-                                <Play className="h-4 w-4 mr-1" />
-                                İzlə
-                              </Button>
-                            )}
-                          </div>
-                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleMaterialClick(material)}
+                          className="ml-auto"
+                        >
+                          {material.videoUrl ? <Play className="w-4 h-4 mr-1" /> : <ExternalLink className="w-4 h-4 mr-1" />}
+                          {material.videoUrl ? 'İzlə' : 'Aç'}
+                        </Button>
                       </div>
-
-                      {/* Teacher Actions */}
-                      {user?.role === 'teacher' && (
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-4 w-4" />
+                      {isTeacher && (
+                        <div className="flex items-center space-x-2 ml-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingMaterial(material);
+                              setMaterialForm({
+                                title: material.title,
+                                content: material.content || '',
+                                videoUrl: material.videoUrl || '',
+                                materialType: material.materialType || 'video'
+                              });
+                              setIsMaterialDialogOpen(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4" />
                           </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Materialı sil</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Bu materialı silmək istədiyinizə əminsiniz? Bu əməliyyat geri alına bilməz.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Ləğv et</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => deleteMaterialMutation.mutate(material.id)}
-                                  className="bg-red-500 hover:bg-red-600"
-                                >
-                                  Sil
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm('Bu materialı silmək istədiyinizə əminsiniz?')) {
+                                deleteMaterialMutation.mutate(material.id);
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       )}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </TabsContent>
 
-        {/* Assignments Tab */}
         <TabsContent value="assignments" className="space-y-4">
-          {assignments.length === 0 ? (
-            <Card>
-              <CardContent className="p-6 text-center text-gray-500">
-                Hələlik tapşırıq yoxdur
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {assignments.map((assignment) => (
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold">Dərs Tapşırıqları</h3>
+            {isTeacher && (
+              <Dialog open={isAssignmentDialogOpen} onOpenChange={setIsAssignmentDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-orange-500 hover:bg-orange-600">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Tapşırıq Əlavə Et
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Yeni Tapşırıq</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Başlıq</Label>
+                      <Input
+                        value={assignmentForm.title}
+                        onChange={(e) => setAssignmentForm({...assignmentForm, title: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Təsvir</Label>
+                      <Textarea
+                        value={assignmentForm.description}
+                        onChange={(e) => setAssignmentForm({...assignmentForm, description: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Son Tarix</Label>
+                      <Input
+                        type="datetime-local"
+                        value={assignmentForm.dueDate}
+                        onChange={(e) => setAssignmentForm({...assignmentForm, dueDate: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Maksimum Bal</Label>
+                      <Input
+                        type="number"
+                        value={assignmentForm.maxPoints}
+                        onChange={(e) => setAssignmentForm({...assignmentForm, maxPoints: parseInt(e.target.value)})}
+                      />
+                    </div>
+                    <Button onClick={handleCreateAssignment} className="w-full">
+                      Tapşırıq Əlavə Et
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            {assignments.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                Hələ tapşırıq əlavə edilməyib
+              </div>
+            ) : (
+              assignments.map((assignment: any) => (
                 <Card key={assignment.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <CheckCircle className="h-5 w-5 text-blue-500" />
-                          <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
-                          <Badge variant="secondary">{assignment.maxPoints} bal</Badge>
-                        </div>
-                        
-                        {assignment.description && (
-                          <div 
-                            className="text-sm text-gray-600 mb-3"
-                            dangerouslySetInnerHTML={{ __html: assignment.description }}
-                          />
-                        )}
-                        
-                        {assignment.dueDate && (
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <Calendar className="h-4 w-4" />
-                            <span>Son tarix: {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}</span>
-                          </div>
-                        )}
-
-                        {/* Teacher: Show submissions */}
-                        {user?.role === 'teacher' && submissions.length > 0 && (
-                          <div className="mt-4 border-t pt-4">
-                            <h4 className="font-medium mb-2">Təqdim edilmiş işlər:</h4>
-                            <div className="space-y-2">
-                              {submissions.map((submission) => (
-                                <div key={submission.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                  <div>
-                                    <p className="font-medium">{submission.student.firstName} {submission.student.lastName}</p>
-                                    <p className="text-sm text-gray-600">
-                                      Təqdim edilib: {new Date(submission.submittedAt).toLocaleDateString('az-AZ')}
-                                    </p>
-                                    <Badge variant={
-                                      submission.status === 'graded' ? 'default' : 
-                                      submission.status === 'returned' ? 'destructive' : 'secondary'
-                                    }>
-                                      {submission.status === 'graded' ? 'Qiymətləndirilib' :
-                                       submission.status === 'returned' ? 'Geri qaytarılıb' : 'Təqdim edilib'}
-                                    </Badge>
-                                  </div>
-                                  
-                                  {submission.status === 'submitted' && (
-                                    <div className="flex gap-2">
-                                      <Dialog>
-                                        <DialogTrigger asChild>
-                                          <Button 
-                                            variant="outline" 
-                                            size="sm"
-                                            onClick={() => setSelectedSubmission(submission.id)}
-                                          >
-                                            <AlertCircle className="h-4 w-4 mr-1" />
-                                            Geri qaytар
-                                          </Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                          <DialogHeader>
-                                            <DialogTitle>Tapşırığı geri qaytар</DialogTitle>
-                                            <DialogDescription>
-                                              Tələbəyə düzəliş üçün rəy yazın
-                                            </DialogDescription>
-                                          </DialogHeader>
-                                          <div className="space-y-4">
-                                            <Textarea
-                                              placeholder="Düzəliş üçün rəy yazın..."
-                                              value={feedback}
-                                              onChange={(e) => setFeedback(e.target.value)}
-                                              rows={4}
-                                            />
-                                          </div>
-                                          <DialogFooter>
-                                            <Button
-                                              onClick={() => {
-                                                if (selectedSubmission && feedback.trim()) {
-                                                  returnTaskMutation.mutate({ 
-                                                    submissionId: selectedSubmission, 
-                                                    feedback: feedback.trim() 
-                                                  });
-                                                }
-                                              }}
-                                              disabled={!feedback.trim() || returnTaskMutation.isPending}
-                                            >
-                                              Geri qaytар
-                                            </Button>
-                                          </DialogFooter>
-                                        </DialogContent>
-                                      </Dialog>
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium">{assignment.title}</h4>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <div className="flex items-center">
+                              <Award className="w-4 h-4 mr-1" />
+                              {assignment.maxPoints} bal
                             </div>
+                            {assignment.dueDate && (
+                              <div className="flex items-center">
+                                <Calendar className="w-4 h-4 mr-1" />
+                                {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
+                              </div>
+                            )}
                           </div>
+                        </div>
+                        {assignment.description && (
+                          <p className="text-sm text-gray-600">{assignment.description}</p>
+                        )}
+                        {!isTeacher && (
+                          <Button 
+                            className="mt-3"
+                            onClick={() => setLocation(`/student/courses/${lesson.courseId}/assignments/${assignment.id}`)}
+                          >
+                            <FileText className="w-4 h-4 mr-2" />
+                            Cavabları Gör
+                          </Button>
                         )}
                       </div>
-
-                      {/* Teacher Actions */}
-                      {user?.role === 'teacher' && (
-                        <div className="flex gap-2 ml-4">
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-4 w-4" />
+                      {isTeacher && (
+                        <div className="flex items-center space-x-2 ml-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingAssignment(assignment);
+                              setAssignmentForm({
+                                title: assignment.title,
+                                description: assignment.description || '',
+                                dueDate: assignment.dueDate ? new Date(assignment.dueDate).toISOString().slice(0, 16) : '',
+                                maxPoints: assignment.maxPoints
+                              });
+                              setIsAssignmentDialogOpen(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4" />
                           </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Tapşırığı sil</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Bu tapşırığı silmək istədiyinizə əminsiniz? Bu əməliyyat geri alına bilməz.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Ləğv et</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => deleteAssignmentMutation.mutate(assignment.id)}
-                                  className="bg-red-500 hover:bg-red-600"
-                                >
-                                  Sil
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm('Bu tapşırığı silmək istədiyinizə əminsiniz?')) {
+                                deleteAssignmentMutation.mutate(assignment.id);
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       )}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
