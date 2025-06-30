@@ -189,7 +189,7 @@ export class DatabaseStorage implements IStorage {
   // Course operations
   async getAllCourses(): Promise<Course[]> {
     const coursesData = await db.select().from(courses).where(eq(courses.isActive, true)).orderBy(desc(courses.createdAt));
-    
+
     // Get actual enrollment counts for each course
     const coursesWithCounts = await Promise.all(
       coursesData.map(async (course) => {
@@ -197,14 +197,14 @@ export class DatabaseStorage implements IStorage {
           .select({ count: count() })
           .from(enrollments)
           .where(eq(enrollments.courseId, course.id));
-        
+
         return {
           ...course,
           enrollmentCount: enrollmentCount.count
         };
       })
     );
-    
+
     return coursesWithCounts;
   }
 
@@ -313,16 +313,35 @@ export class DatabaseStorage implements IStorage {
   // Submission operations
   async getSubmissionsByStudent(studentId: string): Promise<(Submission & { assignment: Assignment & { course: Course } })[]> {
     return await db
-      .select()
+      .select({
+        id: submissions.id,
+        assignmentId: submissions.assignmentId,
+        studentId: submissions.studentId,
+        content: submissions.content,
+        githubUrl: submissions.githubUrl,
+        submittedAt: submissions.submittedAt,
+        grade: submissions.grade,
+        feedback: submissions.feedback,
+        gradedAt: submissions.gradedAt,
+        gradedBy: submissions.gradedBy,
+        assignment: {
+          id: assignments.id,
+          title: assignments.title,
+          description: assignments.description,
+          maxPoints: assignments.maxPoints,
+          dueDate: assignments.dueDate,
+          courseId: assignments.courseId,
+          course: {
+            id: courses.id,
+            title: courses.title
+          }
+        }
+      })
       .from(submissions)
-      .innerJoin(assignments, eq(submissions.assignmentId, assignments.id))
-      .innerJoin(courses, eq(assignments.courseId, courses.id))
+      .leftJoin(assignments, eq(submissions.assignmentId, assignments.id))
+      .leftJoin(courses, eq(assignments.courseId, courses.id))
       .where(eq(submissions.studentId, studentId))
-      .orderBy(desc(submissions.submittedAt))
-      .then(rows => rows.map(row => ({ 
-        ...row.submissions, 
-        assignment: { ...row.assignments, course: row.courses }
-      })));
+      .orderBy(desc(submissions.submittedAt));
   }
 
   async getSubmissionsByAssignment(assignmentId: number): Promise<(Submission & { student: User })[]> {

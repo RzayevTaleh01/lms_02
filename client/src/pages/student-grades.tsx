@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Award, FileText, TrendingUp, Target, Home, GraduationCap, ClipboardList, User, LogOut, Menu } from "lucide-react";
+import { Award, FileText, TrendingUp, Target, Home, GraduationCap, ClipboardList, User, LogOut, Menu, Trophy } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -15,8 +15,9 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const menuItems = [
     { icon: Home, label: "Ana Səhifə", href: "/student", exact: true },
     { icon: GraduationCap, label: "Kurslarım", href: "/student/courses" },
-    { icon: ClipboardList, label: "Davamiyyət", href: "/student/attendance" },
-    { icon: Award, label: "Qiymətlərim", href: "/student/grades" },
+    { icon: ClipboardList, label: "Tapşırıqlarım", href: "/student/assignments" },
+    { icon: Award, label: "Davamiyyət", href: "/student/attendance" },
+    { icon: Trophy, label: "Qiymətlərim", href: "/student/grades" },
     { icon: User, label: "Profil", href: "/student/profile" },
   ];
 

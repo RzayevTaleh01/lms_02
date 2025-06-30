@@ -16,8 +16,9 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const menuItems = [
     { icon: Home, label: "Ana Səhifə", href: "/student", exact: true },
     { icon: GraduationCap, label: "Kurslarım", href: "/student/courses" },
-    { icon: ClipboardList, label: "Davamiyyət", href: "/student/attendance" },
-    { icon: Award, label: "Qiymətlərim", href: "/student/grades" },
+    { icon: ClipboardList, label: "Tapşırıqlarım", href: "/student/assignments" },
+    { icon: Award, label: "Davamiyyət", href: "/student/attendance" },
+    { icon: Trophy, label: "Qiymətlərim", href: "/student/grades" },
     { icon: User, label: "Profil", href: "/student/profile" },
   ];
 
