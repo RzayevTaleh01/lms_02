@@ -48,7 +48,7 @@ export default function CourseManagement() {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState("");
   const [isCreateLessonOpen, setIsCreateLessonOpen] = useState(false);
-  const [newLesson, setNewLesson] = useState({ title: "", description: "", duration: "" });
+  const [newLesson, setNewLesson] = useState({ title: "", description: "", duration: "", orderIndex: 1 });
   const [editingLesson, setEditingLesson] = useState<any>(null);
   const [attendanceData, setAttendanceData] = useState<{[key: string]: string}>({});
   const [attendanceSaved, setAttendanceSaved] = useState(false);
@@ -219,7 +219,7 @@ export default function CourseManagement() {
       toast({ title: "Dərs uğurla yaradıldı" });
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/lessons`] });
       setIsCreateLessonOpen(false);
-      setNewLesson({ title: "", description: "", duration: "" });
+      setNewLesson({ title: "", description: "", duration: "", orderIndex: 1 });
     },
   });
 
@@ -353,7 +353,11 @@ export default function CourseManagement() {
   };
 
   const handleCreateLesson = () => {
-    createLessonMutation.mutate(newLesson);
+    createLessonMutation.mutate({
+      ...newLesson,
+      duration: parseInt(newLesson.duration) || 0,
+      orderIndex: newLesson.orderIndex || 1
+    });
   };
 
     const handleEnrollStudent = () => {
