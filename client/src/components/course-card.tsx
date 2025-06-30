@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Users, Clock, DollarSign } from "lucide-react";
+import { Star, Users, Clock } from "lucide-react";
 
 interface CourseCardProps {
   course: {
@@ -67,10 +67,10 @@ export default function CourseCard({ course }: CourseCardProps) {
             </div>
           </div>
         )}
-        
+
         {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-        
+
         {/* Level Badge */}
         <div className="absolute top-4 left-4">
           <Badge className={`capitalize ${getLevelColor(course.level)}`}>
@@ -87,7 +87,7 @@ export default function CourseCard({ course }: CourseCardProps) {
               {course.category}
             </Badge>
           )}
-          
+
           {course.rating && (
             <div className="flex items-center text-yellow-500">
               <Star className="w-4 h-4 fill-current" />
@@ -117,7 +117,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                 <span>{course.duration}</span>
               </div>
             )}
-            
+
             {course.enrollmentCount !== undefined && (
               <div className="flex items-center">
                 <Users className="w-4 h-4 mr-1" />
@@ -129,13 +129,6 @@ export default function CourseCard({ course }: CourseCardProps) {
 
         {/* Price and CTA */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <DollarSign className="w-5 h-5 text-devcode-orange" />
-            <span className="text-2xl font-bold text-devcode-dark">
-              {course.price}
-            </span>
-          </div>
-          
           <Link href={`/course/${course.id}`}>
             <Button className="bg-devcode-orange hover:bg-orange-600 transition-colors">
               View Details

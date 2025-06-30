@@ -14,7 +14,6 @@ interface CourseForm {
   description: string;
   category: string;
   level: string;
-  price: string;
   duration: string;
 }
 
@@ -28,7 +27,6 @@ export default function CreateCourseDialog() {
     description: "",
     category: "",
     level: "",
-    price: "0.00",
     duration: "",
   });
 
@@ -39,7 +37,7 @@ export default function CreateCourseDialog() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(courseData),
+        body: JSON.stringify({ ...courseData, price: 0 }),
       });
 
       if (!response.ok) {
@@ -60,7 +58,6 @@ export default function CreateCourseDialog() {
         description: "",
         category: "",
         level: "",
-        price: "0.00",
         duration: "",
       });
       // Redirect to the new course management page
@@ -164,29 +161,14 @@ export default function CreateCourseDialog() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="price">Qiymət (AZN)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  value={form.price}
-                  onChange={(e) => updateForm("price", e.target.value)}
-                  placeholder="0"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="duration">Müddət</Label>
-                <Input
-                  id="duration"
-                  value={form.duration}
-                  onChange={(e) => updateForm("duration", e.target.value)}
-                  placeholder="Məsələn: 8 həftə, 40 saat"
-                />
-              </div>
+            <div>
+              <Label htmlFor="duration">Müddət</Label>
+              <Input
+                id="duration"
+                value={form.duration}
+                onChange={(e) => updateForm("duration", e.target.value)}
+                placeholder="Məsələn: 8 həftə, 40 saat"
+              />
             </div>
           </div>
 
