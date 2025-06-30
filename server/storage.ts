@@ -698,6 +698,106 @@ export class DatabaseStorage implements IStorage {
       ));
   }
 
+  // Lesson progress functions
+  async markLessonAsCompleted(lessonId: number, studentId: string, courseId: number): Promise<void> {
+    const existing = await db.select()
+      .from(lessonProgress)
+      .where(and(
+        eq(lessonProgress.lessonId, lessonId),
+        eq(lessonProgress.studentId, studentId)
+      ))
+      .limit(1);
+
+    if (existing.length > 0) {
+      await db.update(lessonProgress)
+        .set({
+          isCompleted: true,
+          completedAt: new Date(),
+          lastWatchedAt: new Date()
+        })
+        .where(eq(lessonProgress.id, existing[0].id));
+    } else {
+      await db.insert(lessonProgress).values({
+        lessonId,
+        studentId,
+        courseId,
+        isCompleted: true,
+        completedAt: new Date(),
+        lastWatchedAt: new Date()
+      });
+    }
+
+    // Update course progress
+    await this.updateCourseProgress(courseId, studentId);
+  }
+
+  async updateLessonWatchTime(lessonId: number, studentId: string, courseId: number, timeSpent: number): Promise<void> {
+    const existing = await db.select()
+      .from(lessonProgress)
+      .where(and(
+        eq(lessonProgress.lessonId, lessonId),
+        eq(lessonProgress.studentId, studentId)
+      ))
+      .limit(1);
+
+    if (existing.length > 0) {
+      await db.update(lessonProgress)
+        .set({
+          timeSpent: timeSpent,
+          lastWatchedAt: new Date()
+        })
+        .where(eq(lessonProgress.id, existing[0].id));
+    } else {
+      await db.insert(lessonProgress).values({
+        lessonId,
+        studentId,
+        courseId,
+        timeSpent,
+        lastWatchedAt: new Date()
+      });
+    }
+  }
+
+  async getLessonProgress(studentId: string, courseId: number): Promise<any[]> {
+    return await db.select()
+      .from(lessonProgress)
+      .where(and(
+        eq(lessonProgress.studentId, studentId),
+        eq(lessonProgress.courseId, courseId)
+      ));
+  }
+
+  async updateCourseProgress(courseId: number, studentId: string): Promise<void> {
+    // Get total lessons for this course
+    const totalLessons = await db.select({ count: count() })
+      .from(lessons)
+      .where(eq(lessons.courseId, courseId));
+
+    // Get completed lessons for this student
+    const completedLessons = await db.select({ count: count() })
+      .from(lessonProgress)
+      .where(and(
+        eq(lessonProgress.courseId, courseId),
+        eq(lessonProgress.studentId, studentId),
+        eq(lessonProgress.isCompleted, true)
+      ));
+
+    const total = totalLessons[0]?.count || 0;
+    const completed = completedLessons[0]?.count || 0;
+    const progressPercentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    // Update enrollment progress
+    await db.update(enrollments)
+      .set({
+        progress: progressPercentage,
+        completedAt: progressPercentage === 100 ? new Date() : null
+      })
+      .where(and(
+        eq(enrollments.courseId, courseId),
+        eq(enrollments.studentId, studentId)
+      ));
+  }
+
   async getAllActiveSessions(): Promise<(LessonSession & { courseName: string })[]> {
     const activeSessions = await db.select({
       id: lessonSessions.id,
@@ -807,3 +907,18 @@ export async function createDefaultUsers() {
     console.error('Error creating default users:', error);
   }
 }
+
+// Define lessonProgress table schema
+import { pgTable, integer, boolean, date, primaryKey, foreignKey } from "drizzle-orm/pg-core";
+import { users, courses, lessons } from "@shared/schema";
+
+export const lessonProgress = pgTable('lesson_progress', {
+  id: integer('id').primaryKey().notNull(),
+  lessonId: integer('lesson_id').notNull().references(() => lessons.id),
+  studentId: integer('student_id').notNull().references(() => users.id),
+  courseId: integer('course_id').notNull().references(() => courses.id),
+  isCompleted: boolean('is_completed').default(false),
+  completedAt: date('completed_at'),
+  timeSpent: integer('time_spent').default(0),
+  lastWatchedAt: date('last_watched_at')
+});

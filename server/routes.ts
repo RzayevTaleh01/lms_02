@@ -847,6 +847,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Lesson progress routes
+  app.post('/api/lessons/:lessonId/complete', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const { courseId } = req.body;
+
+      await storage.markLessonAsCompleted(lessonId, req.user!.id, courseId);
+      res.json({ message: 'Lesson marked as completed' });
+    } catch (error) {
+      console.error('Error marking lesson as completed:', error);
+      res.status(500).json({ message: 'Failed to mark lesson as completed' });
+    }
+  });
+
+  app.post('/api/lessons/:lessonId/watch-time', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const { courseId, timeSpent } = req.body;
+
+      await storage.updateLessonWatchTime(lessonId, req.user!.id, courseId, timeSpent);
+      res.json({ message: 'Watch time updated' });
+    } catch (error) {
+      console.error('Error updating watch time:', error);
+      res.status(500).json({ message: 'Failed to update watch time' });
+    }
+  });
+
+  app.get('/api/courses/:courseId/progress', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const courseId = parseInt(req.params.courseId);
+      const progress = await storage.getLessonProgress(req.user!.id, courseId);
+      res.json(progress);
+    } catch (error) {
+      console.error('Error fetching lesson progress:', error);
+      res.status(500).json({ message: 'Failed to fetch lesson progress' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

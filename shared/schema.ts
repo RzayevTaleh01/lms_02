@@ -169,6 +169,18 @@ export const attendance = pgTable("attendance", {
   markedBy: varchar("marked_by").notNull(), // teacher who marked attendance
 });
 
+// Lesson progress tracking
+export const lessonProgress = pgTable("lesson_progress", {
+  id: serial("id").primaryKey(),
+  lessonId: integer("lesson_id").notNull(),
+  studentId: varchar("student_id").notNull(),
+  courseId: integer("course_id").notNull(),
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  timeSpent: integer("time_spent").default(0), // in minutes
+  lastWatchedAt: timestamp("last_watched_at").defaultNow(),
+});
+
 // Lesson materials (video + description)
 export const lessonMaterials = pgTable("lesson_materials", {
   id: serial("id").primaryKey(),
@@ -320,6 +332,21 @@ export const lessonAssignmentsRelations = relations(lessonAssignments, ({ one, m
   submissions: many(submissions),
 }));
 
+export const lessonProgressRelations = relations(lessonProgress, ({ one }) => ({
+  lesson: one(lessons, {
+    fields: [lessonProgress.lessonId],
+    references: [lessons.id],
+  }),
+  student: one(users, {
+    fields: [lessonProgress.studentId],
+    references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [lessonProgress.courseId],
+    references: [courses.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
@@ -393,6 +420,12 @@ export const insertLessonAssignmentSchema = createInsertSchema(lessonAssignments
   createdAt: true,
 });
 
+export const insertLessonProgressSchema = createInsertSchema(lessonProgress).omit({
+  id: true,
+  completedAt: true,
+  lastWatchedAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -420,3 +453,5 @@ export type LessonMaterial = typeof lessonMaterials.$inferSelect;
 export type InsertLessonMaterial = z.infer<typeof insertLessonMaterialSchema>;
 export type LessonAssignment = typeof lessonAssignments.$inferSelect;
 export type InsertLessonAssignment = z.infer<typeof insertLessonAssignmentSchema>;
+export type LessonProgress = typeof lessonProgress.$inferSelect;
+export type InsertLessonProgress = z.infer<typeof insertLessonProgressSchema>;

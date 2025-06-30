@@ -167,6 +167,12 @@ export default function StudentCourse() {
     enabled: !!user
   });
 
+  // Fetch lesson progress
+  const { data: lessonProgress = [] } = useQuery({
+    queryKey: [`/api/courses/${id}/progress`],
+    enabled: !!id && !!user
+  });
+
   // Submit assignment mutation
   const submitAssignmentMutation = useMutation({
     mutationFn: async ({ assignmentId, content, githubUrl, fileUrl }: {
@@ -190,6 +196,20 @@ export default function StudentCourse() {
     onError: (error: any) => {
       const errorMessage = error?.message || "Tapşırıq göndərilərkən xəta baş verdi";
       toast({ title: errorMessage, variant: "destructive" });
+    }
+  });
+
+  // Mark lesson as completed mutation
+  const markLessonCompleteMutation = useMutation({
+    mutationFn: async (lessonId: number) => {
+      return apiRequest("POST", `/api/lessons/${lessonId}/complete`, {
+        courseId: parseInt(id!)
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/progress`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/enrollments"] });
+      toast({ title: "Dərs tamamlandı!" });
     }
   });
 
@@ -245,6 +265,18 @@ export default function StudentCourse() {
     }
   };
 
+  const isLessonCompleted = (lessonId: number) => {
+    return lessonProgress.some((progress: any) => 
+      progress.lessonId === lessonId && progress.isCompleted
+    );
+  };
+
+  const handleMarkLessonComplete = (lessonId: number) => {
+    if (!isLessonCompleted(lessonId)) {
+      markLessonCompleteMutation.mutate(lessonId);
+    }
+  };
+
   if (!course) {
     return (
       <div className="p-6">
@@ -296,36 +328,44 @@ export default function StudentCourse() {
                 <p className="text-sm text-muted-foreground">Hələ dərs əlavə edilməyib</p>
               </div>
             ) : (
-              lessons.map((lesson: any, index: number) => (
-                <Button
-                  key={lesson.id}
-                  variant={selectedLesson?.id === lesson.id ? "default" : "ghost"}
-                  className="w-full justify-start h-auto p-3"
-                  onClick={() => setSelectedLesson(lesson)}
-                >
-                  <div className="flex items-start space-x-3 w-full">
-                    <div className="flex-shrink-0 mt-0.5">
-                      {selectedLesson?.id === lesson.id ? (
-                        <PlayCircle className="w-4 h-4" />
-                      ) : (
-                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
-                          {index + 1}
+              lessons.map((lesson: any, index: number) => {
+                const completed = isLessonCompleted(lesson.id);
+                return (
+                  <Button
+                    key={lesson.id}
+                    variant={selectedLesson?.id === lesson.id ? "default" : "ghost"}
+                    className="w-full justify-start h-auto p-3"
+                    onClick={() => setSelectedLesson(lesson)}
+                  >
+                    <div className="flex items-start space-x-3 w-full">
+                      <div className="flex-shrink-0 mt-0.5">
+                        {completed ? (
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        ) : selectedLesson?.id === lesson.id ? (
+                          <PlayCircle className="w-4 h-4" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
+                            {index + 1}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className={cn("font-medium text-sm", completed && "line-through text-muted-foreground")}>
+                          {lesson.title}
                         </div>
-                      )}
+                        {lesson.duration && (
+                          <div className="flex items-center text-xs text-muted-foreground mt-1">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {lesson.duration} dəqiqə
+                            {completed && <span className="ml-2 text-green-600">✓</span>}
+                          </div>
+                        )}
+                      </div>
+                      <ChevronRight className="w-4 h-4 flex-shrink-0" />
                     </div>
-                    <div className="flex-1 text-left">
-                      <div className="font-medium text-sm">{lesson.title}</div>
-                      {lesson.duration && (
-                        <div className="flex items-center text-xs text-muted-foreground mt-1">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {lesson.duration} dəqiqə
-                        </div>
-                      )}
-                    </div>
-                    <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                  </div>
-                </Button>
-              ))
+                  </Button>
+                );
+              })
             )}
           </div>
         </ScrollArea>
@@ -354,6 +394,25 @@ export default function StudentCourse() {
                   {renderYouTubeVideo(selectedLesson.videoUrl)}
                 </div>
               )}
+
+              {/* Lesson Completion Button */}
+              <div className="mb-6">
+                {isLessonCompleted(selectedLesson.id) ? (
+                  <div className="flex items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                    <span className="text-green-800 font-medium">Bu dərs tamamlandı</span>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => handleMarkLessonComplete(selectedLesson.id)}
+                    disabled={markLessonCompleteMutation.isPending}
+                    className="w-full"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    {markLessonCompleteMutation.isPending ? "Tamamlanır..." : "Dərsi Tamamla"}
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Content Tabs */}
