@@ -45,7 +45,6 @@ export const courses = pgTable("courses", {
   description: text("description"),
   shortDescription: text("short_description"),
   level: varchar("level", { enum: ["beginner", "intermediate", "advanced"] }).notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   duration: varchar("duration", { length: 50 }), // e.g., "12 weeks"
   imageUrl: varchar("image_url"),
   instructorId: varchar("instructor_id").notNull(),
@@ -332,8 +331,6 @@ export const insertCourseSchema = createInsertSchema(courses).omit({
   updatedAt: true,
   enrollmentCount: true,
   rating: true,
-}).extend({
-  price: z.string().optional()
 });
 
 export const insertLessonSchema = createInsertSchema(lessons).omit({
