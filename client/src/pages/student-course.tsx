@@ -222,19 +222,28 @@ export default function StudentCourse() {
     if (!url) return null;
 
     let videoId = "";
+    
+    // Better YouTube URL parsing
     if (url.includes("youtu.be/")) {
-      videoId = url.split("youtu.be/")[1].split("?")[0];
+      const parts = url.split("youtu.be/")[1];
+      videoId = parts.split("?")[0].split("&")[0];
     } else if (url.includes("youtube.com/watch?v=")) {
-      videoId = url.split("v=")[1].split("&")[0];
+      const urlParams = new URL(url).searchParams;
+      videoId = urlParams.get("v") || "";
+    } else if (url.includes("youtube.com/embed/")) {
+      const parts = url.split("youtube.com/embed/")[1];
+      videoId = parts.split("?")[0].split("&")[0];
     }
 
     if (videoId) {
       return (
-        <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
           <iframe
-            className="absolute top-0 left-0 w-full h-full rounded-lg"
-            src={`https://www.youtube.com/embed/${videoId}`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            className="absolute top-0 left-0 w-full h-full"
+            src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
         </div>
@@ -242,10 +251,10 @@ export default function StudentCourse() {
     }
 
     return (
-      <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
+      <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
-          <Video className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">Video dəstəklənmir</p>
+          <Video className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+          <p className="text-sm text-gray-500 mb-2">Video dəstəklənmir</p>
           <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">
             Linki açın
           </a>
@@ -289,155 +298,159 @@ export default function StudentCourse() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50">
       {/* Main Sidebar */}
       <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main Content */}
-      <div className="flex-1 lg:ml-0 flex">
-        {/* Top Navigation */}
-        <div className="absolute top-0 left-0 right-0 bg-white shadow-sm border-b z-30 lg:left-64">
-          <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-              >
-                <Menu className="h-6 w-6" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">{course.title}</h1>
-                <p className="text-gray-600">Kurs Məzmunu</p>
+      {/* Main Content Container */}
+      <div className={cn("flex min-h-screen transition-all duration-300", sidebarOpen ? "lg:ml-64" : "lg:ml-64")}>
+        {/* Content Area */}
+        <div className="flex-1 flex flex-col">
+          {/* Top Navigation */}
+          <div className="bg-white shadow-sm border-b sticky top-0 z-20">
+            <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                >
+                  <Menu className="h-6 w-6" />
+                </button>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">{course?.title || "Kurs"}</h1>
+                  <p className="text-gray-600">Kurs Məzmunu</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Course Content Sidebar */}
-        <div className="w-80 border-r bg-background mt-16">
-          <div className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Dərslər</h2>
-            <p className="text-sm text-muted-foreground">Kursun məzmunu</p>
-          </div>
-
-        <ScrollArea className="h-[calc(100vh-80px)]">
-          <div className="p-4 space-y-2">
-            {lessons.length === 0 ? (
-              <div className="text-center py-8">
-                <BookOpen className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">Hələ dərs əlavə edilməyib</p>
+          {/* Main Content Layout */}
+          <div className="flex-1 flex">
+            {/* Course Content Sidebar */}
+            <div className="w-80 border-r bg-white hidden lg:block">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Dərslər</h2>
+                <p className="text-sm text-gray-500">Kursun məzmunu</p>
               </div>
-            ) : (
-              lessons.map((lesson: any, index: number) => {
-                const completed = isLessonCompleted(lesson.id);
-                return (
-                  <Button
-                    key={lesson.id}
-                    variant={selectedLesson?.id === lesson.id ? "default" : "ghost"}
-                    className="w-full justify-start h-auto p-3"
-                    onClick={() => setSelectedLesson(lesson)}
-                  >
-                    <div className="flex items-start space-x-3 w-full">
-                      <div className="flex-shrink-0 mt-0.5">
-                        {completed ? (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                        ) : selectedLesson?.id === lesson.id ? (
-                          <PlayCircle className="w-4 h-4" />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
-                            {index + 1}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 text-left">
-                        <div className={cn("font-medium text-sm", completed && "line-through text-muted-foreground")}>
-                          {lesson.title}
-                        </div>
-                        {lesson.duration && (
-                          <div className="flex items-center text-xs text-muted-foreground mt-1">
-                            <Clock className="w-3 h-3 mr-1" />
-                            {lesson.duration} dəqiqə
-                            {completed && <span className="ml-2 text-green-600">✓</span>}
-                          </div>
-                        )}
-                      </div>
-                      <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                    </div>
-                  </Button>
-                );
-              })
-            )}
-          </div>
-        </ScrollArea>
-        </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        {selectedLesson ? (
-          <>
-            {/* Video Section */}
-            <div className="p-6 border-b">
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold mb-2">{selectedLesson.title}</h2>
-                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                  {selectedLesson.duration && (
-                    <div className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {selectedLesson.duration} dəqiqə
+              <ScrollArea className="h-[calc(100vh-160px)]">
+                <div className="p-4 space-y-2">
+                  {lessons.length === 0 ? (
+                    <div className="text-center py-8">
+                      <BookOpen className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-500">Hələ dərs əlavə edilməyib</p>
                     </div>
+                  ) : (
+                    lessons.map((lesson: any, index: number) => {
+                      const completed = isLessonCompleted(lesson.id);
+                      return (
+                        <Button
+                          key={lesson.id}
+                          variant={selectedLesson?.id === lesson.id ? "default" : "ghost"}
+                          className="w-full justify-start h-auto p-3"
+                          onClick={() => setSelectedLesson(lesson)}
+                        >
+                          <div className="flex items-start space-x-3 w-full">
+                            <div className="flex-shrink-0 mt-0.5">
+                              {completed ? (
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                              ) : selectedLesson?.id === lesson.id ? (
+                                <PlayCircle className="w-4 h-4" />
+                              ) : (
+                                <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs">
+                                  {index + 1}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 text-left">
+                              <div className={cn("font-medium text-sm", completed && "line-through text-gray-500")}>
+                                {lesson.title}
+                              </div>
+                              {lesson.duration && (
+                                <div className="flex items-center text-xs text-gray-500 mt-1">
+                                  <Clock className="w-3 h-3 mr-1" />
+                                  {lesson.duration} dəqiqə
+                                  {completed && <span className="ml-2 text-green-600">✓</span>}
+                                </div>
+                              )}
+                            </div>
+                            <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                          </div>
+                        </Button>
+                      );
+                    })
                   )}
                 </div>
-              </div>
-
-              {selectedLesson.videoUrl && (
-                <div className="mb-6">
-                  {renderYouTubeVideo(selectedLesson.videoUrl)}
-                </div>
-              )}
-
-              {/* Lesson Completion Button */}
-              <div className="mb-6">
-                {isLessonCompleted(selectedLesson.id) ? (
-                  <div className="flex items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                    <span className="text-green-800 font-medium">Bu dərs tamamlandı</span>
-                  </div>
-                ) : (
-                  <Button
-                    onClick={() => handleMarkLessonComplete(selectedLesson.id)}
-                    disabled={markLessonCompleteMutation.isPending}
-                    className="w-full"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    {markLessonCompleteMutation.isPending ? "Tamamlanır..." : "Dərsi Tamamla"}
-                  </Button>
-                )}
-              </div>
+              </ScrollArea>
             </div>
 
-            {/* Content Tabs */}
-            <div className="flex-1 p-6">
-              <Tabs defaultValue="content" className="h-full">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="content">Məzmun</TabsTrigger>
-                  <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
-                  <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
-                </TabsList>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col">
+              {selectedLesson ? (
+                <>
+                  {/* Video Section */}
+                  <div className="p-6 border-b bg-white">
+                    <div className="mb-4">
+                      <h2 className="text-2xl font-bold mb-2">{selectedLesson.title}</h2>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        {selectedLesson.duration && (
+                          <div className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1" />
+                            {selectedLesson.duration} dəqiqə
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-                <TabsContent value="content" className="h-full">
-                  <ScrollArea className="h-[calc(100vh-300px)]">
-                    <div className="prose prose-sm max-w-none">
-                      {selectedLesson.content ? (
-                        <div dangerouslySetInnerHTML={{ __html: selectedLesson.content }} />
-                      ) : (
-                        <div className="text-center py-8">
-                          <FileText className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="text-muted-foreground">Bu dərsin məzmunu yoxdur</p>
+                    {selectedLesson.videoUrl && (
+                      <div className="mb-6">
+                        {renderYouTubeVideo(selectedLesson.videoUrl)}
+                      </div>
+                    )}
+
+                    {/* Lesson Completion Button */}
+                    <div className="mb-6">
+                      {isLessonCompleted(selectedLesson.id) ? (
+                        <div className="flex items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                          <span className="text-green-800 font-medium">Bu dərs tamamlandı</span>
                         </div>
+                      ) : (
+                        <Button
+                          onClick={() => handleMarkLessonComplete(selectedLesson.id)}
+                          disabled={markLessonCompleteMutation.isPending}
+                          className="w-full"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          {markLessonCompleteMutation.isPending ? "Tamamlanır..." : "Dərsi Tamamla"}
+                        </Button>
                       )}
                     </div>
-                  </ScrollArea>
-                </TabsContent>
+                  </div>
+
+            {/* Content Tabs */}
+                  <div className="flex-1 p-6 bg-gray-50">
+                    <Tabs defaultValue="content" className="h-full">
+                      <TabsList className="mb-4">
+                        <TabsTrigger value="content">Məzmun</TabsTrigger>
+                        <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
+                        <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="content" className="h-full">
+                        <ScrollArea className="h-[calc(100vh-300px)]">
+                          <div className="prose prose-sm max-w-none bg-white p-6 rounded-lg shadow-sm">
+                            {selectedLesson.content ? (
+                              <div dangerouslySetInnerHTML={{ __html: selectedLesson.content }} />
+                            ) : (
+                              <div className="text-center py-8">
+                                <FileText className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                                <p className="text-gray-500">Bu dərsin məzmunu yoxdur</p>
+                              </div>
+                            )}
+                          </div>
+                        </ScrollArea>
+                      </TabsContent>
 
                 <TabsContent value="materials" className="h-full">
                   <ScrollArea className="h-[calc(100vh-300px)]">
@@ -654,15 +667,17 @@ export default function StudentCourse() {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <BookOpen className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
-              <p className="text-muted-foreground">Soldan dərsi seçərək öyrənməyə başlayın</p>
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center">
+                    <BookOpen className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
+                    <p className="text-gray-500">Soldan dərsi seçərək öyrənməyə başlayın</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
       </div>
     </div>
   );

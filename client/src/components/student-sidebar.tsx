@@ -34,9 +34,9 @@ export const StudentSidebar = ({ isOpen, onClose }: StudentSidebarProps) => {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
-        isOpen ? "translate-x-0" : "-translate-x-full",
-        "lg:translate-x-0 lg:fixed lg:z-50"
+        "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col",
+        isOpen ? "translate-x-0 z-50" : "-translate-x-full z-50",
+        "lg:translate-x-0 lg:z-30"
       )}>
         {/* Header */}
         <div className="p-6 border-b">
