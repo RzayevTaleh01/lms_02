@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation, navigate } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,15 @@ export default function Navbar() {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const dashboardLink = getDashboardLink();
+      if (location === "/") {
+        navigate(dashboardLink, { replace: true });
+      }
+    }
+  }, [isAuthenticated, location]);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -77,6 +86,13 @@ export default function Navbar() {
                   </span>
                 </Link>
               ))}
+              {isAuthenticated && (  //Conditionally render dashboard link
+                <Link href={getDashboardLink()}>
+                  <span className="text-devcode-dark hover:text-devcode-orange cursor-pointer">
+                    Dashboard
+                  </span>
+                </Link>
+              )}
             </div>
 
             {/* Auth Section */}
@@ -225,6 +241,10 @@ export default function Navbar() {
           setIsLoginModalOpen(false);
           setIsSignupModalOpen(true);
         }}
+        onLoginSuccess={() => {
+          const dashboardLink = getDashboardLink();
+          navigate(dashboardLink, { replace: true });
+        }}
       />
 
       <SignupModal 
@@ -233,6 +253,10 @@ export default function Navbar() {
         onSwitchToLogin={() => {
           setIsSignupModalOpen(false);
           setIsLoginModalOpen(true);
+        }}
+        onSignupSuccess={() => {
+          const dashboardLink = getDashboardLink();
+          navigate(dashboardLink, { replace: true });
         }}
       />
     </>

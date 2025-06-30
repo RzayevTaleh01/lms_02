@@ -23,12 +23,12 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
   const loginMutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await apiRequest('POST', '/api/auth/login', data);
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Giriş uğursuz');
       }
-      
+
       return response.json();
     },
     onSuccess: (userData) => {
@@ -37,7 +37,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
         description: "Xoş gəlmisiniz!"
       });
       onOpenChange(false);
-      
+
       // Redirect to appropriate dashboard based on user role
       switch (userData.role) {
         case 'admin':
@@ -50,7 +50,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
           window.location.href = '/student';
           break;
         default:
-          window.location.reload();
+          window.location.href = '/';
       }
     },
     onError: (error: Error) => {
@@ -80,7 +80,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
           <DialogTitle className="text-2xl font-bold text-devcode-dark">Xoş gəlmisiniz</DialogTitle>
           <p className="text-devcode-gray">Öyrənmə səyahətinizə davam edin</p>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -93,7 +93,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
@@ -105,7 +105,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
               required
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -119,7 +119,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
               Forgot password?
             </Button>
           </div>
-          
+
           <Button 
             type="submit"
             className="w-full bg-devcode-orange hover:bg-orange-600"
@@ -128,7 +128,7 @@ export default function LoginModal({ open, onOpenChange, onSwitchToSignup }: Log
             {loginMutation.isPending ? "Giriş edilir..." : "Daxil ol"}
           </Button>
         </form>
-        
+
         <div className="text-center text-sm">
           <span className="text-devcode-gray">Hesabınız yoxdur? </span>
           <Button 

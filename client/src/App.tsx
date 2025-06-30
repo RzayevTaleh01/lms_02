@@ -45,7 +45,12 @@ function Router() {
   return (
     <Switch>
       <Route path="/">
-        {isAuthenticated ? <Home /> : <Landing />}
+        {isAuthenticated ? 
+          user?.role === 'admin' ? <AdminDashboard /> :
+          user?.role === 'teacher' ? <TeacherDashboard /> :
+          user?.role === 'student' ? <StudentDashboard /> :
+          <Landing />
+        : <Landing />}
       </Route>
       <Route path="/courses" component={Courses} />
       <Route path="/course/:id" component={CourseDetail} />
