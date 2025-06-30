@@ -885,6 +885,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete lesson material
+  app.delete('/api/lessons/materials/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can delete materials" });
+      }
+      
+      const materialId = parseInt(req.params.id);
+      await storage.deleteLessonMaterial(materialId);
+      res.status(200).json({ message: "Material deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting lesson material:", error);
+      res.status(500).json({ message: "Failed to delete lesson material" });
+    }
+  });
+
+  // Delete lesson assignment
+  app.delete('/api/lessons/assignments/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can delete assignments" });
+      }
+      
+      const assignmentId = parseInt(req.params.id);
+      await storage.deleteLessonAssignment(assignmentId);
+      res.status(200).json({ message: "Assignment deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting lesson assignment:", error);
+      res.status(500).json({ message: "Failed to delete lesson assignment" });
+    }
+  });
+
+  // Return task for revision (without grade)
+  app.patch('/api/submissions/:id/return', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can return tasks" });
+      }
+
+      const submissionId = parseInt(req.params.id);
+      const { feedback } = req.body;
+
+      await storage.returnSubmissionForRevision(submissionId, feedback, req.user.id);
+      res.json({ message: "Task returned for revision" });
+    } catch (error) {
+      console.error("Error returning submission:", error);
+      res.status(500).json({ message: "Failed to return submission" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -133,6 +133,13 @@ export interface IStorage {
   createLessonAssignment(assignment: InsertLessonAssignment): Promise<LessonAssignment>;
   getLessonAssignments(lessonId: number): Promise<LessonAssignment[]>;
   getAssignmentSubmissions(assignmentId: number): Promise<(Submission & { student: User })[]>;
+  deleteLessonAssignment(assignmentId: number): Promise<void>;
+
+  // Delete operations
+  deleteLessonMaterial(materialId: number): Promise<void>;
+
+  // Task feedback operations
+  returnSubmissionForRevision(submissionId: number, feedback: string, teacherId: string): Promise<void>;
 
   // Course enrollment operations
   removeStudentFromCourse(courseId: number, studentId: string): Promise<void>;
@@ -853,6 +860,26 @@ export class DatabaseStorage implements IStorage {
 
     return sessionsWithAttendance;
   }
+
+  async deleteLessonMaterial(materialId: number): Promise<void> {
+    await db.delete(lessonMaterials).where(eq(lessonMaterials.id, materialId));
+  }
+
+  async deleteLessonAssignment(assignmentId: number): Promise<void> {
+    await db.delete(lessonAssignments).where(eq(lessonAssignments.id, assignmentId));
+  }
+
+  async returnSubmissionForRevision(submissionId: number, feedback: string, teacherId: string): Promise<void> {
+    await db
+      .update(submissions)
+      .set({
+        feedback,
+        gradedBy: teacherId,
+        gradedAt: new Date(),
+        grade: null, // Remove grade so student can resubmit
+      })
+      .where(eq(submissions.id, submissionId));
+  }
 }
 
 export const storage = new DatabaseStorage();
@@ -910,15 +937,3 @@ export async function createDefaultUsers() {
 
 // Define lessonProgress table schema
 import { pgTable, integer, boolean, date, primaryKey, foreignKey } from "drizzle-orm/pg-core";
-import { users, courses, lessons } from "@shared/schema";
-
-export const lessonProgress = pgTable('lesson_progress', {
-  id: integer('id').primaryKey().notNull(),
-  lessonId: integer('lesson_id').notNull().references(() => lessons.id),
-  studentId: integer('student_id').notNull().references(() => users.id),
-  courseId: integer('course_id').notNull().references(() => courses.id),
-  isCompleted: boolean('is_completed').default(false),
-  completedAt: date('completed_at'),
-  timeSpent: integer('time_spent').default(0),
-  lastWatchedAt: date('last_watched_at')
-});

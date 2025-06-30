@@ -17,7 +17,11 @@ import {
   Calendar,
   CheckCircle,
   Upload,
-  Clock
+  Clock,
+  Edit,
+  Trash,
+  Link as LinkIcon,
+  Video
 } from "lucide-react";
 // @ts-ignore
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -47,6 +51,65 @@ export default function LessonDetail() {
   const { data: assignments = [] } = useQuery({
     queryKey: [`/api/lessons/${lessonId}/assignments`],
     enabled: !!lessonId,
+  });
+
+  // Delete material mutation
+  const deleteMaterialMutation = useMutation({
+    mutationFn: (materialId: number) => 
+      apiRequest(`/api/lessons/materials/${materialId}`, "DELETE"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${lessonId}/materials`] });
+      toast({
+        title: "Material silindi",
+        description: "Material uğurla silindi",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Xəta",
+        description: "Material silinərkən xəta baş verdi",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete assignment mutation
+  const deleteAssignmentMutation = useMutation({
+    mutationFn: (assignmentId: number) => 
+      apiRequest(`/api/lessons/assignments/${assignmentId}`, "DELETE"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${lessonId}/assignments`] });
+      toast({
+        title: "Tapşırıq silindi",
+        description: "Tapşırıq uğurla silindi",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Xəta",
+        description: "Tapşırıq silinərkən xəta baş verdi",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Return task for revision mutation
+  const returnTaskMutation = useMutation({
+    mutationFn: ({ submissionId, feedback }: { submissionId: number; feedback: string }) => 
+      apiRequest(`/api/submissions/${submissionId}/return`, "PATCH", { feedback }),
+    onSuccess: () => {
+      toast({
+        title: "Tapşırıq geri qaytarıldı",
+        description: "Tələbə tapşırığı düzəldə bilər",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Xəta",
+        description: "Tapşırıq qaytarılarkən xəta baş verdi",
+        variant: "destructive",
+      });
+    }
   });
 
   // Extract YouTube video ID from URL
@@ -185,27 +248,78 @@ export default function LessonDetail() {
                       </p>
                     ) : (
                       materials.map((material: any) => (
-                        <div key={material.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            {material.materialType === "video" && <Play className="w-4 h-4 text-blue-500" />}
-                            {material.materialType === "document" && <FileText className="w-4 h-4 text-green-500" />}
-                            {material.materialType === "link" && <ExternalLink className="w-4 h-4 text-purple-500" />}
-                            <div>
-                              <p className="font-medium text-sm">{material.title}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {material.materialType === "video" && "Video"}
-                                {material.materialType === "document" && "Sənəd"}
-                                {material.materialType === "link" && "Link"}
-                              </p>
+                        <div key={material.id} className="p-4 border rounded-lg">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                {material.materialType === "video" && <Video className="w-4 h-4 text-blue-600" />}
+                                {material.materialType === "document" && <FileText className="w-4 h-4 text-red-600" />}
+                                {material.materialType === "link" && <LinkIcon className="w-4 h-4 text-green-600" />}
+                                <h4 className="font-medium">{material.title}</h4>
+                              </div>
+                              {material.description && (
+                                <p className="text-sm text-muted-foreground mb-3">
+                                  {material.description}
+                                </p>
+                              )}
+                              
+                              <div className="flex items-center space-x-2">
+                                {material.materialType === "video" && material.videoUrl && (
+                                  <Button size="sm" variant="outline" asChild>
+                                    <a href={material.videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                                      <Play className="w-3 h-3 mr-1" />
+                                      Video izlə
+                                    </a>
+                                  </Button>
+                                )}
+                                
+                                {material.materialType === "document" && material.fileUrl && (
+                                  <Button size="sm" variant="outline" asChild>
+                                    <a 
+                                      href={material.fileUrl} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      download
+                                      className="flex items-center"
+                                    >
+                                      <Download className="w-3 h-3 mr-1" />
+                                      PDF yüklə
+                                    </a>
+                                  </Button>
+                                )}
+                                
+                                {material.materialType === "link" && material.fileUrl && (
+                                  <Button size="sm" variant="outline" asChild>
+                                    <a 
+                                      href={material.fileUrl} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="flex items-center"
+                                    >
+                                      <ExternalLink className="w-3 h-3 mr-1" />
+                                      Keçid
+                                    </a>
+                                  </Button>
+                                )}
+                              </div>
                             </div>
+                            
+                            {user?.role === "teacher" && (
+                              <div className="flex items-center space-x-1 ml-4">
+                                <Button size="sm" variant="ghost">
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  onClick={() => deleteMaterialMutation.mutate(material.id)}
+                                  disabled={deleteMaterialMutation.isPending}
+                                >
+                                  <Trash className="w-3 h-3 text-red-500" />
+                                </Button>
+                              </div>
+                            )}
                           </div>
-                          {material.videoUrl && (
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={material.videoUrl} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
-                            </Button>
-                          )}
                         </div>
                       ))
                     )}
@@ -230,15 +344,32 @@ export default function LessonDetail() {
                       assignments.map((assignment: any) => (
                         <div key={assignment.id} className="p-4 border rounded-lg space-y-3">
                           <div className="flex items-start justify-between">
-                            <div>
+                            <div className="flex-1">
                               <h4 className="font-medium">{assignment.title}</h4>
                               <p className="text-sm text-muted-foreground mt-1">
                                 {assignment.description}
                               </p>
                             </div>
-                            <Badge variant="outline">
-                              {assignment.maxPoints} bal
-                            </Badge>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline">
+                                {assignment.maxPoints} bal
+                              </Badge>
+                              {user?.role === "teacher" && (
+                                <div className="flex items-center space-x-1">
+                                  <Button size="sm" variant="ghost">
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    onClick={() => deleteAssignmentMutation.mutate(assignment.id)}
+                                    disabled={deleteAssignmentMutation.isPending}
+                                  >
+                                    <Trash className="w-3 h-3 text-red-500" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                           
                           {assignment.dueDate && (
