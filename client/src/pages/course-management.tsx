@@ -852,8 +852,7 @@ export default function CourseManagement() {
                     </div>
                     <Button
                         onClick={handleCreateMaterial}
-                        ```text
-disabled={createMaterialMutation.isPending || !materialForm.title}
+                        disabled={createMaterialMutation.isPending || !materialForm.title}
                         className="bg-devcode-orange hover:bg-orange-600"
                     >
                         {createMaterialMutation.isPending ? "Əlavə edilir..." : "Material Əlavə Et"}
