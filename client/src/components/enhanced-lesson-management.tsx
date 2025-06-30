@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { apiRequest } from "@/lib/authUtils";
 import { 
   Plus, 
   Edit, 
@@ -111,7 +110,13 @@ export default function EnhancedLessonManagement({
   // Create lesson mutation
   const createLessonMutation = useMutation({
     mutationFn: async (lessonData: any) => {
-      return apiRequest("POST", `/api/courses/${courseId}/lessons`, lessonData);
+      const response = await fetch(`/api/courses/${courseId}/lessons`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lessonData),
+      });
+      if (!response.ok) throw new Error("Failed to create lesson");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/lessons`] });
@@ -127,7 +132,13 @@ export default function EnhancedLessonManagement({
   // Create material mutation
   const createMaterialMutation = useMutation({
     mutationFn: async (materialData: any) => {
-      return apiRequest("POST", `/api/lessons/${selectedLesson.id}/materials`, materialData);
+      const response = await fetch(`/api/lessons/${selectedLesson.id}/materials`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(materialData),
+      });
+      if (!response.ok) throw new Error("Failed to create material");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/materials`] });
@@ -143,11 +154,17 @@ export default function EnhancedLessonManagement({
   // Create assignment mutation
   const createAssignmentMutation = useMutation({
     mutationFn: async (assignmentData: any) => {
-      return apiRequest("POST", `/api/lessons/${selectedLesson.id}/assignments`, {
-        ...assignmentData,
-        courseId,
-        lessonId: selectedLesson.id
+      const response = await fetch(`/api/lessons/${selectedLesson.id}/assignments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...assignmentData,
+          courseId,
+          lessonId: selectedLesson.id
+        }),
       });
+      if (!response.ok) throw new Error("Failed to create assignment");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`] });
@@ -163,11 +180,17 @@ export default function EnhancedLessonManagement({
   // Grade submission mutation
   const gradeSubmissionMutation = useMutation({
     mutationFn: async ({ submissionId, grade, feedback }: { submissionId: number, grade: number, feedback: string }) => {
-      return apiRequest("PATCH", `/api/submissions/${submissionId}/grade`, {
-        grade,
-        feedback,
-        gradedBy: user?.id
+      const response = await fetch(`/api/submissions/${submissionId}/grade`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          grade,
+          feedback,
+          gradedBy: user?.id
+        }),
       });
+      if (!response.ok) throw new Error("Failed to grade submission");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`] });
