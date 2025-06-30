@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import CourseSidebar from "@/components/course-sidebar";
 import ActiveSessionBar from "@/components/active-session-bar";
 import SessionHistory from "@/pages/session-history";
-import LessonDetail from "@/components/lesson-detail";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -39,6 +38,7 @@ import {
 
 export default function CourseManagement() {
   const { id } = useParams();
+  const courseId = id;
   const [location, setLocation] = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -49,7 +49,7 @@ export default function CourseManagement() {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState("");
   const [isCreateLessonOpen, setIsCreateLessonOpen] = useState(false);
-  const [newLesson, setNewLesson] = useState({ title: "", description: "", duration: "", orderIndex: 1 });
+  const [newLesson, setNewLesson] = useState({ title: "", description: "", duration: "" });
   const [editingLesson, setEditingLesson] = useState<any>(null);
   const [attendanceData, setAttendanceData] = useState<{[key: string]: string}>({});
   const [attendanceSaved, setAttendanceSaved] = useState(false);
@@ -117,7 +117,7 @@ export default function CourseManagement() {
     queryKey: [`/api/courses/${id}/all-attendance`],
     queryFn: async () => {
       const attendanceMap: { [sessionId: number]: any[] } = {};
-
+      
       for (const session of lessonSessions) {
         try {
           const response = await fetch(`/api/sessions/${session.id}/attendance`, {
@@ -132,7 +132,7 @@ export default function CourseManagement() {
           attendanceMap[session.id] = [];
         }
       }
-
+      
       return attendanceMap;
     },
     enabled: lessonSessions.length > 0,
@@ -220,7 +220,7 @@ export default function CourseManagement() {
       toast({ title: "Dərs uğurla yaradıldı" });
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/lessons`] });
       setIsCreateLessonOpen(false);
-      setNewLesson({ title: "", description: "", duration: "", orderIndex: 1 });
+      setNewLesson({ title: "", description: "", duration: "" });
     },
   });
 
@@ -354,11 +354,7 @@ export default function CourseManagement() {
   };
 
   const handleCreateLesson = () => {
-    createLessonMutation.mutate({
-      ...newLesson,
-      duration: parseInt(newLesson.duration) || 0,
-      orderIndex: newLesson.orderIndex || 1
-    });
+    createLessonMutation.mutate(newLesson);
   };
 
     const handleEnrollStudent = () => {
@@ -484,13 +480,12 @@ export default function CourseManagement() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="orderIndex">Dərs sırası</Label>
+                      <Label htmlFor="duration">Müddət (dəqiqə)</Label>
                       <Input
-                        id="orderIndex"
+                        id="duration"
                         type="number"
-                        value={newLesson.orderIndex}
-                        onChange={(e) => setNewLesson({ ...newLesson, orderIndex: parseInt(e.target.value) })}
-                        placeholder="Dərsin sıra nömrəsi"
+                        value={newLesson.duration}
+                        onChange={(e) => setNewLesson({ ...newLesson, duration: e.target.value })}
                       />
                     </div>
                     <Button onClick={handleCreateLesson} disabled={createLessonMutation.isPending} className="bg-devcode-orange hover:bg-orange-600">
@@ -533,17 +528,22 @@ export default function CourseManagement() {
                       </div>
                     ) : (
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-4 flex-1">
                           <div className="w-10 h-10 bg-devcode-orange rounded-lg flex items-center justify-center text-white">
                             <Video className="w-5 h-5" />
                           </div>
-                          <div>
-                            <h3 className="font-medium">{lesson.title}</h3>
-                            <p className="text-sm text-devcode-gray">{lesson.description}</p>
-                            <div className="flex items-center space-x-2 text-sm text-devcode-gray mt-1">
-                              <Clock className="w-4 h-4" />
-                              <span>{lesson.duration} dəqiqə</span>
-                            </div>
+                          <div className="flex-1">
+                            <Link
+                              href={`/courses/${courseId}/lessons/${lesson.id}`}
+                              className="block hover:text-devcode-orange transition-colors"
+                            >
+                              <h3 className="font-medium hover:underline">{lesson.title}</h3>
+                              <p className="text-sm text-devcode-gray">{lesson.description}</p>
+                              <div className="flex items-center space-x-2 text-sm text-devcode-gray mt-1">
+                                <Clock className="w-4 h-4" />
+                                <span>{lesson.duration} dəqiqə</span>
+                              </div>
+                            </Link>
                           </div>
                         </div>
                         <Button
@@ -710,7 +710,7 @@ export default function CourseManagement() {
                   <TableBody>
                     {students.map((student: any) => {
                       let attendanceCount = 0;
-
+                      
                       // Count attendance for this student across all sessions
                       lessonSessions.forEach((session: any) => {
                         const sessionAttendance = allSessionsAttendance[session.id] || [];
@@ -721,7 +721,7 @@ export default function CourseManagement() {
                           attendanceCount++;
                         }
                       });
-
+                      
                       const attendancePercentage = lessonSessions.length > 0 ? 
                         Math.round((attendanceCount / lessonSessions.length) * 100) : 0;
 
@@ -788,15 +788,15 @@ export default function CourseManagement() {
                   <div className="text-2xl font-bold">
                     {(() => {
                       if (!students?.length || !lessonSessions?.length) return "0%";
-
+                      
                       let totalPresentCount = 0;
                       const totalPossibleAttendance = students.length * lessonSessions.length;
-
+                      
                       lessonSessions.forEach((session: any) => {
                         const sessionAttendance = allSessionsAttendance[session.id] || [];
                         totalPresentCount += sessionAttendance.filter((record: any) => record.status === "present").length;
                       });
-
+                      
                       return Math.round((totalPresentCount / totalPossibleAttendance) * 100) + "%";
                     })()}
                   </div>
@@ -861,7 +861,7 @@ export default function CourseManagement() {
         )}
 
           {activeTab === "lesson-detail" && selectedLesson && (
-              <LessonDetail
+              <LessonDetailView
                   lesson={selectedLesson}
                   courseId={parseInt(id!)}
                   onBack={() => {

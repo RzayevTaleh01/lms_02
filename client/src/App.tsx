@@ -22,6 +22,7 @@ import TeacherStudents from "@/pages/teacher-students";
 import TeacherStudentDetail from "@/pages/teacher-student-detail";
 import StudentDashboard from "@/pages/student-dashboard";
 import CourseManagementPage from "@/pages/course-management";
+import LessonDetail from "@/pages/lesson-detail";
 
 import NotFound from "@/pages/not-found";
 
@@ -43,6 +44,7 @@ function Router() {
       </Route>
       <Route path="/courses" component={Courses} />
       <Route path="/course/:id" component={CourseDetail} />
+      <Route path="/courses/:courseId/lessons/:lessonId" component={LessonDetail} />
       <Route path="/blog" component={Blog} />
       <Route path="/verify" component={VerifyCertificate} />
       <Route path="/contact" component={Contact} />

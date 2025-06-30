@@ -283,25 +283,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update lesson content
-  app.patch('/api/lessons/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
-        return res.status(403).json({ message: "Only teachers and admins can update lessons" });
-      }
-
-      const lessonId = parseInt(req.params.id);
-      const lesson = await storage.updateLesson(lessonId, req.body);
-      if (!lesson) {
-        return res.status(404).json({ message: "Lesson not found" });
-      }
-      res.json(lesson);
-    } catch (error) {
-      console.error("Error updating lesson:", error);
-      res.status(500).json({ message: "Failed to update lesson" });
-    }
-  });
-
   // Enrollment routes
   app.get('/api/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
@@ -408,18 +389,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get submissions by lesson for current student
-  app.get('/api/submissions/lesson/:lessonId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      const lessonId = parseInt(req.params.lessonId);
-      const submissions = await storage.getSubmissionsByLessonAndStudent(lessonId, req.user!.id);
-      res.json(submissions);
-    } catch (error) {
-      console.error("Error fetching lesson submissions:", error);
-      res.status(500).json({ message: "Failed to fetch lesson submissions" });
-    }
-  });
-
   app.post('/api/assignments/:assignmentId/submissions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       const assignmentId = parseInt(req.params.assignmentId);
@@ -451,6 +420,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error grading submission:", error);
       res.status(500).json({ message: "Failed to grade submission" });
+    }
+  });
+
+  // Lesson API routes
+  app.get('/api/lessons/:id', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.id);
+      const lesson = await storage.getLesson(lessonId);
+      if (!lesson) {
+        return res.status(404).json({ message: "Lesson not found" });
+      }
+      res.json(lesson);
+    } catch (error) {
+      console.error("Error fetching lesson:", error);
+      res.status(500).json({ message: "Failed to fetch lesson" });
+    }
+  });
+
+  app.get('/api/lessons/:lessonId/materials', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const materials = await storage.getLessonMaterials(lessonId);
+      res.json(materials);
+    } catch (error) {
+      console.error("Error fetching lesson materials:", error);
+      res.status(500).json({ message: "Failed to fetch lesson materials" });
+    }
+  });
+
+  app.get('/api/lessons/:lessonId/assignments', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const assignments = await storage.getLessonAssignments(lessonId);
+      res.json(assignments);
+    } catch (error) {
+      console.error("Error fetching lesson assignments:", error);
+      res.status(500).json({ message: "Failed to fetch lesson assignments" });
     }
   });
 
@@ -788,33 +794,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching active sessions:', error);
       res.status(500).json({ message: 'Failed to fetch active sessions' });
-    }
-  });
-
-  // Get specific lesson
-  app.get('/api/courses/:courseId/lessons/:lessonId', async (req, res) => {
-    try {
-      const lessonId = parseInt(req.params.lessonId);
-      const lesson = await storage.getLesson(lessonId);
-      if (!lesson) {
-        return res.status(404).json({ message: "Lesson not found" });
-      }
-      res.json(lesson);
-    } catch (error) {
-      console.error("Error fetching lesson:", error);
-      res.status(500).json({ message: "Failed to fetch lesson" });
-    }
-  });
-
-  // Get student submissions for a lesson
-  app.get('/api/submissions/lesson/:lessonId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
-    try {
-      const lessonId = parseInt(req.params.lessonId);
-      const submissions = await storage.getSubmissionsByLessonAndStudent(lessonId, req.user!.id);
-      res.json(submissions);
-    } catch (error) {
-      console.error("Error fetching lesson submissions:", error);
-      res.status(500).json({ message: "Failed to fetch lesson submissions" });
     }
   });
 
