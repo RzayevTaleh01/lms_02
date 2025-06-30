@@ -27,6 +27,7 @@ import StudentGrades from "@/pages/student-grades";
 import StudentProfile from "@/pages/student-profile";
 import CourseManagementPage from "@/pages/course-management";
 import LessonDetail from "@/pages/lesson-detail";
+import StudentAssignments from "@/pages/student-assignments";
 
 import NotFound from "@/pages/not-found";
 
@@ -63,6 +64,7 @@ function Router() {
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
       <Route path="/student/courses" component={StudentCourses} />
       <Route path="/student/course/:id" component={StudentCourse} />
+      {isAuthenticated && user?.role === 'student' && <Route path="/student/assignments" component={StudentAssignments} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student/attendance" component={StudentAttendance} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student/grades" component={StudentGrades} />}
       {isAuthenticated && user?.role === 'student' && <Route path="/student/profile" component={StudentProfile} />}

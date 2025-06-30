@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Calendar, Trophy, Target, Clock, Users, Home, GraduationCap, ClipboardList, Award, User, LogOut, Menu } from "lucide-react";
+import { BookOpen, Calendar, Trophy, Target, Clock, Users, Home, GraduationCap, ClipboardList, Award, User, LogOut, Menu, FileText } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -30,7 +30,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           onClick={onClose}
         />
       )}
-      
+
       {/* Sidebar */}
       <div className={cn(
         "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
@@ -62,7 +62,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             const isActive = item.exact 
               ? location === item.href 
               : location.startsWith(item.href);
-            
+
             return (
               <Link
                 key={item.href}
@@ -212,7 +212,7 @@ export default function StudentDashboard() {
           {/* Active Courses */}
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">Aktiv Kurslarınız</h2>
-            
+
             {activeEnrollments.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
@@ -242,7 +242,7 @@ export default function StudentDashboard() {
                       <p className="text-gray-600 mb-4 line-clamp-3">
                         {enrollment.course.description}
                       </p>
-                      
+
                       <div className="space-y-3">
                         <div>
                           <div className="flex justify-between text-sm mb-1">
@@ -251,14 +251,14 @@ export default function StudentDashboard() {
                           </div>
                           <Progress value={enrollment.progress} className="h-2" />
                         </div>
-                        
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center text-sm text-gray-500">
                             <Clock className="h-4 w-4 mr-1" />
                             <span>Qeydiyyat: {new Date(enrollment.enrolledAt).toLocaleDateString('az-AZ')}</span>
                           </div>
                         </div>
-                        
+
                         <Button asChild className="w-full">
                           <Link href={`/student/course/${enrollment.course.id}`}>
                             Kursa Davam Et

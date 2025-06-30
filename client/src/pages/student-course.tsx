@@ -35,6 +35,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const [location] = useLocation();
@@ -57,7 +58,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           onClick={onClose}
         />
       )}
-      
+
       {/* Sidebar */}
       <div className={cn(
         "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
@@ -89,7 +90,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             const isActive = item.exact 
               ? location === item.href 
               : location.startsWith(item.href);
-            
+
             return (
               <Link
                 key={item.href}
@@ -197,14 +198,14 @@ export default function StudentCourse() {
 
   const renderYouTubeVideo = (url: string) => {
     if (!url) return null;
-    
+
     let videoId = "";
     if (url.includes("youtu.be/")) {
       videoId = url.split("youtu.be/")[1].split("?")[0];
     } else if (url.includes("youtube.com/watch?v=")) {
       videoId = url.split("v=")[1].split("&")[0];
     }
-    
+
     if (videoId) {
       return (
         <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
@@ -217,7 +218,7 @@ export default function StudentCourse() {
         </div>
       );
     }
-    
+
     return (
       <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
         <div className="text-center">
@@ -229,6 +230,17 @@ export default function StudentCourse() {
         </div>
       </div>
     );
+  };
+
+  const handleSubmitAssignment = (assignmentId: number) => {
+    if (submissionForm.content.trim()) {
+      submitAssignmentMutation.mutate({
+        assignmentId: assignmentId,
+        content: submissionForm.content,
+        githubUrl: submissionForm.githubUrl || undefined,
+        fileUrl: submissionForm.fileUrl || undefined
+      });
+    }
   };
 
   if (!course) {
@@ -273,7 +285,7 @@ export default function StudentCourse() {
             <h2 className="text-lg font-semibold">Dərslər</h2>
             <p className="text-sm text-muted-foreground">Kursun məzmunu</p>
           </div>
-        
+
         <ScrollArea className="h-[calc(100vh-80px)]">
           <div className="p-4 space-y-2">
             {lessons.length === 0 ? (
@@ -334,7 +346,7 @@ export default function StudentCourse() {
                   )}
                 </div>
               </div>
-              
+
               {selectedLesson.videoUrl && (
                 <div className="mb-6">
                   {renderYouTubeVideo(selectedLesson.videoUrl)}
@@ -425,7 +437,7 @@ export default function StudentCourse() {
                       ) : (
                         assignments.map((assignment: any) => {
                           const studentSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
-                          
+
                           return (
                             <Card key={assignment.id}>
                               <CardContent className="p-6">
@@ -470,44 +482,30 @@ export default function StudentCourse() {
                                   {/* Submission Section */}
                                   {!studentSubmission ? (
                                     <div className="space-y-4">
-                                      <h5 className="font-medium">Tapşırığı göndər</h5>
-                                      <div className="space-y-3">
-                                        <div>
-                                          <label className="text-sm font-medium">Cavab məzmunu</label>
-                                          <Textarea
-                                            placeholder="Tapşırığın cavabını buraya yazın..."
-                                            value={submissionForm.content}
-                                            onChange={(e) => setSubmissionForm(prev => ({ ...prev, content: e.target.value }))}
-                                            rows={4}
-                                          />
-                                        </div>
-                                        <div>
-                                          <label className="text-sm font-medium">GitHub linki (istəyə bağlı)</label>
-                                          <Input
-                                            placeholder="https://github.com/..."
-                                            value={submissionForm.githubUrl}
-                                            onChange={(e) => setSubmissionForm(prev => ({ ...prev, githubUrl: e.target.value }))}
-                                          />
-                                        </div>
-                                        <div>
-                                          <label className="text-sm font-medium">Fayl linki (istəyə bağlı)</label>
-                                          <Input
-                                            placeholder="Fayl linkini daxil edin..."
-                                            value={submissionForm.fileUrl}
-                                            onChange={(e) => setSubmissionForm(prev => ({ ...prev, fileUrl: e.target.value }))}
-                                          />
-                                        </div>
+                                      <div>
+                                        <Label htmlFor="assignmentContent">Cavab məzmunu</Label>
+                                        <Textarea
+                                          id="assignmentContent"
+                                          placeholder="Tapşırığınızın cavabını yazın..."
+                                          value={submissionForm.content}
+                                          onChange={(e) => setSubmissionForm({ ...submissionForm, content: e.target.value })}
+                                          rows={4}
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <Label htmlFor="githubUrl">GitHub Linki (İxtiyari)</Label>
+                                        <Input
+                                          id="githubUrl"
+                                          placeholder="https://github.com/username/repo"
+                                          value={submissionForm.githubUrl}
+                                          onChange={(e) => setSubmissionForm({ ...submissionForm, githubUrl: e.target.value })}
+                                        />
+                                      </div>
+
+                                      <div>
                                         <Button
-                                          onClick={() => {
-                                            if (submissionForm.content.trim()) {
-                                              submitAssignmentMutation.mutate({
-                                                assignmentId: assignment.id,
-                                                content: submissionForm.content,
-                                                githubUrl: submissionForm.githubUrl || undefined,
-                                                fileUrl: submissionForm.fileUrl || undefined
-                                              });
-                                            }
-                                          }}
+                                          onClick={() => handleSubmitAssignment(assignment.id)}
                                           disabled={!submissionForm.content.trim() || submitAssignmentMutation.isPending}
                                           className="w-full"
                                         >
@@ -518,11 +516,18 @@ export default function StudentCourse() {
                                     </div>
                                   ) : (
                                     <div className="space-y-3">
-                                      <div className="flex items-center space-x-2">
-                                        <CheckCircle className="w-5 h-5 text-green-600" />
-                                        <span className="font-medium text-green-600">Tapşırıq göndərilib</span>
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-2">
+                                          <CheckCircle className="w-5 h-5 text-green-600" />
+                                          <span className="font-medium text-green-600">Tapşırıq göndərilib</span>
+                                        </div>
+                                        {studentSubmission.grade !== null && (
+                                          <Badge variant="default" className="text-lg px-3 py-1">
+                                            {studentSubmission.grade} / {assignment.maxPoints} bal
+                                          </Badge>
+                                        )}
                                       </div>
-                                      
+
                                       <div className="bg-muted p-4 rounded-lg space-y-2">
                                         <p className="text-sm"><strong>Cavab:</strong> {studentSubmission.content}</p>
                                         {studentSubmission.githubUrl && (
@@ -533,22 +538,35 @@ export default function StudentCourse() {
                                             </a>
                                           </p>
                                         )}
-                                        {studentSubmission.fileUrl && (
-                                          <p className="text-sm">
-                                            <strong>Fayl:</strong>
-                                            <a href={studentSubmission.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
-                                              Faylı yüklə
-                                            </a>
-                                          </p>
-                                        )}
-                                        {studentSubmission.feedback && (
-                                          <p className="text-sm">
-                                            <strong>Müəllim rəyi:</strong> {studentSubmission.feedback}
-                                          </p>
-                                        )}
                                         <p className="text-xs text-muted-foreground">
                                           Göndərilmə tarixi: {new Date(studentSubmission.submittedAt).toLocaleString('az-AZ')}
                                         </p>
+
+                                        {studentSubmission.grade !== null ? (
+                                          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                            <div className="flex items-center space-x-2 mb-2">
+                                              <Award className="w-4 h-4 text-green-600" />
+                                              <span className="text-sm font-medium text-green-800">Qiymətləndirilib</span>
+                                            </div>
+                                            {studentSubmission.feedback && (
+                                              <p className="text-sm text-green-700">
+                                                <strong>Müəllim rəyi:</strong> {studentSubmission.feedback}
+                                              </p>
+                                            )}
+                                            {studentSubmission.gradedAt && (
+                                              <p className="text-xs text-green-600 mt-1">
+                                                Qiymətləndirmə tarixi: {new Date(studentSubmission.gradedAt).toLocaleString('az-AZ')}
+                                              </p>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                            <div className="flex items-center space-x-2">
+                                              <Clock className="w-4 h-4 text-yellow-600" />
+                                              <span className="text-sm font-medium text-yellow-800">Qiymətləndirmə gözlənilir</span>
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   )}

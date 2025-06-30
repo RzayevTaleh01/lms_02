@@ -1,9 +1,8 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarCheck, Clock, Users, CheckCircle, XCircle, Home, GraduationCap, ClipboardList, Award, User, LogOut, Menu } from "lucide-react";
+import { Calendar, Clock, CheckCircle, XCircle, Users, Home, GraduationCap, ClipboardList, Award, User, LogOut, Menu, FileText } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -29,7 +28,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           onClick={onClose}
         />
       )}
-      
+
       {/* Sidebar */}
       <div className={cn(
         "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
@@ -61,7 +60,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             const isActive = item.exact 
               ? location === item.href 
               : location.startsWith(item.href);
-            
+
             return (
               <Link
                 key={item.href}
@@ -110,7 +109,7 @@ export default function StudentAttendance() {
     queryKey: ["/api/student/attendance", user?.id],
     queryFn: async () => {
       if (!enrollments.length) return [];
-      
+
       const attendancePromises = enrollments.map(async (enrollment) => {
         // Get all sessions for this course
         const sessionsResponse = await fetch(`/api/courses/${enrollment.courseId}/sessions`, {
@@ -125,12 +124,12 @@ export default function StudentAttendance() {
               credentials: "include"
             });
             const sessionAttendance = await attendanceResponse.json();
-            
+
             // Find this student's attendance in this session
             const studentAttendance = sessionAttendance.find((record: any) => 
               record.studentId === user?.id
             );
-            
+
             return {
               sessionId: session.id,
               sessionName: session.sessionName,
@@ -150,7 +149,7 @@ export default function StudentAttendance() {
         });
 
         const attendanceRecords = await Promise.all(attendancePromises);
-        
+
         // Calculate statistics
         const totalSessions = sessions.length;
         const attendedSessions = attendanceRecords.filter(record => record.status === 'present').length;
@@ -266,7 +265,7 @@ export default function StudentAttendance() {
           {/* Course Attendance Details */}
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">Kurs üzrə Davamiyyət</h2>
-            
+
             {attendanceData.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">

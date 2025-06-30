@@ -1,10 +1,9 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Award, TrendingUp, FileText, Target, Home, GraduationCap, ClipboardList, User, LogOut, Menu } from "lucide-react";
+import { Award, FileText, TrendingUp, Target, Home, GraduationCap, ClipboardList, User, LogOut, Menu } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -30,7 +29,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           onClick={onClose}
         />
       )}
-      
+
       {/* Sidebar */}
       <div className={cn(
         "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
@@ -62,7 +61,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             const isActive = item.exact 
               ? location === item.href 
               : location.startsWith(item.href);
-            
+
             return (
               <Link
                 key={item.href}
@@ -256,7 +255,7 @@ export default function StudentGrades() {
           {/* Course Grades */}
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">Kurs üzrə Qiymətlər</h2>
-            
+
             {gradesByCourse.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
