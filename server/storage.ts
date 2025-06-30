@@ -40,7 +40,8 @@ import {
   type InsertLessonAssignment,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, like, and, count, sql } from "drizzle-orm";
+import { courses, lessons, enrollments, assignments, submissions, users, blogPosts, certificates, contactSubmissions, lessonSessions, attendance, lessonMaterials, lessonAssignments } from "@shared/schema";
+import { eq, and, desc, asc, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -322,7 +323,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getSubmissionsByStudent(studentId: string) {
-    const results = await db
+    // Get regular assignment submissions 
+    const regularSubmissions = await db
       .select({
         id: submissions.id,
         assignmentId: submissions.assignmentId,
@@ -334,7 +336,7 @@ export class DatabaseStorage implements IStorage {
         feedback: submissions.feedback,
         gradedAt: submissions.gradedAt,
         gradedBy: submissions.gradedBy,
-        // Assignment details - use INNER JOIN to ensure data exists
+        fileUrl: submissions.fileUrl,
         assignmentTitle: assignments.title,
         assignmentDescription: assignments.description,
         assignmentMaxPoints: assignments.maxPoints,
@@ -342,7 +344,6 @@ export class DatabaseStorage implements IStorage {
         assignmentCourseId: assignments.courseId,
         assignmentCreatedAt: assignments.createdAt,
         assignmentIsActive: assignments.isActive,
-        // Course details
         courseId: courses.id,
         courseTitle: courses.title,
         courseDescription: courses.description,
@@ -353,15 +354,62 @@ export class DatabaseStorage implements IStorage {
         courseEnrollmentCount: courses.enrollmentCount,
         courseIsActive: courses.isActive,
         courseCreatedAt: courses.createdAt,
-        courseUpdatedAt: courses.updatedAt
+        courseUpdatedAt: courses.updatedAt,
+        courseRating: courses.rating,
+        courseShortDescription: courses.shortDescription,
+        assignmentType: sql<string>`'regular'`.as('assignmentType')
       })
       .from(submissions)
-      .innerJoin(assignments, eq(submissions.assignmentId, assignments.id))
-      .innerJoin(courses, eq(assignments.courseId, courses.id))
-      .where(eq(submissions.studentId, studentId))
-      .orderBy(desc(submissions.submittedAt));
+      .leftJoin(assignments, eq(submissions.assignmentId, assignments.id))
+      .leftJoin(courses, eq(assignments.courseId, courses.id))
+      .where(eq(submissions.studentId, studentId));
 
-    return results.map(row => ({
+    // Get lesson assignment submissions
+    const lessonSubmissions = await db
+      .select({
+        id: submissions.id,
+        assignmentId: submissions.assignmentId,
+        studentId: submissions.studentId,
+        content: submissions.content,
+        githubUrl: submissions.githubUrl,
+        submittedAt: submissions.submittedAt,
+        grade: submissions.grade,
+        feedback: submissions.feedback,
+        gradedAt: submissions.gradedAt,
+        gradedBy: submissions.gradedBy,
+        fileUrl: submissions.fileUrl,
+        assignmentTitle: lessonAssignments.title,
+        assignmentDescription: lessonAssignments.description,
+        assignmentMaxPoints: lessonAssignments.maxPoints,
+        assignmentDueDate: lessonAssignments.dueDate,
+        assignmentCourseId: lessonAssignments.courseId,
+        assignmentCreatedAt: lessonAssignments.createdAt,
+        assignmentIsActive: lessonAssignments.isActive,
+        courseId: courses.id,
+        courseTitle: courses.title,
+        courseDescription: courses.description,
+        courseInstructorId: courses.instructorId,
+        courseImageUrl: courses.imageUrl,
+        courseDuration: courses.duration,
+        courseLevel: courses.level,
+        courseEnrollmentCount: courses.enrollmentCount,
+        courseIsActive: courses.isActive,
+        courseCreatedAt: courses.createdAt,
+        courseUpdatedAt: courses.updatedAt,
+        courseRating: courses.rating,
+        courseShortDescription: courses.shortDescription,
+        assignmentType: sql<string>`'lesson'`.as('assignmentType')
+      })
+      .from(submissions)
+      .leftJoin(lessonAssignments, eq(submissions.assignmentId, lessonAssignments.id))
+      .leftJoin(courses, eq(lessonAssignments.courseId, courses.id))
+      .where(eq(submissions.studentId, studentId));
+
+    const allSubmissions = [...regularSubmissions, ...lessonSubmissions]
+      .filter(row => row.assignmentTitle) // Only include submissions with valid assignments
+      .sort((a, b) => new Date(b.submittedAt!).getTime() - new Date(a.submittedAt!).getTime());
+
+    return allSubmissions.map(row => ({
       id: row.id,
       assignmentId: row.assignmentId,
       studentId: row.studentId,
@@ -372,6 +420,7 @@ export class DatabaseStorage implements IStorage {
       feedback: row.feedback,
       gradedAt: row.gradedAt,
       gradedBy: row.gradedBy,
+      fileUrl: row.fileUrl,
       assignment: {
         id: row.assignmentId!,
         title: row.assignmentTitle!,
@@ -381,15 +430,18 @@ export class DatabaseStorage implements IStorage {
         courseId: row.assignmentCourseId!,
         createdAt: row.assignmentCreatedAt!,
         isActive: row.assignmentIsActive!,
+        type: row.assignmentType,
         course: {
           id: row.courseId!,
           title: row.courseTitle!,
           description: row.courseDescription,
+          shortDescription: row.courseShortDescription,
           instructorId: row.courseInstructorId!,
           imageUrl: row.courseImageUrl,
           duration: row.courseDuration,
           level: row.courseLevel!,
           enrollmentCount: row.courseEnrollmentCount!,
+          rating: row.courseRating!,
           isActive: row.courseIsActive!,
           createdAt: row.courseCreatedAt!,
           updatedAt: row.courseUpdatedAt!

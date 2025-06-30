@@ -425,6 +425,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Lesson assignment submission route
+  app.post('/api/lesson-assignments/:assignmentId/submissions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const assignmentId = parseInt(req.params.assignmentId);
+
+      // Check if student has already submitted this lesson assignment
+      const existingSubmission = await storage.getSubmissionByLessonAssignmentAndStudent(assignmentId, req.user!.id);
+      if (existingSubmission) {
+        return res.status(400).json({ message: "Bu tapşırığı artıq göndərmisiniz" });
+      }
+
+      const submissionData = insertSubmissionSchema.parse({ 
+        ...req.body, 
+        assignmentId, 
+        studentId: req.user!.id 
+      });
+      const submission = await storage.createSubmission(submissionData);
+      res.status(201).json(submission);
+    } catch (error) {
+      console.error("Error creating lesson assignment submission:", error);
+      res.status(500).json({ message: "Failed to submit lesson assignment" });
+    }
+  });
+
   app.patch('/api/submissions/:id/grade', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
