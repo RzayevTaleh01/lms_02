@@ -283,6 +283,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update lesson content
+  app.patch('/api/lessons/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can update lessons" });
+      }
+
+      const lessonId = parseInt(req.params.id);
+      const lesson = await storage.updateLesson(lessonId, req.body);
+      if (!lesson) {
+        return res.status(404).json({ message: "Lesson not found" });
+      }
+      res.json(lesson);
+    } catch (error) {
+      console.error("Error updating lesson:", error);
+      res.status(500).json({ message: "Failed to update lesson" });
+    }
+  });
+
   // Enrollment routes
   app.get('/api/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
@@ -386,6 +405,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching submissions:", error);
       res.status(500).json({ message: "Failed to fetch submissions" });
+    }
+  });
+
+  // Get submissions by lesson for current student
+  app.get('/api/submissions/lesson/:lessonId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const submissions = await storage.getSubmissionsByLessonAndStudent(lessonId, req.user!.id);
+      res.json(submissions);
+    } catch (error) {
+      console.error("Error fetching lesson submissions:", error);
+      res.status(500).json({ message: "Failed to fetch lesson submissions" });
     }
   });
 

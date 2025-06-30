@@ -60,6 +60,7 @@ export interface IStorage {
   // Lesson operations
   getLessonsByCourse(courseId: number): Promise<Lesson[]>;
   createLesson(lesson: InsertLesson): Promise<Lesson>;
+  updateLesson(id: number, lesson: Partial<InsertLesson>): Promise<Lesson | undefined>;
 
   // Enrollment operations
   getStudentEnrollments(studentId: string): Promise<(Enrollment & { course: Course })[]>;
@@ -245,6 +246,15 @@ export class DatabaseStorage implements IStorage {
   async createLesson(lesson: InsertLesson): Promise<Lesson> {
     const [newLesson] = await db.insert(lessons).values(lesson).returning();
     return newLesson;
+  }
+
+  async updateLesson(id: number, lessonData: Partial<InsertLesson>): Promise<Lesson | undefined> {
+    const [updatedLesson] = await db
+      .update(lessons)
+      .set(lessonData)
+      .where(eq(lessons.id, id))
+      .returning();
+    return updatedLesson;
   }
 
   // Enrollment operations

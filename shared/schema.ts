@@ -61,6 +61,7 @@ export const lessons = pgTable("lessons", {
   courseId: integer("course_id").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
+  content: text("content"), // Rich text content for the lesson
   videoUrl: varchar("video_url"),
   duration: integer("duration"), // in minutes
   orderIndex: integer("order_index").notNull(),

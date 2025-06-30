@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import CourseSidebar from "@/components/course-sidebar";
 import ActiveSessionBar from "@/components/active-session-bar";
 import SessionHistory from "@/pages/session-history";
+import LessonDetail from "@/components/lesson-detail";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -860,7 +861,7 @@ export default function CourseManagement() {
         )}
 
           {activeTab === "lesson-detail" && selectedLesson && (
-              <LessonDetailView
+              <LessonDetail
                   lesson={selectedLesson}
                   courseId={parseInt(id!)}
                   onBack={() => {
