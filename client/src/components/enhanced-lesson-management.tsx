@@ -97,10 +97,7 @@ export default function EnhancedLessonManagement({
   // Create lesson mutation
   const createLessonMutation = useMutation({
     mutationFn: async (lessonData: any) => {
-      return apiRequest(`/api/courses/${courseId}/lessons`, {
-        method: "POST",
-        body: JSON.stringify(lessonData),
-      });
+      return apiRequest("POST", `/api/courses/${courseId}/lessons`, lessonData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/lessons`] });
@@ -116,10 +113,7 @@ export default function EnhancedLessonManagement({
   // Create material mutation
   const createMaterialMutation = useMutation({
     mutationFn: async (materialData: any) => {
-      return apiRequest(`/api/lessons/${selectedLesson.id}/materials`, {
-        method: "POST",
-        body: JSON.stringify(materialData),
-      });
+      return apiRequest("POST", `/api/lessons/${selectedLesson.id}/materials`, materialData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/materials`] });
@@ -135,13 +129,10 @@ export default function EnhancedLessonManagement({
   // Create assignment mutation
   const createAssignmentMutation = useMutation({
     mutationFn: async (assignmentData: any) => {
-      return apiRequest(`/api/lessons/${selectedLesson.id}/assignments`, {
-        method: "POST",
-        body: JSON.stringify({
-          ...assignmentData,
-          courseId,
-          lessonId: selectedLesson.id
-        }),
+      return apiRequest("POST", `/api/lessons/${selectedLesson.id}/assignments`, {
+        ...assignmentData,
+        courseId,
+        lessonId: selectedLesson.id
       });
     },
     onSuccess: () => {
