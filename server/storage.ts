@@ -334,7 +334,7 @@ export class DatabaseStorage implements IStorage {
         feedback: submissions.feedback,
         gradedAt: submissions.gradedAt,
         gradedBy: submissions.gradedBy,
-        // Assignment details
+        // Assignment details - use INNER JOIN to ensure data exists
         assignmentTitle: assignments.title,
         assignmentDescription: assignments.description,
         assignmentMaxPoints: assignments.maxPoints,
@@ -356,8 +356,8 @@ export class DatabaseStorage implements IStorage {
         courseUpdatedAt: courses.updatedAt
       })
       .from(submissions)
-      .leftJoin(assignments, eq(submissions.assignmentId, assignments.id))
-      .leftJoin(courses, eq(assignments.courseId, courses.id))
+      .innerJoin(assignments, eq(submissions.assignmentId, assignments.id))
+      .innerJoin(courses, eq(assignments.courseId, courses.id))
       .where(eq(submissions.studentId, studentId))
       .orderBy(desc(submissions.submittedAt));
 
@@ -372,18 +372,18 @@ export class DatabaseStorage implements IStorage {
       feedback: row.feedback,
       gradedAt: row.gradedAt,
       gradedBy: row.gradedBy,
-      assignment: row.assignmentTitle ? {
-        id: row.assignmentId,
-        title: row.assignmentTitle,
+      assignment: {
+        id: row.assignmentId!,
+        title: row.assignmentTitle!,
         description: row.assignmentDescription,
         maxPoints: row.assignmentMaxPoints!,
         dueDate: row.assignmentDueDate,
         courseId: row.assignmentCourseId!,
         createdAt: row.assignmentCreatedAt!,
         isActive: row.assignmentIsActive!,
-        course: row.courseTitle ? {
+        course: {
           id: row.courseId!,
-          title: row.courseTitle,
+          title: row.courseTitle!,
           description: row.courseDescription,
           instructorId: row.courseInstructorId!,
           imageUrl: row.courseImageUrl,
@@ -393,9 +393,9 @@ export class DatabaseStorage implements IStorage {
           isActive: row.courseIsActive!,
           createdAt: row.courseCreatedAt!,
           updatedAt: row.courseUpdatedAt!
-        } : null
-      } : null
-    })).filter(submission => submission.assignment !== null);
+        }
+      }
+    }));
   }
 
   async getSubmissionsByAssignment(assignmentId: number): Promise<(Submission & { student: User })[]> {

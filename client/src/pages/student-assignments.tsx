@@ -249,13 +249,7 @@ export default function StudentAssignments() {
                 </CardContent>
               </Card>
             ) : (
-              submissions.map((submission: any) => {
-                // Null check for assignment data
-                if (!submission.assignment || !submission.assignment.course) {
-                  return null;
-                }
-
-                return (
+              submissions.map((submission: any) => (
                   <Card key={submission.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
@@ -356,9 +350,7 @@ export default function StudentAssignments() {
                     </div>
                   </CardContent>
                 </Card>
-                );
-              })
-            )}
+              ))
           </div>
         </div>
       </div>
