@@ -44,7 +44,6 @@ export const courses = pgTable("courses", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   shortDescription: text("short_description"),
-  category: varchar("category", { length: 100 }),
   level: varchar("level", { enum: ["beginner", "intermediate", "advanced"] }).notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   duration: varchar("duration", { length: 50 }), // e.g., "12 weeks"

@@ -204,7 +204,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only teachers and admins can create courses" });
       }
 
-      const courseData = insertCourseSchema.parse({ ...req.body, instructorId: req.user.id });
+      const { category, ...courseDataWithoutCategory } = req.body;
+      const courseData = insertCourseSchema.parse({ ...courseDataWithoutCategory, instructorId: req.user.id });
       const course = await storage.createCourse(courseData);
       res.status(201).json(course);
     } catch (error) {
@@ -221,7 +222,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const courseId = parseInt(req.params.id);
-      const courseData = insertCourseSchema.parse(req.body);
+      const { category, ...courseDataWithoutCategory } = req.body;
+      const courseData = insertCourseSchema.parse(courseDataWithoutCategory);
 
       const updatedCourse = await storage.updateCourse(courseId, courseData);
 

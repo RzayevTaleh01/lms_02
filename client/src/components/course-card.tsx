@@ -10,7 +10,6 @@ interface CourseCardProps {
     title: string;
     description?: string;
     shortDescription?: string;
-    category?: string;
     level: string;
     price: string;
     duration?: string;
@@ -21,21 +20,6 @@ interface CourseCardProps {
 }
 
 export default function CourseCard({ course }: CourseCardProps) {
-  const getCategoryColor = (category?: string) => {
-    switch (category?.toLowerCase()) {
-      case 'web development':
-        return 'bg-blue-100 text-blue-800';
-      case 'data science':
-        return 'bg-green-100 text-green-800';
-      case 'mobile development':
-        return 'bg-purple-100 text-purple-800';
-      case 'devops':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-orange-100 text-orange-800';
-    }
-  };
-
   const getLevelColor = (level: string) => {
     switch (level.toLowerCase()) {
       case 'beginner':
@@ -63,7 +47,7 @@ export default function CourseCard({ course }: CourseCardProps) {
           <div className="w-full h-full bg-gradient-to-br from-devcode-orange to-orange-600 flex items-center justify-center">
             <div className="text-white text-center">
               <div className="text-4xl mb-2">💻</div>
-              <div className="text-sm font-medium">{course.category || 'Programming'}</div>
+              <div className="text-sm font-medium">Programming</div>
             </div>
           </div>
         )}
@@ -80,13 +64,9 @@ export default function CourseCard({ course }: CourseCardProps) {
       </div>
 
       <CardContent className="p-6">
-        {/* Category and Rating */}
+        {/* Rating */}
         <div className="flex items-center justify-between mb-3">
-          {course.category && (
-            <Badge variant="secondary" className={`capitalize ${getCategoryColor(course.category)}`}>
-              {course.category}
-            </Badge>
-          )}
+          <div></div>
 
           {course.rating && (
             <div className="flex items-center text-yellow-500">

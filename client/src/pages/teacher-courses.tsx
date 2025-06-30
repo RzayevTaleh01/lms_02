@@ -25,7 +25,6 @@ export default function TeacherCourses() {
   const [editForm, setEditForm] = useState({
     title: "",
     description: "",
-    category: "",
     level: "",
     duration: "",
   });
@@ -131,7 +130,6 @@ export default function TeacherCourses() {
     setEditForm({
       title: course.title,
       description: course.description,
-      category: course.category,
       level: course.level,
       duration: course.duration,
     });
@@ -189,7 +187,6 @@ export default function TeacherCourses() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Kurs Adı</TableHead>
-                    <TableHead>Kateqoriya</TableHead>
                     <TableHead>Səviyyə</TableHead>
                     <TableHead>Müddət</TableHead>
                     <TableHead>Tələbələr</TableHead>
@@ -212,11 +209,6 @@ export default function TeacherCourses() {
                             </div>
                           </div>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="capitalize">
-                          {course.category}
-                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="capitalize">
@@ -281,35 +273,18 @@ export default function TeacherCourses() {
                                     onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                                   />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <Label htmlFor="edit-category">Kateqoriya</Label>
-                                    <Select value={editForm.category} onValueChange={(value) => setEditForm({...editForm, category: value})}>
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="programming">Proqramlaşdırma</SelectItem>
-                                        <SelectItem value="design">Dizayn</SelectItem>
-                                        <SelectItem value="business">Biznes</SelectItem>
-                                        <SelectItem value="marketing">Marketinq</SelectItem>
-                                        <SelectItem value="other">Digər</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="edit-level">Səviyyə</Label>
-                                    <Select value={editForm.level} onValueChange={(value) => setEditForm({...editForm, level: value})}>
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="beginner">Başlanğıc</SelectItem>
-                                        <SelectItem value="intermediate">Orta</SelectItem>
-                                        <SelectItem value="advanced">İrəliləmiş</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
+                                <div>
+                                  <Label htmlFor="edit-level">Səviyyə</Label>
+                                  <Select value={editForm.level} onValueChange={(value) => setEditForm({...editForm, level: value})}>
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="beginner">Başlanğıc</SelectItem>
+                                      <SelectItem value="intermediate">Orta</SelectItem>
+                                      <SelectItem value="advanced">İrəliləmiş</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
                                 <div>
                                   <Label htmlFor="edit-duration">Müddət</Label>

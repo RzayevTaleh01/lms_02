@@ -15,7 +15,6 @@ export default function Courses() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
 
   const { data: courses = [], isLoading } = useQuery({

@@ -12,7 +12,6 @@ import { Plus } from "lucide-react";
 interface CourseForm {
   title: string;
   description: string;
-  category: string;
   level: string;
   duration: string;
 }
@@ -25,7 +24,6 @@ export default function CreateCourseDialog() {
   const [form, setForm] = useState<CourseForm>({
     title: "",
     description: "",
-    category: "",
     level: "",
     duration: "",
   });
@@ -56,7 +54,6 @@ export default function CreateCourseDialog() {
       setForm({
         title: "",
         description: "",
-        category: "",
         level: "",
         duration: "",
       });
@@ -75,7 +72,7 @@ export default function CreateCourseDialog() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!form.title || !form.description || !form.category || !form.level) {
+    if (!form.title || !form.description || !form.level) {
       toast({
         title: "Xəta",
         description: "Zəhmət olmasa bütün məcburi sahələri doldurun.",
@@ -126,39 +123,18 @@ export default function CreateCourseDialog() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="category">Kateqoriya *</Label>
-                <Select value={form.category} onValueChange={(value) => updateForm("category", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Kateqoriya seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="programming">Proqramlaşdırma</SelectItem>
-                    <SelectItem value="web-development">Web Development</SelectItem>
-                    <SelectItem value="mobile-development">Mobil Development</SelectItem>
-                    <SelectItem value="data-science">Data Science</SelectItem>
-                    <SelectItem value="design">Dizayn</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="business">Biznes</SelectItem>
-                    <SelectItem value="other">Digər</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="level">Səviyyə *</Label>
-                <Select value={form.level} onValueChange={(value) => updateForm("level", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Səviyyə seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">Başlanğıc</SelectItem>
-                    <SelectItem value="intermediate">Orta</SelectItem>
-                    <SelectItem value="advanced">İrəliləmiş</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <Label htmlFor="level">Səviyyə *</Label>
+              <Select value={form.level} onValueChange={(value) => updateForm("level", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Səviyyə seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="beginner">Başlanğıc</SelectItem>
+                  <SelectItem value="intermediate">Orta</SelectItem>
+                  <SelectItem value="advanced">İrəliləmiş</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
