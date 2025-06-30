@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { apiRequest } from "@/lib/queryClient";
 import { 
   ArrowLeft, 
@@ -19,14 +22,68 @@ import {
   Upload,
   Clock,
   Edit,
-  Trash,
+  Trash2,
   Link as LinkIcon,
-  Video
+  Video,
+  FileIcon,
+  AlertCircle
 } from "lucide-react";
-// @ts-ignore
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-// @ts-ignore
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+interface Material {
+  id: number;
+  lessonId: number;
+  title: string;
+  content: string;
+  videoUrl?: string;
+  materialType: 'video' | 'document' | 'link';
+  orderIndex: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+interface Assignment {
+  id: number;
+  lessonId: number;
+  courseId: number;
+  title: string;
+  description: string;
+  dueDate?: string;
+  maxPoints: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+interface Lesson {
+  id: number;
+  courseId: number;
+  title: string;
+  description: string;
+  content: string;
+  videoUrl?: string;
+  duration: number;
+  orderIndex: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+interface Submission {
+  id: number;
+  assignmentId: number;
+  studentId: string;
+  content: string;
+  fileUrl?: string;
+  grade?: number;
+  feedback?: string;
+  status: 'submitted' | 'graded' | 'returned';
+  submittedAt: string;
+  gradedAt?: string;
+  student: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
 
 export default function LessonDetail() {
   const { courseId, lessonId } = useParams();
@@ -34,23 +91,31 @@ export default function LessonDetail() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [feedback, setFeedback] = useState("");
+  const [selectedSubmission, setSelectedSubmission] = useState<number | null>(null);
 
   // Fetch lesson details
-  const { data: lesson, isLoading: lessonLoading } = useQuery({
+  const { data: lesson, isLoading: lessonLoading } = useQuery<Lesson>({
     queryKey: [`/api/lessons/${lessonId}`],
     enabled: !!lessonId,
   });
 
   // Fetch lesson materials
-  const { data: materials = [] } = useQuery({
+  const { data: materials = [] } = useQuery<Material[]>({
     queryKey: [`/api/lessons/${lessonId}/materials`],
     enabled: !!lessonId,
   });
 
   // Fetch lesson assignments
-  const { data: assignments = [] } = useQuery({
+  const { data: assignments = [] } = useQuery<Assignment[]>({
     queryKey: [`/api/lessons/${lessonId}/assignments`],
     enabled: !!lessonId,
+  });
+
+  // Fetch submissions (for teachers)
+  const { data: submissions = [] } = useQuery<Submission[]>({
+    queryKey: [`/api/assignments/${assignments[0]?.id}/submissions`],
+    enabled: !!assignments[0]?.id && user?.role === 'teacher',
   });
 
   // Delete material mutation
@@ -98,10 +163,13 @@ export default function LessonDetail() {
     mutationFn: ({ submissionId, feedback }: { submissionId: number; feedback: string }) => 
       apiRequest(`/api/submissions/${submissionId}/return`, "PATCH", { feedback }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/assignments/${assignments[0]?.id}/submissions`] });
       toast({
         title: "Tapşırıq geri qaytarıldı",
         description: "Tələbə tapşırığı düzəldə bilər",
       });
+      setFeedback("");
+      setSelectedSubmission(null);
     },
     onError: () => {
       toast({
@@ -112,293 +180,371 @@ export default function LessonDetail() {
     }
   });
 
-  // Extract YouTube video ID from URL
-  const extractYouTubeId = (url: string) => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
-  };
-
   if (lessonLoading) {
-    return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded w-64"></div>
-            <div className="aspect-video bg-muted rounded-lg"></div>
-            <div className="h-4 bg-muted rounded w-3/4"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="flex justify-center items-center h-64">Yüklənir...</div>;
   }
 
   if (!lesson) {
-    return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto text-center py-20">
-          <h1 className="text-2xl font-bold text-muted-foreground">Dərs tapılmadı</h1>
-          <Button 
-            variant="outline" 
-            onClick={() => setLocation(`/courses/${courseId}`)}
-            className="mt-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Geri qayıt
-          </Button>
-        </div>
-      </div>
-    );
+    return <div className="text-center text-red-500">Dərs tapılmadı</div>;
   }
 
-  const videoId = extractYouTubeId(lesson.videoUrl);
+  const getYouTubeEmbedUrl = (url: string) => {
+    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
+    return videoId ? `https://www.youtube.com/embed/${videoId[1]}` : null;
+  };
+
+  const getMaterialIcon = (materialType: string) => {
+    switch (materialType) {
+      case 'video':
+        return <Video className="h-5 w-5 text-blue-500" />;
+      case 'document':
+        return <FileIcon className="h-5 w-5 text-green-500" />;
+      case 'link':
+        return <LinkIcon className="h-5 w-5 text-purple-500" />;
+      default:
+        return <FileText className="h-5 w-5 text-gray-500" />;
+    }
+  };
+
+  const openMaterial = (material: Material) => {
+    if (material.materialType === 'link' && material.videoUrl) {
+      window.open(material.videoUrl, '_blank');
+    } else if (material.materialType === 'document' && material.videoUrl) {
+      // For PDF documents, open in new tab for download
+      window.open(material.videoUrl, '_blank');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="container mx-auto p-6 max-w-6xl">
       {/* Header */}
-      <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setLocation(`/courses/${courseId}`)}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Kursa qayıt
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold">{lesson.title}</h1>
-                <p className="text-muted-foreground">{lesson.description}</p>
-              </div>
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            if (user?.role === 'teacher') {
+              setLocation(`/teacher/course/${courseId}`);
+            } else {
+              setLocation(`/student/course/${courseId}`);
+            }
+          }}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Geriyə
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{lesson.title}</h1>
+          <p className="text-gray-600 mt-1">{lesson.description}</p>
+        </div>
+      </div>
+
+      {/* Video Section */}
+      {lesson.videoUrl && (
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="aspect-video bg-black rounded-lg overflow-hidden">
+              {getYouTubeEmbedUrl(lesson.videoUrl) ? (
+                <iframe
+                  src={getYouTubeEmbedUrl(lesson.videoUrl)!}
+                  title={lesson.title}
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-white">
+                  <div className="text-center">
+                    <Play className="h-16 w-16 mx-auto mb-4" />
+                    <p>Video mövcud deyil</p>
+                  </div>
+                </div>
+              )}
             </div>
             {lesson.duration && (
-              <Badge variant="secondary" className="flex items-center space-x-1">
-                <Clock className="w-3 h-3" />
+              <div className="flex items-center gap-2 mt-4 text-sm text-gray-600">
+                <Clock className="h-4 w-4" />
                 <span>{lesson.duration} dəqiqə</span>
-              </Badge>
+              </div>
             )}
-          </div>
-        </div>
-      </div>
+          </CardContent>
+        </Card>
+      )}
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Video Player */}
-            {videoId && (
-              <Card>
-                <CardContent className="p-0">
-                  <div className="aspect-video">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${videoId}`}
-                      title={lesson.title}
-                      className="w-full h-full rounded-lg"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+      {/* Lesson Content */}
+      {lesson.content && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Dərs Məzmunu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div 
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: lesson.content }}
+            />
+          </CardContent>
+        </Card>
+      )}
 
-            {/* Lesson Content */}
-            {lesson.content && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="w-5 h-5" />
-                    <span>Dərs Məzmunu</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div 
-                    className="prose prose-sm max-w-none dark:prose-invert"
-                    dangerouslySetInnerHTML={{ __html: lesson.content }}
-                  />
-                </CardContent>
-              </Card>
-            )}
-          </div>
+      {/* Materials and Assignments Tabs */}
+      <Tabs defaultValue="materials" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
+          <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
+        </TabsList>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <Tabs defaultValue="materials" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="materials">Materiallar</TabsTrigger>
-                <TabsTrigger value="assignments">Tapşırıqlar</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="materials" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Dərs Materialları</CardTitle>
-                    <CardDescription>
-                      Bu dərsə aid əlavə materiallar
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {materials.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        Hələ material əlavə edilməyib
-                      </p>
-                    ) : (
-                      materials.map((material: any) => (
-                        <div key={material.id} className="p-4 border rounded-lg">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-2">
-                                {material.materialType === "video" && <Video className="w-4 h-4 text-blue-600" />}
-                                {material.materialType === "document" && <FileText className="w-4 h-4 text-red-600" />}
-                                {material.materialType === "link" && <LinkIcon className="w-4 h-4 text-green-600" />}
-                                <h4 className="font-medium">{material.title}</h4>
-                              </div>
-                              {material.description && (
-                                <p className="text-sm text-muted-foreground mb-3">
-                                  {material.description}
-                                </p>
-                              )}
-                              
-                              <div className="flex items-center space-x-2">
-                                {material.materialType === "video" && material.videoUrl && (
-                                  <Button size="sm" variant="outline" asChild>
-                                    <a href={material.videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                                      <Play className="w-3 h-3 mr-1" />
-                                      Video izlə
-                                    </a>
-                                  </Button>
-                                )}
-                                
-                                {material.materialType === "document" && material.fileUrl && (
-                                  <Button size="sm" variant="outline" asChild>
-                                    <a 
-                                      href={material.fileUrl} 
-                                      target="_blank" 
-                                      rel="noopener noreferrer"
-                                      download
-                                      className="flex items-center"
-                                    >
-                                      <Download className="w-3 h-3 mr-1" />
-                                      PDF yüklə
-                                    </a>
-                                  </Button>
-                                )}
-                                
-                                {material.materialType === "link" && material.fileUrl && (
-                                  <Button size="sm" variant="outline" asChild>
-                                    <a 
-                                      href={material.fileUrl} 
-                                      target="_blank" 
-                                      rel="noopener noreferrer"
-                                      className="flex items-center"
-                                    >
-                                      <ExternalLink className="w-3 h-3 mr-1" />
-                                      Keçid
-                                    </a>
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                            
-                            {user?.role === "teacher" && (
-                              <div className="flex items-center space-x-1 ml-4">
-                                <Button size="sm" variant="ghost">
-                                  <Edit className="w-3 h-3" />
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  onClick={() => deleteMaterialMutation.mutate(material.id)}
-                                  disabled={deleteMaterialMutation.isPending}
-                                >
-                                  <Trash className="w-3 h-3 text-red-500" />
-                                </Button>
-                              </div>
+        {/* Materials Tab */}
+        <TabsContent value="materials" className="space-y-4">
+          {materials.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center text-gray-500">
+                Hələlik material yoxdur
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {materials.map((material) => (
+                <Card key={material.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1">
+                        {getMaterialIcon(material.materialType)}
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{material.title}</h3>
+                          {material.content && (
+                            <div 
+                              className="text-sm text-gray-600 mt-1"
+                              dangerouslySetInnerHTML={{ __html: material.content }}
+                            />
+                          )}
+                        </div>
+                        
+                        {/* Student Actions */}
+                        {user?.role === 'student' && (
+                          <div className="flex gap-2">
+                            {material.materialType === 'link' && material.videoUrl && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openMaterial(material)}
+                              >
+                                <ExternalLink className="h-4 w-4 mr-1" />
+                                Aç
+                              </Button>
+                            )}
+                            {material.materialType === 'document' && material.videoUrl && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openMaterial(material)}
+                              >
+                                <Download className="h-4 w-4 mr-1" />
+                                Yüklə
+                              </Button>
+                            )}
+                            {material.materialType === 'video' && material.videoUrl && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openMaterial(material)}
+                              >
+                                <Play className="h-4 w-4 mr-1" />
+                                İzlə
+                              </Button>
                             )}
                           </div>
+                        )}
+                      </div>
+
+                      {/* Teacher Actions */}
+                      {user?.role === 'teacher' && (
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Materialı sil</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Bu materialı silmək istədiyinizə əminsiniz? Bu əməliyyat geri alına bilməz.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Ləğv et</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deleteMaterialMutation.mutate(material.id)}
+                                  className="bg-red-500 hover:bg-red-600"
+                                >
+                                  Sil
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
-                      ))
-                    )}
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              ))}
+            </div>
+          )}
+        </TabsContent>
 
-              <TabsContent value="assignments" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Dərs Tapşırıqları</CardTitle>
-                    <CardDescription>
-                      Bu dərsə aid tapşırıqlar və onların statusu
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {assignments.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        Hələ tapşırıq əlavə edilməyib
-                      </p>
-                    ) : (
-                      assignments.map((assignment: any) => (
-                        <div key={assignment.id} className="p-4 border rounded-lg space-y-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-medium">{assignment.title}</h4>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {assignment.description}
-                              </p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge variant="outline">
-                                {assignment.maxPoints} bal
-                              </Badge>
-                              {user?.role === "teacher" && (
-                                <div className="flex items-center space-x-1">
-                                  <Button size="sm" variant="ghost">
-                                    <Edit className="w-3 h-3" />
-                                  </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    onClick={() => deleteAssignmentMutation.mutate(assignment.id)}
-                                    disabled={deleteAssignmentMutation.isPending}
-                                  >
-                                    <Trash className="w-3 h-3 text-red-500" />
-                                  </Button>
+        {/* Assignments Tab */}
+        <TabsContent value="assignments" className="space-y-4">
+          {assignments.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center text-gray-500">
+                Hələlik tapşırıq yoxdur
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {assignments.map((assignment) => (
+                <Card key={assignment.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <CheckCircle className="h-5 w-5 text-blue-500" />
+                          <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
+                          <Badge variant="secondary">{assignment.maxPoints} bal</Badge>
+                        </div>
+                        
+                        {assignment.description && (
+                          <div 
+                            className="text-sm text-gray-600 mb-3"
+                            dangerouslySetInnerHTML={{ __html: assignment.description }}
+                          />
+                        )}
+                        
+                        {assignment.dueDate && (
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Calendar className="h-4 w-4" />
+                            <span>Son tarix: {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}</span>
+                          </div>
+                        )}
+
+                        {/* Teacher: Show submissions */}
+                        {user?.role === 'teacher' && submissions.length > 0 && (
+                          <div className="mt-4 border-t pt-4">
+                            <h4 className="font-medium mb-2">Təqdim edilmiş işlər:</h4>
+                            <div className="space-y-2">
+                              {submissions.map((submission) => (
+                                <div key={submission.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                  <div>
+                                    <p className="font-medium">{submission.student.firstName} {submission.student.lastName}</p>
+                                    <p className="text-sm text-gray-600">
+                                      Təqdim edilib: {new Date(submission.submittedAt).toLocaleDateString('az-AZ')}
+                                    </p>
+                                    <Badge variant={
+                                      submission.status === 'graded' ? 'default' : 
+                                      submission.status === 'returned' ? 'destructive' : 'secondary'
+                                    }>
+                                      {submission.status === 'graded' ? 'Qiymətləndirilib' :
+                                       submission.status === 'returned' ? 'Geri qaytarılıb' : 'Təqdim edilib'}
+                                    </Badge>
+                                  </div>
+                                  
+                                  {submission.status === 'submitted' && (
+                                    <div className="flex gap-2">
+                                      <Dialog>
+                                        <DialogTrigger asChild>
+                                          <Button 
+                                            variant="outline" 
+                                            size="sm"
+                                            onClick={() => setSelectedSubmission(submission.id)}
+                                          >
+                                            <AlertCircle className="h-4 w-4 mr-1" />
+                                            Geri qaytар
+                                          </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                          <DialogHeader>
+                                            <DialogTitle>Tapşırığı geri qaytар</DialogTitle>
+                                            <DialogDescription>
+                                              Tələbəyə düzəliş üçün rəy yazın
+                                            </DialogDescription>
+                                          </DialogHeader>
+                                          <div className="space-y-4">
+                                            <Textarea
+                                              placeholder="Düzəliş üçün rəy yazın..."
+                                              value={feedback}
+                                              onChange={(e) => setFeedback(e.target.value)}
+                                              rows={4}
+                                            />
+                                          </div>
+                                          <DialogFooter>
+                                            <Button
+                                              onClick={() => {
+                                                if (selectedSubmission && feedback.trim()) {
+                                                  returnTaskMutation.mutate({ 
+                                                    submissionId: selectedSubmission, 
+                                                    feedback: feedback.trim() 
+                                                  });
+                                                }
+                                              }}
+                                              disabled={!feedback.trim() || returnTaskMutation.isPending}
+                                            >
+                                              Geri qaytар
+                                            </Button>
+                                          </DialogFooter>
+                                        </DialogContent>
+                                      </Dialog>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
+                              ))}
                             </div>
                           </div>
-                          
-                          {assignment.dueDate && (
-                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                              <Calendar className="w-3 h-3" />
-                              <span>
-                                Son tarix: {new Date(assignment.dueDate).toLocaleDateString("az-AZ")}
-                              </span>
-                            </div>
-                          )}
+                        )}
+                      </div>
 
-                          {user?.role === "student" && (
-                            <div className="flex items-center space-x-2 pt-2">
-                              <Button size="sm" variant="default">
-                                <Upload className="w-3 h-3 mr-2" />
-                                Cavab yüklə
+                      {/* Teacher Actions */}
+                      {user?.role === 'teacher' && (
+                        <div className="flex gap-2 ml-4">
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="h-4 w-4" />
                               </Button>
-                            </div>
-                          )}
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Tapşırığı sil</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Bu tapşırığı silmək istədiyinizə əminsiniz? Bu əməliyyat geri alına bilməz.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Ləğv et</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deleteAssignmentMutation.mutate(assignment.id)}
+                                  className="bg-red-500 hover:bg-red-600"
+                                >
+                                  Sil
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
-                      ))
-                    )}
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
-      </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
