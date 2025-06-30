@@ -50,6 +50,16 @@ function Router() {
       <Route path="/verify-certificate/:certificateId" component={VerifyCertificate} />
       <Route path="/courses/:courseId/lessons/:lessonId" component={LessonDetail} />
       <Route path="/assignments/:assignmentId/submissions" component={AssignmentSubmissions} />
+      
+      {/* Dashboard routes */}
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/teacher/dashboard" component={TeacherDashboard} />
+      <Route path="/teacher/courses" component={TeacherCourses} />
+      <Route path="/teacher/students" component={TeacherStudents} />
+      <Route path="/teacher/students/:studentId" component={TeacherStudentDetail} />
+      <Route path="/student/dashboard" component={StudentDashboard} />
+      <Route path="/course-management/:id?" component={CourseManagementPage} />
+      
       <Route component={NotFound} />
     </Switch>
   );
