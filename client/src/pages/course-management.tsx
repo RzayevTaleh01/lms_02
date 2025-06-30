@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import CourseSidebar from "@/components/course-sidebar";
 import ActiveSessionBar from "@/components/active-session-bar";
 import SessionHistory from "@/pages/session-history";
+import EnhancedLessonManagement from "@/components/enhanced-lesson-management";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -84,6 +85,7 @@ export default function CourseManagement() {
     studentId: ""
   });
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedLessonForManagement, setSelectedLessonForManagement] = useState<any>(null);
   const [isAttendanceDisabled, setIsAttendanceDisabled] = useState(false);
 
   // Data fetching
@@ -448,118 +450,11 @@ export default function CourseManagement() {
 
         {/* Content based on active tab */}
         {activeTab === "lessons" && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold">Dərslər</h2>
-              <Dialog open={isCreateLessonOpen} onOpenChange={setIsCreateLessonOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-devcode-orange hover:bg-orange-600">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Yeni Dərs
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Yeni Dərs Yaradın</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="title">Başlıq</Label>
-                      <Input
-                        id="title"
-                        value={newLesson.title}
-                        onChange={(e) => setNewLesson({ ...newLesson, title: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="description">Təsvir</Label>
-                      <Textarea
-                        id="description"
-                        value={newLesson.description}
-                        onChange={(e) => setNewLesson({ ...newLesson, description: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="duration">Müddət (dəqiqə)</Label>
-                      <Input
-                        id="duration"
-                        type="number"
-                        value={newLesson.duration}
-                        onChange={(e) => setNewLesson({ ...newLesson, duration: e.target.value })}
-                      />
-                    </div>
-                    <Button onClick={handleCreateLesson} disabled={createLessonMutation.isPending} className="bg-devcode-orange hover:bg-orange-600">
-                      Yaradın
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid gap-4">
-              {lessons.map((lesson: any) => (
-                <Card key={lesson.id}>
-                  <CardContent className="p-4">
-                    {editingLesson?.id === lesson.id ? (
-                      <div className="space-y-4">
-                        <Input
-                          value={editingLesson.title}
-                          onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
-                        />
-                        <Textarea
-                          value={editingLesson.description}
-                          onChange={(e) => setEditingLesson({ ...editingLesson, description: e.target.value })}
-                        />
-                        <Input
-                          type="number"
-                          value={editingLesson.duration}
-                          onChange={(e) => setEditingLesson({ ...editingLesson, duration: e.target.value })}
-                        />
-                        <div className="flex space-x-2">
-                          <Button onClick={handleUpdateLesson} size="sm" className="bg-devcode-orange hover:bg-orange-600">
-                            <Save className="w-4 h-4 mr-2" />
-                            Yadda Saxla
-                          </Button>
-                          <Button variant="outline" onClick={() => setEditingLesson(null)} size="sm">
-                            <X className="w-4 h-4 mr-2" />
-                            Ləğv Et
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 flex-1">
-                          <div className="w-10 h-10 bg-devcode-orange rounded-lg flex items-center justify-center text-white">
-                            <Video className="w-5 h-5" />
-                          </div>
-                          <div className="flex-1">
-                            <Link
-                              href={`/courses/${courseId}/lessons/${lesson.id}`}
-                              className="block hover:text-devcode-orange transition-colors"
-                            >
-                              <h3 className="font-medium hover:underline">{lesson.title}</h3>
-                              <p className="text-sm text-devcode-gray">{lesson.description}</p>
-                              <div className="flex items-center space-x-2 text-sm text-devcode-gray mt-1">
-                                <Clock className="w-4 h-4" />
-                                <span>{lesson.duration} dəqiqə</span>
-                              </div>
-                            </Link>
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setEditingLesson(lesson)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+          <EnhancedLessonManagement 
+            courseId={parseInt(courseId)}
+            selectedLesson={selectedLessonForManagement}
+            onSelectLesson={setSelectedLessonForManagement}
+          />
         )}
 
         {activeTab === "students" && (

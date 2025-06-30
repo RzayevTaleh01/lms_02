@@ -274,8 +274,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const courseId = parseInt(req.params.courseId);
-      const lessonData = insertLessonSchema.parse({ ...req.body, courseId });
-      const lesson = await storage.createLesson(lessonData);
+      
+      // Get the next order index for this course
+      const existingLessons = await storage.getLessonsByCourse(courseId);
+      const nextOrderIndex = existingLessons.length + 1;
+      
+      // Prepare lesson data with proper type conversion
+      const lessonData = {
+        ...req.body,
+        courseId,
+        duration: req.body.duration ? parseInt(req.body.duration) : null,
+        orderIndex: req.body.orderIndex ? parseInt(req.body.orderIndex) : nextOrderIndex
+      };
+      
+      const validatedData = insertLessonSchema.parse(lessonData);
+      const lesson = await storage.createLesson(validatedData);
       res.status(201).json(lesson);
     } catch (error) {
       console.error("Error creating lesson:", error);
