@@ -252,6 +252,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all enrollments (for teachers to see their students)
+  app.get('/api/enrollments/all', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can view all enrollments" });
+      }
+
+      const enrollments = await storage.getAllEnrollments();
+      res.json(enrollments);
+    } catch (error) {
+      console.error("Error fetching all enrollments:", error);
+      res.status(500).json({ message: "Failed to fetch all enrollments" });
+    }
+  });
+
   app.post('/api/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       // If studentId is provided in body (for teachers adding students), use it

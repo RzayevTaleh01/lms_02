@@ -65,6 +65,7 @@ export interface IStorage {
   getStudentEnrollments(studentId: string): Promise<(Enrollment & { course: Course })[]>;
   enrollStudent(enrollment: InsertEnrollment): Promise<Enrollment>;
   updateEnrollmentProgress(id: number, progress: number): Promise<void>;
+  getAllEnrollments(): Promise<Enrollment[]>;
 
   // Assignment operations
   getAssignmentsByCourse(courseId: number): Promise<Assignment[]>;
@@ -135,6 +136,8 @@ export interface IStorage {
 
   // Active session operations
   getAllActiveSessions(): Promise<(LessonSession & { courseName: string })[]>;
+
+  getTeacherSessionHistory(teacherId: string): Promise<(LessonSession & { courseName: string; attendanceCount?: number })[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -250,6 +253,10 @@ export class DatabaseStorage implements IStorage {
       .update(enrollments)
       .set({ progress })
       .where(eq(enrollments.id, id));
+  }
+
+   async getAllEnrollments(): Promise<Enrollment[]> {
+    return await db.select().from(enrollments);
   }
 
   // Assignment operations
@@ -437,7 +444,7 @@ export class DatabaseStorage implements IStorage {
           .select({ count: count() })
           .from(attendance)
           .where(eq(attendance.sessionId, session.id));
-        
+
         return {
           ...session,
           attendanceCount: attendanceCount[0]?.count || 0
@@ -579,7 +586,7 @@ export class DatabaseStorage implements IStorage {
           .select({ count: count() })
           .from(attendance)
           .where(eq(attendance.sessionId, session.id));
-        
+
         return {
           ...session,
           attendanceCount: attendanceCount[0]?.count || 0

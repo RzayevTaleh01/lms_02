@@ -26,9 +26,16 @@ export default function TeacherStudents() {
     queryKey: ["/api/courses"],
   });
 
-  // Fetch all enrollments
+  // Fetch all enrollments (not just teacher's enrollments)
   const { data: enrollments = [] } = useQuery({
-    queryKey: ["/api/enrollments"],
+    queryKey: ["/api/all-enrollments"],
+    queryFn: async () => {
+      const response = await fetch("/api/enrollments/all");
+      if (!response.ok) {
+        throw new Error("Failed to fetch enrollments");
+      }
+      return response.json();
+    }
   });
 
   useEffect(() => {
