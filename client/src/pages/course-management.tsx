@@ -857,8 +857,7 @@ export default function CourseManagement() {
 
           {activeTab === "lesson-detail" && selectedLesson && (
               <LessonDetailView
-                  ```text
-lesson={selectedLesson}
+                  lesson={selectedLesson}
                   courseId={parseInt(id!)}
                   onBack={() => {
                       setSelectedLesson(null);
