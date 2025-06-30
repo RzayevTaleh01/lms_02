@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +30,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           onClick={onClose}
         />
       )}
-      
+
       {/* Sidebar */}
       <div className={cn(
         "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
@@ -63,7 +62,7 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             const isActive = item.exact 
               ? location === item.href 
               : location.startsWith(item.href);
-            
+
             return (
               <Link
                 key={item.href}
@@ -255,7 +254,7 @@ export default function StudentAssignments() {
                 if (!submission.assignment || !submission.assignment.course) {
                   return null;
                 }
-                
+
                 return (
                   <Card key={submission.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
@@ -358,7 +357,7 @@ export default function StudentAssignments() {
                   </CardContent>
                 </Card>
                 );
-              }).filter(Boolean) // Remove null entries
+              })
             )}
           </div>
         </div>

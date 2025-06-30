@@ -406,6 +406,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const assignmentId = parseInt(req.params.assignmentId);
 
+      // Check if student has already submitted this assignment
+      const existingSubmission = await storage.getSubmissionByAssignmentAndStudent(assignmentId, req.user!.id);
+      if (existingSubmission) {
+        return res.status(400).json({ message: "Bu tapşırığı artıq göndərmisiniz" });
+      }
+
       const submissionData = insertSubmissionSchema.parse({ 
         ...req.body, 
         assignmentId, 

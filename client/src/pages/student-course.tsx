@@ -29,7 +29,8 @@ import {
   GraduationCap,
   ClipboardList,
   User,
-  LogOut
+  LogOut,
+  AlertCircle
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
@@ -186,8 +187,9 @@ export default function StudentCourse() {
       setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
       toast({ title: "Tapşırıq uğurla göndərildi!" });
     },
-    onError: () => {
-      toast({ title: "Xəta", description: "Tapşırıq göndərilərkən xəta baş verdi", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Tapşırıq göndərilərkən xəta baş verdi";
+      toast({ title: errorMessage, variant: "destructive" });
     }
   });
 
@@ -494,13 +496,23 @@ export default function StudentCourse() {
                                       </div>
 
                                       <div>
-                                        <Label htmlFor="githubUrl">GitHub Linki (İxtiyari)</Label>
+                                        <Label htmlFor="githubUrl">GitHub Link (isteğe bağlı)</Label>
                                         <Input
                                           id="githubUrl"
-                                          placeholder="https://github.com/username/repo"
+                                          type="url"
+                                          placeholder="https://github.com/username/repository"
                                           value={submissionForm.githubUrl}
                                           onChange={(e) => setSubmissionForm({ ...submissionForm, githubUrl: e.target.value })}
                                         />
+                                      </div>
+
+                                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                                        <div className="flex items-center space-x-2">
+                                          <AlertCircle className="w-4 h-4 text-amber-600" />
+                                          <p className="text-sm text-amber-800">
+                                            <strong>Diqqət:</strong> Hər tapşırığı yalnız bir dəfə göndərə bilərsiniz. Göndərdikdən sonra yenidən dəyişdirmək mümkün olmayacaq.
+                                          </p>
+                                        </div>
                                       </div>
 
                                       <div>
