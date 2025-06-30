@@ -57,31 +57,6 @@ const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-2">
-          {menuItems.map((item) => {
-            const isActive = item.exact 
-              ? location === item.href 
-              : location.startsWith(item.href);
-            
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
-                  isActive 
-                    ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
-                    : "text-gray-700 hover:bg-gray-50"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Navigation */}
         <nav className="p-4 space-y-2 flex-1">
           {menuItems.map((item) => {
             const isActive = item.exact 

@@ -4,8 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
-import { lazy } from "react";
-
 // Public pages
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -24,6 +22,9 @@ import TeacherStudentDetail from "@/pages/teacher-student-detail";
 import StudentDashboard from "@/pages/student-dashboard";
 import StudentCourse from "@/pages/student-course";
 import StudentCourses from "@/pages/student-courses";
+import StudentAttendance from "@/pages/student-attendance";
+import StudentGrades from "@/pages/student-grades";
+import StudentProfile from "@/pages/student-profile";
 import CourseManagementPage from "@/pages/course-management";
 import LessonDetail from "@/pages/lesson-detail";
 
@@ -62,9 +63,9 @@ function Router() {
       {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
       <Route path="/student/courses" component={StudentCourses} />
       <Route path="/student/course/:id" component={StudentCourse} />
-      <Route path="/student/attendance" component={lazy(() => import("./pages/student-attendance"))} />
-      <Route path="/student/grades" component={lazy(() => import("./pages/student-grades"))} />
-      <Route path="/student/profile" component={lazy(() => import("./pages/student-profile"))} />
+      {isAuthenticated && user?.role === 'student' && <Route path="/student/attendance" component={StudentAttendance} />}
+      {isAuthenticated && user?.role === 'student' && <Route path="/student/grades" component={StudentGrades} />}
+      {isAuthenticated && user?.role === 'student' && <Route path="/student/profile" component={StudentProfile} />}
 
       <Route component={NotFound} />
     </Switch>
