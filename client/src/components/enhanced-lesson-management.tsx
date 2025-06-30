@@ -28,10 +28,8 @@ import {
   File,
   Link
 } from "lucide-react";
-// @ts-ignore
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-// @ts-ignore
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface EnhancedLessonManagementProps {
   courseId: number;
@@ -264,23 +262,21 @@ export default function EnhancedLessonManagement({
 
                   <div>
                     <Label>Dərs Məzmunu (Detallı Təsvir)</Label>
-                    <div className="mt-2 border rounded-md">
-                      <CKEditor
-                        editor={ClassicEditor}
-                        data={lessonForm.content}
-                        onChange={(event: any, editor: any) => {
-                          const data = editor.getData();
-                          setLessonForm({ ...lessonForm, content: data });
-                        }}
-                        config={{
+                    <div className="mt-2">
+                      <ReactQuill
+                        theme="snow"
+                        value={lessonForm.content}
+                        onChange={(content) => setLessonForm({ ...lessonForm, content })}
+                        modules={{
                           toolbar: [
-                            'heading', '|',
-                            'bold', 'italic', 'underline', '|',
-                            'bulletedList', 'numberedList', '|',
-                            'link', 'blockQuote', '|',
-                            'undo', 'redo'
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link', 'blockquote'],
+                            ['clean']
                           ]
                         }}
+                        style={{ height: '200px', marginBottom: '50px' }}
                       />
                     </div>
                   </div>
@@ -491,23 +487,21 @@ export default function EnhancedLessonManagement({
 
                     <div>
                       <Label>Material Təsviri</Label>
-                      <div className="mt-2 border rounded-md">
-                        <CKEditor
-                          editor={ClassicEditor}
-                          data={materialForm.content}
-                          onChange={(event: any, editor: any) => {
-                            const data = editor.getData();
-                            setMaterialForm({ ...materialForm, content: data });
-                          }}
-                          config={{
+                      <div className="mt-2">
+                        <ReactQuill
+                          theme="snow"
+                          value={materialForm.content}
+                          onChange={(content) => setMaterialForm({ ...materialForm, content })}
+                          modules={{
                             toolbar: [
-                              'heading', '|',
-                              'bold', 'italic', 'underline', '|',
-                              'bulletedList', 'numberedList', '|',
-                              'link', 'blockQuote', '|',
-                              'undo', 'redo'
+                              [{ 'header': [1, 2, 3, false] }],
+                              ['bold', 'italic', 'underline'],
+                              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                              ['link', 'blockquote'],
+                              ['clean']
                             ]
                           }}
+                          style={{ height: '150px', marginBottom: '50px' }}
                         />
                       </div>
                     </div>
@@ -630,23 +624,21 @@ export default function EnhancedLessonManagement({
 
                     <div>
                       <Label>Tapşırıq Təsviri</Label>
-                      <div className="mt-2 border rounded-md">
-                        <CKEditor
-                          editor={ClassicEditor}
-                          data={assignmentForm.description}
-                          onChange={(event: any, editor: any) => {
-                            const data = editor.getData();
-                            setAssignmentForm({ ...assignmentForm, description: data });
-                          }}
-                          config={{
+                      <div className="mt-2">
+                        <ReactQuill
+                          theme="snow"
+                          value={assignmentForm.description}
+                          onChange={(description) => setAssignmentForm({ ...assignmentForm, description })}
+                          modules={{
                             toolbar: [
-                              'heading', '|',
-                              'bold', 'italic', 'underline', '|',
-                              'bulletedList', 'numberedList', '|',
-                              'link', 'blockQuote', '|',
-                              'undo', 'redo'
+                              [{ 'header': [1, 2, 3, false] }],
+                              ['bold', 'italic', 'underline'],
+                              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                              ['link', 'blockquote'],
+                              ['clean']
                             ]
                           }}
+                          style={{ height: '150px', marginBottom: '50px' }}
                         />
                       </div>
                     </div>

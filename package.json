@@ -14,8 +14,6 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
-    "@ckeditor/ckeditor5-react": "^9.5.0",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
@@ -69,11 +67,13 @@
     "openid-client": "^6.6.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
+    "quill": "^2.0.3",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.55.0",
     "react-icons": "^5.4.0",
+    "react-quill": "^2.0.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
     "tailwind-merge": "^2.6.0",
