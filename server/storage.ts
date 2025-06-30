@@ -905,7 +905,7 @@ export const storage = new DatabaseStorage();
 export async function createDefaultUsers() {
   try {
     // Check if default users already exist
-    const existingAdmin = awaitstorage.getUserByEmail('admin@devcode.az');
+    const existingAdmin = await storage.getUserByEmail('admin@devcode.az');
     const existingTeacher = await storage.getUserByEmail('teacher@devcode.az');
     const existingStudent = await storage.getUserByEmail('student@devcode.az');
 
