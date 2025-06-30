@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -15,19 +15,8 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
   const { user, isAuthenticated } = useAuth();
-
-  const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      const dashboardLink = getDashboardLink();
-      if (location === "/") {
-        setLocation(dashboardLink);
-      }
-    }
-  }, [isAuthenticated, location]);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -88,13 +77,6 @@ export default function Navbar() {
                   </span>
                 </Link>
               ))}
-              {isAuthenticated && (  //Conditionally render dashboard link
-                <Link href={getDashboardLink()}>
-                  <span className="text-devcode-dark hover:text-devcode-orange cursor-pointer">
-                    Dashboard
-                  </span>
-                </Link>
-              )}
             </div>
 
             {/* Auth Section */}
@@ -243,10 +225,6 @@ export default function Navbar() {
           setIsLoginModalOpen(false);
           setIsSignupModalOpen(true);
         }}
-        onLoginSuccess={() => {
-          const dashboardLink = getDashboardLink();
-          setLocation(dashboardLink);
-        }}
       />
 
       <SignupModal 
@@ -255,10 +233,6 @@ export default function Navbar() {
         onSwitchToLogin={() => {
           setIsSignupModalOpen(false);
           setIsLoginModalOpen(true);
-        }}
-        onSignupSuccess={() => {
-          const dashboardLink = getDashboardLink();
-          setLocation(dashboardLink);
         }}
       />
     </>
