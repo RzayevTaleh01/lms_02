@@ -224,23 +224,27 @@ export default function StudentCourse() {
     let videoId = "";
     
     // Better YouTube URL parsing
-    if (url.includes("youtu.be/")) {
-      const parts = url.split("youtu.be/")[1];
-      videoId = parts.split("?")[0].split("&")[0];
-    } else if (url.includes("youtube.com/watch?v=")) {
-      const urlParams = new URL(url).searchParams;
-      videoId = urlParams.get("v") || "";
-    } else if (url.includes("youtube.com/embed/")) {
-      const parts = url.split("youtube.com/embed/")[1];
-      videoId = parts.split("?")[0].split("&")[0];
+    try {
+      if (url.includes("youtu.be/")) {
+        const parts = url.split("youtu.be/")[1];
+        videoId = parts.split("?")[0].split("&")[0];
+      } else if (url.includes("youtube.com/watch?v=")) {
+        const urlParams = new URL(url).searchParams;
+        videoId = urlParams.get("v") || "";
+      } else if (url.includes("youtube.com/embed/")) {
+        const parts = url.split("youtube.com/embed/")[1];
+        videoId = parts.split("?")[0].split("&")[0];
+      }
+    } catch (error) {
+      console.error("Error parsing YouTube URL:", error);
     }
 
     if (videoId) {
       return (
-        <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg bg-black">
           <iframe
             className="absolute top-0 left-0 w-full h-full"
-            src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+            src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1`}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -251,7 +255,7 @@ export default function StudentCourse() {
     }
 
     return (
-      <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className="w-full aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
           <Video className="w-12 h-12 mx-auto text-gray-400 mb-2" />
           <p className="text-sm text-gray-500 mb-2">Video dəstəklənmir</p>
@@ -298,12 +302,12 @@ export default function StudentCourse() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 lg:ml-64">
       {/* Main Sidebar */}
       <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Container */}
-      <div className={cn("flex min-h-screen transition-all duration-300", sidebarOpen ? "lg:ml-64" : "lg:ml-64")}>
+      <div className="flex min-h-screen">
         {/* Content Area */}
         <div className="flex-1 flex flex-col">
           {/* Top Navigation */}
@@ -327,7 +331,7 @@ export default function StudentCourse() {
           {/* Main Content Layout */}
           <div className="flex-1 flex">
             {/* Course Content Sidebar */}
-            <div className="w-80 border-r bg-white hidden lg:block">
+            <div className="w-80 border-r bg-white hidden lg:block flex-shrink-0">
               <div className="p-4 border-b">
                 <h2 className="text-lg font-semibold">Dərslər</h2>
                 <p className="text-sm text-gray-500">Kursun məzmunu</p>
@@ -385,12 +389,12 @@ export default function StudentCourse() {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-w-0">
               {selectedLesson ? (
                 <>
                   {/* Video Section */}
                   <div className="p-6 border-b bg-white">
-                    <div className="mb-4">
+                    <div className="mb-6">
                       <h2 className="text-2xl font-bold mb-2">{selectedLesson.title}</h2>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         {selectedLesson.duration && (
@@ -403,13 +407,15 @@ export default function StudentCourse() {
                     </div>
 
                     {selectedLesson.videoUrl && (
-                      <div className="mb-6">
-                        {renderYouTubeVideo(selectedLesson.videoUrl)}
+                      <div className="mb-8">
+                        <div className="max-w-5xl mx-auto">
+                          {renderYouTubeVideo(selectedLesson.videoUrl)}
+                        </div>
                       </div>
                     )}
 
                     {/* Lesson Completion Button */}
-                    <div className="mb-6">
+                    <div className="mb-6 max-w-md mx-auto">
                       {isLessonCompleted(selectedLesson.id) ? (
                         <div className="flex items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg">
                           <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
