@@ -105,37 +105,83 @@ export default function StudentAttendance() {
     enabled: !!user
   });
 
-  // Mock attendance data - in real app, this would come from an API
-  const attendanceData = enrollments.map((enrollment) => ({
-    courseId: enrollment.courseId,
-    courseName: enrollment.course.title,
-    totalSessions: 12,
-    attendedSessions: 8,
-    missedSessions: 4,
-    attendanceRate: Math.round((8 / 12) * 100),
-    lastAttendance: new Date().toISOString(),
-    sessions: [
-      { date: '2024-01-15', status: 'present', topic: 'HTML əsasları' },
-      { date: '2024-01-17', status: 'present', topic: 'CSS fundamentals' },
-      { date: '2024-01-19', status: 'absent', topic: 'JavaScript giriş' },
-      { date: '2024-01-22', status: 'present', topic: 'DOM manipulyasiya' },
-      { date: '2024-01-24', status: 'present', topic: 'Event handling' },
-      { date: '2024-01-26', status: 'absent', topic: 'API integration' },
-      { date: '2024-01-29', status: 'present', topic: 'React giriş' },
-      { date: '2024-01-31', status: 'present', topic: 'Components' },
-      { date: '2024-02-02', status: 'absent', topic: 'State management' },
-      { date: '2024-02-05', status: 'present', topic: 'Hooks' },
-      { date: '2024-02-07', status: 'present', topic: 'Project work' },
-      { date: '2024-02-09', status: 'absent', topic: 'Final presentation' },
-    ]
-  }));
+  // Fetch attendance data for each enrolled course
+  const attendanceQueries = useQuery({
+    queryKey: ["/api/student/attendance", user?.id],
+    queryFn: async () => {
+      if (!enrollments.length) return [];
+      
+      const attendancePromises = enrollments.map(async (enrollment) => {
+        // Get all sessions for this course
+        const sessionsResponse = await fetch(`/api/courses/${enrollment.courseId}/sessions`, {
+          credentials: "include"
+        });
+        const sessions = await sessionsResponse.json();
 
-  if (isLoading) {
+        // Get attendance records for this student in all sessions
+        const attendancePromises = sessions.map(async (session: any) => {
+          try {
+            const attendanceResponse = await fetch(`/api/sessions/${session.id}/attendance`, {
+              credentials: "include"
+            });
+            const sessionAttendance = await attendanceResponse.json();
+            
+            // Find this student's attendance in this session
+            const studentAttendance = sessionAttendance.find((record: any) => 
+              record.studentId === user?.id
+            );
+            
+            return {
+              sessionId: session.id,
+              sessionName: session.sessionName,
+              date: session.startTime,
+              status: studentAttendance ? studentAttendance.status : 'absent',
+              duration: session.duration
+            };
+          } catch (error) {
+            return {
+              sessionId: session.id,
+              sessionName: session.sessionName,
+              date: session.startTime,
+              status: 'absent',
+              duration: session.duration
+            };
+          }
+        });
+
+        const attendanceRecords = await Promise.all(attendancePromises);
+        
+        // Calculate statistics
+        const totalSessions = sessions.length;
+        const attendedSessions = attendanceRecords.filter(record => record.status === 'present').length;
+        const missedSessions = totalSessions - attendedSessions;
+        const attendanceRate = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : 0;
+
+        return {
+          courseId: enrollment.courseId,
+          courseName: enrollment.course.title,
+          totalSessions,
+          attendedSessions,
+          missedSessions,
+          attendanceRate,
+          lastAttendance: sessions.length > 0 ? sessions[sessions.length - 1].startTime : null,
+          sessions: attendanceRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        };
+      });
+
+      return Promise.all(attendancePromises);
+    },
+    enabled: !!user && enrollments.length > 0
+  });
+
+  const attendanceData = attendanceQueries.data || [];
+
+  if (isLoading || attendanceQueries.isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex">
         <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 lg:ml-0 flex items-center justify-center">
-          <div className="text-center">Yüklənir...</div>
+          <div className="text-center">Davamiyyət məlumatları yüklənir...</div>
         </div>
       </div>
     );
@@ -188,22 +234,22 @@ export default function StudentAttendance() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">İştirak Etdiyi Dərslər</CardTitle>
+                <CardTitle className="text-sm font-medium">İ/E Oranı</CardTitle>
                 <CheckCircle className="h-4 w-4 text-green-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">
-                  {attendanceData.reduce((acc, course) => acc + course.attendedSessions, 0)}
+                  {attendanceData.reduce((acc, course) => acc + course.attendedSessions, 0)} / {attendanceData.reduce((acc, course) => acc + course.totalSessions, 0)}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Ümumi iştirak edilmiş dərslər
+                  İştirak Etdi / Ümumi Dərslər
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Qaçırılan Dərslər</CardTitle>
+                <CardTitle className="text-sm font-medium">Qaçırılan (QB)</CardTitle>
                 <XCircle className="h-4 w-4 text-red-600" />
               </CardHeader>
               <CardContent>
@@ -211,7 +257,7 @@ export default function StudentAttendance() {
                   {attendanceData.reduce((acc, course) => acc + course.missedSessions, 0)}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Ümumi qaçırılan dərslər
+                  Qaçırılan dərslər sayı
                 </p>
               </CardContent>
             </Card>
@@ -249,42 +295,57 @@ export default function StudentAttendance() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">{course.attendedSessions}</div>
-                        <p className="text-sm text-gray-600">İştirak</p>
+                        <div className="text-2xl font-bold text-green-600">{course.attendedSessions}/{course.totalSessions}</div>
+                        <p className="text-sm text-gray-600">İ/E Oranı</p>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-red-600">{course.missedSessions}</div>
-                        <p className="text-sm text-gray-600">Qaçırılan</p>
+                        <p className="text-sm text-gray-600">QB (Qaçırıb)</p>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">{course.totalSessions}</div>
-                        <p className="text-sm text-gray-600">Ümumi</p>
+                        <div className="text-2xl font-bold text-blue-600">{course.attendanceRate}%</div>
+                        <p className="text-sm text-gray-600">Davamiyyət Faizi</p>
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <h4 className="font-medium text-gray-900">Son Dərslər</h4>
                       <div className="space-y-2 max-h-60 overflow-y-auto">
-                        {course.sessions.map((session, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center space-x-3">
-                              {session.status === 'present' ? (
-                                <CheckCircle className="h-5 w-5 text-green-600" />
-                              ) : (
-                                <XCircle className="h-5 w-5 text-red-600" />
-                              )}
-                              <div>
-                                <p className="font-medium text-gray-900">{session.topic}</p>
-                                <p className="text-sm text-gray-600">
-                                  {new Date(session.date).toLocaleDateString('az-AZ')}
-                                </p>
+                        {course.sessions.length === 0 ? (
+                          <p className="text-gray-500 text-center py-4">Hələ heç bir dərs keçirilməyib</p>
+                        ) : (
+                          course.sessions.map((session, index) => (
+                            <div key={session.sessionId} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center space-x-3">
+                                {session.status === 'present' ? (
+                                  <CheckCircle className="h-5 w-5 text-green-600" />
+                                ) : (
+                                  <XCircle className="h-5 w-5 text-red-600" />
+                                )}
+                                <div>
+                                  <p className="font-medium text-gray-900">{session.sessionName}</p>
+                                  <p className="text-sm text-gray-600">
+                                    {new Date(session.date).toLocaleDateString('az-AZ', {
+                                      year: 'numeric',
+                                      month: 'long', 
+                                      day: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </p>
+                                  {session.duration && (
+                                    <p className="text-xs text-gray-500">
+                                      Müddət: {session.duration} dəqiqə
+                                    </p>
+                                  )}
+                                </div>
                               </div>
+                              <Badge variant={session.status === 'present' ? "default" : "destructive"}>
+                                {session.status === 'present' ? 'İştirak Etdi' : 'Qaçırdı'}
+                              </Badge>
                             </div>
-                            <Badge variant={session.status === 'present' ? "default" : "destructive"}>
-                              {session.status === 'present' ? 'İştirak' : 'Qaçırıb'}
-                            </Badge>
-                          </div>
-                        ))}
+                          ))
+                        )}
                       </div>
                     </div>
                   </CardContent>
