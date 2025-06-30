@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function StudentCourse() {
   const { id } = useParams();
-  const { user } = useUser();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [submissionForm, setSubmissionForm] = useState({

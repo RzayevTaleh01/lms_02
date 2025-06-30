@@ -8,7 +8,7 @@ import { BookOpen, Calendar, Trophy, Target, Clock, Users } from "lucide-react";
 import { Link } from "wouter";
 
 export default function StudentDashboard() {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const { data: enrollments = [], isLoading } = useQuery({
     queryKey: ["/api/enrollments"],
