@@ -154,23 +154,25 @@ export default function CourseDetail() {
                     </div>
                   ) : (
                     lessons.map((lesson: any, index: number) => (
-                      <Card key={lesson.id}>
+                      <Card key={lesson.id} className="hover:shadow-md transition-shadow">
                         <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-devcode-orange rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                                {index + 1}
+                          <Link href={`/courses/${id}/lessons/${lesson.id}`} className="block">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-devcode-orange rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                  {index + 1}
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-devcode-dark hover:text-devcode-orange transition-colors">{lesson.title}</h4>
+                                  <p className="text-sm text-devcode-gray">{lesson.description}</p>
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="font-medium text-devcode-dark">{lesson.title}</h4>
-                                <p className="text-sm text-devcode-gray">{lesson.description}</p>
+                              <div className="flex items-center space-x-2 text-sm text-devcode-gray">
+                                <Play className="w-4 h-4" />
+                                <span>Dərsə başla</span>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2 text-sm text-devcode-gray">
-                              <Clock className="w-4 h-4" />
-                              <span>{lesson.duration} min</span>
-                            </div>
-                          </div>
+                          </Link>
                         </CardContent>
                       </Card>
                     ))

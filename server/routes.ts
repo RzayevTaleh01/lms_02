@@ -267,6 +267,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/courses/:courseId/lessons/:lessonId', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const lesson = await storage.getLesson(lessonId);
+      if (!lesson) {
+        return res.status(404).json({ message: "Lesson not found" });
+      }
+      res.json(lesson);
+    } catch (error) {
+      console.error("Error fetching lesson:", error);
+      res.status(500).json({ message: "Failed to fetch lesson" });
+    }
+  });
+
   app.post('/api/courses/:courseId/lessons', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
@@ -344,6 +358,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching assignments:", error);
       res.status(500).json({ message: "Failed to fetch assignments" });
+    }
+  });
+
+  app.get('/api/assignments/:assignmentId', async (req, res) => {
+    try {
+      const assignmentId = parseInt(req.params.assignmentId);
+      const assignment = await storage.getAssignment(assignmentId);
+      if (!assignment) {
+        return res.status(404).json({ message: "Assignment not found" });
+      }
+      res.json(assignment);
+    } catch (error) {
+      console.error("Error fetching assignment:", error);
+      res.status(500).json({ message: "Failed to fetch assignment" });
     }
   });
 
