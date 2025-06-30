@@ -705,7 +705,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const lessonId = parseInt(req.params.lessonId);
-      const assignmentData = insertLessonAssignmentSchema.parse({ ...req.body, lessonId });
+      
+      // Convert dueDate string to Date object if provided
+      const requestData = { ...req.body, lessonId };
+      if (requestData.dueDate && typeof requestData.dueDate === 'string') {
+        requestData.dueDate = new Date(requestData.dueDate);
+      }
+      
+      const assignmentData = insertLessonAssignmentSchema.parse(requestData);
       const assignment = await storage.createLessonAssignment(assignmentData);
       res.status(201).json(assignment);
     } catch (error) {
