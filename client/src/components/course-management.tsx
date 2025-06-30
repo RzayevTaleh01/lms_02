@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -386,39 +387,44 @@ export default function CourseManagement() {
                       <DialogHeader>
                         <DialogTitle>Yeni Dərs Əlavə Et</DialogTitle>
                       </DialogHeader>
-                      
-                      <div className="space-y-4">
+                      <div className="grid gap-4 py-4">
                         <div>
-                          <Label htmlFor="lessonTitle">Dərs Başlığı</Label>
+                          <Label htmlFor="lessonTitle">Dərs Adı</Label>
                           <Input
                             id="lessonTitle"
                             value={lessonForm.title}
                             onChange={(e) => setLessonForm(prev => ({ ...prev, title: e.target.value }))}
-                            placeholder="Dərs başlığını daxil edin"
+                            placeholder="Məs: HTML Əsasları"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="lessonDescription">Qısa Təsvir</Label>
+                          <Label htmlFor="lessonDescription">Təsvir</Label>
                           <Textarea
                             id="lessonDescription"
                             value={lessonForm.description}
                             onChange={(e) => setLessonForm(prev => ({ ...prev, description: e.target.value }))}
-                            placeholder="Dərsin qısa təsvirini daxil edin"
-                            rows={3}
+                            placeholder="Dərsin təsviri"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="orderIndex">Sıra</Label>
+                          <Label htmlFor="videoUrl">Video URL</Label>
                           <Input
-                            id="orderIndex"
-                            type="number"
-                            value={lessonForm.orderIndex}
-                            onChange={(e) => setLessonForm(prev => ({ ...prev, orderIndex: parseInt(e.target.value) }))}
-                            placeholder="1"
-                            min="1"
+                            id="videoUrl"
+                            value={lessonForm.videoUrl}
+                            onChange={(e) => setLessonForm(prev => ({ ...prev, videoUrl: e.target.value }))}
+                            placeholder="https://youtube.com/watch?v=..."
                           />
                         </div>
-                      
+                        <div>
+                          <Label htmlFor="lessonDuration">Müddət (dəqiqə)</Label>
+                          <Input
+                            id="lessonDuration"
+                            type="number"
+                            value={lessonForm.duration}
+                            onChange={(e) => setLessonForm(prev => ({ ...prev, duration: e.target.value }))}
+                            placeholder="45"
+                          />
+                        </div>
                         <Button onClick={handleCreateLesson} disabled={createLessonMutation.isPending}>
                           {createLessonMutation.isPending ? "Əlavə edilir..." : "Dərsi Əlavə Et"}
                         </Button>

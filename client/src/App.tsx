@@ -11,10 +11,8 @@ import Home from "@/pages/home";
 import Courses from "@/pages/courses";
 import CourseDetail from "@/pages/course-detail";
 import Blog from "@/pages/blog";
-import VerifyCertificate from "./pages/verify-certificate";
-import LessonDetail from "./pages/lesson-detail";
-import AssignmentSubmissions from "./pages/assignment-submissions";
-import NotFound from "./pages/not-found";
+import VerifyCertificate from "@/pages/verify-certificate";
+import Contact from "@/pages/contact";
 
 // Dashboard pages
 import AdminDashboard from "@/pages/admin-dashboard";
@@ -25,7 +23,7 @@ import TeacherStudentDetail from "@/pages/teacher-student-detail";
 import StudentDashboard from "@/pages/student-dashboard";
 import CourseManagementPage from "@/pages/course-management";
 
-
+import NotFound from "@/pages/not-found";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -47,18 +45,16 @@ function Router() {
       <Route path="/course/:id" component={CourseDetail} />
       <Route path="/blog" component={Blog} />
       <Route path="/verify" component={VerifyCertificate} />
-      <Route path="/verify-certificate/:certificateId" component={VerifyCertificate} />
-      <Route path="/courses/:courseId/lessons/:lessonId" component={LessonDetail} />
-      <Route path="/assignments/:assignmentId/submissions" component={AssignmentSubmissions} />
+      <Route path="/contact" component={Contact} />
       
-      {/* Dashboard routes */}
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/teacher/dashboard" component={TeacherDashboard} />
-      <Route path="/teacher/courses" component={TeacherCourses} />
-      <Route path="/teacher/students" component={TeacherStudents} />
-      <Route path="/teacher/students/:studentId" component={TeacherStudentDetail} />
-      <Route path="/student/dashboard" component={StudentDashboard} />
-      <Route path="/course-management/:id?" component={CourseManagementPage} />
+      {/* Role-based dashboards - only for authenticated users */}
+      {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses" component={TeacherCourses} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses/:id" component={CourseManagementPage} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students" component={TeacherStudents} />}
+      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students/:studentId" component={TeacherStudentDetail} />}
+      {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
       
       <Route component={NotFound} />
     </Switch>
