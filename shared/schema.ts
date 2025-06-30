@@ -332,6 +332,8 @@ export const insertCourseSchema = createInsertSchema(courses).omit({
   updatedAt: true,
   enrollmentCount: true,
   rating: true,
+}).extend({
+  price: z.string().optional()
 });
 
 export const insertLessonSchema = createInsertSchema(lessons).omit({
