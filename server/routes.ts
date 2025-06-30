@@ -760,6 +760,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific lesson
+  app.get('/api/courses/:courseId/lessons/:lessonId', async (req, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const lesson = await storage.getLesson(lessonId);
+      if (!lesson) {
+        return res.status(404).json({ message: "Lesson not found" });
+      }
+      res.json(lesson);
+    } catch (error) {
+      console.error("Error fetching lesson:", error);
+      res.status(500).json({ message: "Failed to fetch lesson" });
+    }
+  });
+
+  // Get student submissions for a lesson
+  app.get('/api/submissions/lesson/:lessonId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const submissions = await storage.getSubmissionsByLessonAndStudent(lessonId, req.user!.id);
+      res.json(submissions);
+    } catch (error) {
+      console.error("Error fetching lesson submissions:", error);
+      res.status(500).json({ message: "Failed to fetch lesson submissions" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

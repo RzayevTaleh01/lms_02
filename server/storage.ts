@@ -138,6 +138,10 @@ export interface IStorage {
   getAllActiveSessions(): Promise<(LessonSession & { courseName: string })[]>;
 
   getTeacherSessionHistory(teacherId: string): Promise<(LessonSession & { courseName: string; attendanceCount?: number })[]>;
+
+    // Lesson detail operations
+  getLesson(lessonId: number): Promise<Lesson | null>;
+  getSubmissionsByLessonAndStudent(lessonId: number, studentId: string): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -187,7 +191,7 @@ export class DatabaseStorage implements IStorage {
   // Course operations
   async getAllCourses(): Promise<Course[]> {
     const coursesData = await db.select().from(courses).where(eq(courses.isActive, true)).orderBy(desc(courses.createdAt));
-    
+
     // Get actual enrollment counts for each course
     const coursesWithCounts = await Promise.all(
       coursesData.map(async (course) => {
@@ -195,14 +199,14 @@ export class DatabaseStorage implements IStorage {
           .select({ count: count() })
           .from(enrollments)
           .where(eq(enrollments.courseId, course.id));
-        
+
         return {
           ...course,
           enrollmentCount: enrollmentCount.count
         };
       })
     );
-    
+
     return coursesWithCounts;
   }
 
@@ -612,6 +616,38 @@ export class DatabaseStorage implements IStorage {
     );
 
     return sessionsWithAttendance;
+  }
+
+  async getLesson(lessonId: number) {
+    const [lesson] = await db.select().from(lessons)
+      .where(eq(lessons.id, lessonId));
+    return lesson;
+  }
+
+  async getSubmissionsByLessonAndStudent(lessonId: number, studentId: string) {
+    const submissions = await db
+      .select({
+        id: submissions.id,
+        assignmentId: submissions.assignmentId,
+        content: submissions.content,
+        fileUrl: submissions.fileUrl,
+        githubUrl: submissions.githubUrl,
+        submittedAt: submissions.submittedAt,
+        grade: submissions.grade,
+        feedback: submissions.feedback,
+        assignment: {
+          id: lessonAssignments.id,
+          title: lessonAssignments.title,
+          maxPoints: lessonAssignments.maxPoints
+        }
+      })
+      .from(submissions)
+      .innerJoin(lessonAssignments, eq(submissions.assignmentId, lessonAssignments.id))
+      .where(and(
+        eq(lessonAssignments.lessonId, lessonId),
+        eq(submissions.studentId, studentId)
+      ));
+    return submissions;
   }
 }
 
