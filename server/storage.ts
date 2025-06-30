@@ -312,7 +312,7 @@ export class DatabaseStorage implements IStorage {
 
   // Submission operations
   async getSubmissionsByStudent(studentId: string): Promise<(Submission & { assignment: Assignment & { course: Course } })[]> {
-    return await db
+    const results = await db
       .select({
         id: submissions.id,
         assignmentId: submissions.assignmentId,
@@ -324,24 +324,71 @@ export class DatabaseStorage implements IStorage {
         feedback: submissions.feedback,
         gradedAt: submissions.gradedAt,
         gradedBy: submissions.gradedBy,
-        assignment: {
-          id: assignments.id,
-          title: assignments.title,
-          description: assignments.description,
-          maxPoints: assignments.maxPoints,
-          dueDate: assignments.dueDate,
-          courseId: assignments.courseId,
-          course: {
-            id: courses.id,
-            title: courses.title
-          }
-        }
+        assignmentId_a: assignments.id,
+        assignmentTitle: assignments.title,
+        assignmentDescription: assignments.description,
+        assignmentMaxPoints: assignments.maxPoints,
+        assignmentDueDate: assignments.dueDate,
+        assignmentCourseId: assignments.courseId,
+        assignmentCreatedAt: assignments.createdAt,
+        assignmentUpdatedAt: assignments.updatedAt,
+        assignmentIsActive: assignments.isActive,
+        courseId: courses.id,
+        courseTitle: courses.title,
+        courseDescription: courses.description,
+        courseInstructorId: courses.instructorId,
+        courseImageUrl: courses.imageUrl,
+        courseDuration: courses.duration,
+        courseLevel: courses.level,
+        coursePrice: courses.price,
+        courseEnrollmentCount: courses.enrollmentCount,
+        courseIsActive: courses.isActive,
+        courseCreatedAt: courses.createdAt,
+        courseUpdatedAt: courses.updatedAt
       })
       .from(submissions)
-      .leftJoin(assignments, eq(submissions.assignmentId, assignments.id))
-      .leftJoin(courses, eq(assignments.courseId, courses.id))
+      .innerJoin(assignments, eq(submissions.assignmentId, assignments.id))
+      .innerJoin(courses, eq(assignments.courseId, courses.id))
       .where(eq(submissions.studentId, studentId))
       .orderBy(desc(submissions.submittedAt));
+
+    return results.map(row => ({
+      id: row.id,
+      assignmentId: row.assignmentId,
+      studentId: row.studentId,
+      content: row.content,
+      githubUrl: row.githubUrl,
+      submittedAt: row.submittedAt,
+      grade: row.grade,
+      feedback: row.feedback,
+      gradedAt: row.gradedAt,
+      gradedBy: row.gradedBy,
+      assignment: {
+        id: row.assignmentId_a!,
+        title: row.assignmentTitle!,
+        description: row.assignmentDescription,
+        maxPoints: row.assignmentMaxPoints!,
+        dueDate: row.assignmentDueDate,
+        courseId: row.assignmentCourseId!,
+        createdAt: row.assignmentCreatedAt!,
+        updatedAt: row.assignmentUpdatedAt!,
+        isActive: row.assignmentIsActive!,
+        course: {
+          id: row.courseId!,
+          title: row.courseTitle!,
+          description: row.courseDescription,
+          instructorId: row.courseInstructorId!,
+          imageUrl: row.courseImageUrl,
+          duration: row.courseDuration,
+          level: row.courseLevel!,
+          price: row.coursePrice!,
+          enrollmentCount: row.courseEnrollmentCount!,
+          isActive: row.courseIsActive!,
+          createdAt: row.courseCreatedAt!,
+          updatedAt: row.courseUpdatedAt!
+        }
+      }
+    }));
   }
 
   async getSubmissionsByAssignment(assignmentId: number): Promise<(Submission & { student: User })[]> {

@@ -250,22 +250,28 @@ export default function StudentAssignments() {
                 </CardContent>
               </Card>
             ) : (
-              submissions.map((submission: any) => (
-                <Card key={submission.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3 className="text-lg font-semibold mb-1">
-                              {submission.assignment.title}
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-2">
-                              Kurs: {submission.assignment.course.title}
-                            </p>
+              submissions.map((submission: any) => {
+                // Null check for assignment data
+                if (!submission.assignment || !submission.assignment.course) {
+                  return null;
+                }
+                
+                return (
+                  <Card key={submission.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <h3 className="text-lg font-semibold mb-1">
+                                {submission.assignment.title}
+                              </h3>
+                              <p className="text-sm text-gray-600 mb-2">
+                                Kurs: {submission.assignment.course.title}
+                              </p>
+                            </div>
+                            {getStatusBadge(submission)}
                           </div>
-                          {getStatusBadge(submission)}
-                        </div>
 
                         <div className="flex items-center space-x-6 text-sm text-gray-500 mb-4">
                           <div className="flex items-center">
@@ -351,7 +357,8 @@ export default function StudentAssignments() {
                     </div>
                   </CardContent>
                 </Card>
-              ))
+                );
+              }).filter(Boolean) // Remove null entries
             )}
           </div>
         </div>
