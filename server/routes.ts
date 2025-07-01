@@ -4,6 +4,14 @@ import session from 'express-session';
 import { Pool } from '@neondatabase/serverless';
 import ConnectPgSimple from 'connect-pg-simple';
 import { storage } from "./storage";
+import { db } from "./db";
+import { 
+  lessons, 
+  lessonAssignments, 
+  submissions,
+  users
+} from "../shared/schema";
+import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword, isAuthenticated, attachUser, AuthenticatedRequest } from "./auth";
 import { 
   insertCourseSchema, 

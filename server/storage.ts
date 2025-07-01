@@ -859,7 +859,7 @@ export class DatabaseStorage implements IStorage {
       ));
 
     // Get lesson assignments for graded assignments
-    const lessonAssignments = await db.select({
+    const lessonAssignmentsList = await db.select({
       lessonId: lessonAssignments.lessonId,
       id: lessonAssignments.id
     })
@@ -892,7 +892,7 @@ export class DatabaseStorage implements IStorage {
       const isLessonViewed = lessonViewProgress?.isCompleted || false;
       
       // Lesson assignments progress (50% of lesson progress)
-      const lessonAssignmentIds = lessonAssignments
+      const lessonAssignmentIds = lessonAssignmentsList
         .filter(la => la.lessonId === lesson.id)
         .map(la => la.id);
       
