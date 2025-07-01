@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -18,14 +19,17 @@ import {
   Clock,
   History,
   Menu,
-  ChevronLeft
+  ChevronLeft,
+  X
 } from "lucide-react";
 
 interface SidebarProps {
   userRole: 'admin' | 'teacher' | 'student';
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function Sidebar({ userRole }: SidebarProps) {
+export default function Sidebar({ userRole, isOpen = true, onClose }: SidebarProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -111,108 +115,140 @@ export default function Sidebar({ userRole }: SidebarProps) {
   };
 
   return (
-    <div className={cn(
-      "fixed left-0 top-0 h-full bg-white shadow-sm border-r border-gray-200 z-40 transition-all duration-300",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
-      <div className={cn("p-6", isCollapsed && "p-3")}>
-        {/* Toggle Button */}
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            {isCollapsed ? (
-              <Menu className="w-5 h-5 text-gray-600" />
-            ) : (
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
-            )}
-          </button>
-        </div>
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
-        {/* Logo */}
-        <Link href="/">
-          <div className={cn(
-            "flex items-center mb-8 cursor-pointer",
-            isCollapsed ? "justify-center" : "space-x-3"
-          )}>
-            <div className="w-8 h-8 bg-devcode-orange rounded transform rotate-45 relative flex-shrink-0">
-              <div className="absolute inset-1 bg-white rounded transform -rotate-45"></div>
-            </div>
-            {!isCollapsed && (
-              <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
-            )}
-          </div>
-        </Link>
-
-        {/* User Profile */}
-        <div className="mb-6">
-          <div className={cn(
-            "flex items-center p-3 bg-gray-50 rounded-lg",
-            isCollapsed ? "justify-center" : "space-x-3"
-          )}>
-            <Avatar className="w-10 h-10 flex-shrink-0">
-              <AvatarFallback className="bg-devcode-orange text-white">
-                {userInfo.avatar}
-              </AvatarFallback>
-            </Avatar>
-            {!isCollapsed && (
-              <div>
-                <div className="font-medium text-devcode-dark">{userInfo.name}</div>
-                <div className="text-sm text-devcode-gray">{userInfo.role}</div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="space-y-2">
-          {navigationItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = location === item.href;
-
-            return (
-              <Link key={item.href} href={item.href}>
-                <div className={cn(
-                  "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer relative group",
-                  isActive 
-                    ? "bg-devcode-dark text-white" 
-                    : "text-devcode-gray hover:text-devcode-dark hover:bg-gray-50",
-                  isCollapsed ? "justify-center" : "space-x-3"
-                )}>
-                  <IconComponent className="w-5 h-5 flex-shrink-0" />
-                  {!isCollapsed && <span>{item.label}</span>}
-                  
-                  {/* Tooltip for collapsed state */}
-                  {isCollapsed && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                      {item.label}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-          
-          <div
-            className={cn(
-              "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer text-devcode-gray hover:text-devcode-dark hover:bg-gray-50 relative group",
-              isCollapsed ? "justify-center" : "space-x-3"
-            )}
-            onClick={handleLogout}
-          >
-            <Clock className="w-5 h-5 flex-shrink-0" />
-            {!isCollapsed && <span>Logout</span>}
+      {/* Sidebar */}
+      <div className={cn(
+        "fixed left-0 top-0 h-full bg-white shadow-sm border-r border-gray-200 z-50 transition-all duration-300",
+        // Mobile responsive classes
+        "lg:relative lg:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        isCollapsed ? "w-16" : "w-64"
+      )}>
+        <div className={cn("p-6", isCollapsed && "p-3")}>
+          {/* Mobile close button */}
+          <div className="flex justify-between items-center mb-4">
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors hidden lg:block"
+            >
+              {isCollapsed ? (
+                <Menu className="w-5 h-5 text-gray-600" />
+              ) : (
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
             
-            {/* Tooltip for collapsed state */}
-            {isCollapsed && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                Logout
-              </div>
+            {/* Mobile close button */}
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
             )}
           </div>
-        </nav>
+
+          {/* Logo */}
+          <Link href="/">
+            <div className={cn(
+              "flex items-center mb-8 cursor-pointer",
+              isCollapsed ? "justify-center" : "space-x-3"
+            )}>
+              <div className="w-8 h-8 bg-devcode-orange rounded transform rotate-45 relative flex-shrink-0">
+                <div className="absolute inset-1 bg-white rounded transform -rotate-45"></div>
+              </div>
+              {!isCollapsed && (
+                <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
+              )}
+            </div>
+          </Link>
+
+          {/* User Profile */}
+          <div className="mb-6">
+            <div className={cn(
+              "flex items-center p-3 bg-gray-50 rounded-lg",
+              isCollapsed ? "justify-center" : "space-x-3"
+            )}>
+              <Avatar className="w-10 h-10 flex-shrink-0">
+                <AvatarFallback className="bg-devcode-orange text-white">
+                  {userInfo.avatar}
+                </AvatarFallback>
+              </Avatar>
+              {!isCollapsed && (
+                <div>
+                  <div className="font-medium text-devcode-dark">{userInfo.name}</div>
+                  <div className="text-sm text-devcode-gray">{userInfo.role}</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="space-y-2">
+            {navigationItems.map((item) => {
+              const IconComponent = item.icon;
+              const isActive = location === item.href;
+
+              return (
+                <Link key={item.href} href={item.href}>
+                  <div 
+                    className={cn(
+                      "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer relative group",
+                      isActive 
+                        ? "bg-devcode-dark text-white" 
+                        : "text-devcode-gray hover:text-devcode-dark hover:bg-gray-50",
+                      isCollapsed ? "justify-center" : "space-x-3"
+                    )}
+                    onClick={() => {
+                      // Close mobile sidebar when navigation item is clicked
+                      if (onClose && window.innerWidth < 1024) {
+                        onClose();
+                      }
+                    }}
+                  >
+                    <IconComponent className="w-5 h-5 flex-shrink-0" />
+                    {!isCollapsed && <span>{item.label}</span>}
+                    
+                    {/* Tooltip for collapsed state */}
+                    {isCollapsed && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                        {item.label}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+            
+            <div
+              className={cn(
+                "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer text-devcode-gray hover:text-devcode-dark hover:bg-gray-50 relative group",
+                isCollapsed ? "justify-center" : "space-x-3"
+              )}
+              onClick={handleLogout}
+            >
+              <Clock className="w-5 h-5 flex-shrink-0" />
+              {!isCollapsed && <span>Logout</span>}
+              
+              {/* Tooltip for collapsed state */}
+              {isCollapsed && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  Logout
+                </div>
+              )}
+            </div>
+          </nav>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
