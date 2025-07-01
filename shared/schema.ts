@@ -209,6 +209,43 @@ export const lessonAssignments = pgTable("lesson_assignments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Offline Courses Table (for physical classes)
+export const offlineCourses = pgTable("offline_courses", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  shortDescription: text("short_description"),
+  level: varchar("level", { enum: ["beginner", "intermediate", "advanced"] }).notNull(),
+  duration: varchar("duration", { length: 50 }), // e.g., "3 months"
+  imageUrl: varchar("image_url"),
+  instructorId: varchar("instructor_id").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }),
+  maxStudents: integer("max_students").default(20),
+  currentStudents: integer("current_students").default(0),
+  location: varchar("location"),
+  schedule: text("schedule"), // JSON string with days and times
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  isActive: boolean("is_active").default(true),
+  requirements: text("requirements"),
+  syllabus: text("syllabus"), // JSON string with course outline
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Offline Course Enrollments
+export const offlineCourseEnrollments = pgTable("offline_course_enrollments", {
+  id: serial("id").primaryKey(),
+  studentId: varchar("student_id").notNull(),
+  offlineCourseId: integer("offline_course_id").notNull(),
+  enrolledAt: timestamp("enrolled_at").defaultNow(),
+  paymentStatus: varchar("payment_status", { enum: ["pending", "paid", "refunded"] }).default("pending"),
+  attendanceRate: decimal("attendance_rate", { precision: 5, scale: 2 }).default("0"),
+  finalGrade: varchar("final_grade"),
+  certificateIssued: boolean("certificate_issued").default(false),
+  notes: text("notes"),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   coursesInstructed: many(courses, { relationName: "instructor" }),
@@ -426,6 +463,19 @@ export const insertLessonProgressSchema = createInsertSchema(lessonProgress).omi
   id: true,
   completedAt: true,
   lastWatchedAt: true,
+});
+
+// Offline courses schemas
+export const insertOfflineCourseSchema = createInsertSchema(offlineCourses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  currentStudents: true,
+});
+
+export const insertOfflineCourseEnrollmentSchema = createInsertSchema(offlineCourseEnrollments).omit({
+  id: true,
+  enrolledAt: true,
 });
 
 // Types

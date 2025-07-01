@@ -33,148 +33,69 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-orange-900 text-white">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-48 h-48 bg-blue-500/10 rounded-full blur-xl animate-pulse delay-700"></div>
-          <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
-          
-          {/* Digital Grid Pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="grid grid-cols-12 h-full">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className="border-r border-white/20"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+      {/* Hero Section - Code Star Style */}
+      <section className="relative bg-white py-20 lg:py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <div className="flex items-center gap-3 mb-6 justify-center lg:justify-start">
                 <img 
                   src="/assets/devcode_1751389375943.png" 
                   alt="DevCode Academy" 
-                  className="w-12 h-12"
+                  className="w-10 h-10"
                 />
-                <Badge className="bg-orange-500/20 text-orange-200 border-orange-400/30">
-                  🚀 Rəqəmsal Akademiya
-                </Badge>
+                <span className="text-2xl font-bold text-gray-900">DevCode Academy</span>
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight mb-6">
-                <span className="bg-gradient-to-r from-white via-orange-200 to-orange-400 bg-clip-text text-transparent">
-                  DevCode
-                </span>
-                <br />
-                <span className="text-3xl lg:text-4xl text-blue-200 font-normal">
-                  Hibrid Proqramlaşdırma Akademiyası
-                </span>
+              <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6">
+                <span className="text-red-600">Rəqəmsal Karyerana</span><br />
+                <span className="text-gray-900">təsdiqənmiş metodlarla</span><br />
+                <span className="text-gray-900">və peşəkar komanda ilə</span><br />
+                <span className="text-red-600">başla</span>
               </h1>
               
-              <div className="flex flex-wrap gap-4 mb-8 justify-center lg:justify-start">
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-                  <Monitor className="w-4 h-4 text-orange-400" />
-                  <span className="text-sm">Online Dərslər</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-                  <Users className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm">Offline Sinif</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-                  <BarChart3 className="w-4 h-4 text-green-400" />
-                  <span className="text-sm">Rəqəmsal İdarəetmə</span>
-                </div>
-              </div>
-              
-              <p className="text-xl text-gray-200 mb-8 max-w-2xl leading-relaxed">
-                Azərbaycanda ən müasir <strong className="text-orange-300">hibrid təhsil platforması</strong>. 
-                Həm online həm offline dərslər, AI dəstəkli rəqəmsal idarəetmə sistemi və 
-                real layihələr üzərində praktik təcrübə.
+              <p className="text-lg text-gray-600 mb-8 max-w-xl">
+                DevCode Academy komandası olaraq 500+ mezun, ekspertlərdən ibarət heyət 
+                və real layihə təcrübəsi ilə sənim bu yoldaki başlanğıcın olacaq.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link href="/courses">
-                  <Button size="lg" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 text-lg shadow-2xl shadow-orange-500/25">
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    Kurslara Qoşul
+                  <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-3 rounded-lg text-lg">
+                    Öyrənməyə başla
                   </Button>
                 </Link>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white/30 text-white hover:bg-white hover:text-gray-900 px-8 py-4 text-lg backdrop-blur-sm"
-                >
-                  <Play className="w-5 h-5 mr-2" />
-                  Canlı Demo
-                </Button>
               </div>
             </div>
             
-            <div className="relative">
-              {/* Digital Management System Showcase */}
-              <div className="relative z-10 space-y-6">
-                {/* Main Dashboard Card */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-2xl">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="w-4 h-4 text-white" />
+            <div className="relative flex justify-center lg:justify-end">
+              {/* YouTube Video Embed Style */}
+              <div className="relative w-full max-w-md bg-black rounded-xl overflow-hidden shadow-2xl">
+                <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Play className="w-8 h-8 text-white ml-1" />
                     </div>
-                    <span className="font-semibold text-white">Rəqəmsal İdarəetmə Paneli</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="bg-green-500/20 rounded-lg p-3 border border-green-400/30">
-                      <div className="text-green-300 text-sm">Aktiv Tələbələr</div>
-                      <div className="text-2xl font-bold text-white">1,247</div>
-                    </div>
-                    <div className="bg-blue-500/20 rounded-lg p-3 border border-blue-400/30">
-                      <div className="text-blue-300 text-sm">Online Siniflər</div>
-                      <div className="text-2xl font-bold text-white">18</div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-orange-500/20 rounded-lg p-3 border border-orange-400/30">
-                    <div className="text-orange-300 text-sm">Hibrid Proqres</div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex-1 bg-gray-700 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-orange-400 to-orange-500 h-2 rounded-full w-4/5"></div>
-                      </div>
-                      <span className="text-white font-bold">87%</span>
-                    </div>
+                    <h3 className="text-lg font-bold mb-2">DevCode Academy - Rəqəmsal Təhsil</h3>
+                    <p className="text-sm text-gray-300">Proqramlaşdırma, Data Science və AI sahələrində müasir təhsil</p>
                   </div>
                 </div>
                 
-                {/* Learning Modes */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-blue-500/20 backdrop-blur-lg rounded-xl p-4 border border-blue-400/30">
-                    <Monitor className="w-8 h-8 text-blue-400 mb-2" />
-                    <div className="text-blue-300 text-sm">Online Dərslər</div>
-                    <div className="text-white font-semibold">24/7 Əlçatan</div>
+                {/* Video Controls */}
+                <div className="bg-black p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="flex-1 bg-gray-700 rounded-full h-1">
+                      <div className="bg-red-500 h-1 rounded-full w-1/3"></div>
+                    </div>
+                    <span className="text-white text-sm">2:45 / 8:30</span>
                   </div>
-                  <div className="bg-purple-500/20 backdrop-blur-lg rounded-xl p-4 border border-purple-400/30">
-                    <Users className="w-8 h-8 text-purple-400 mb-2" />
-                    <div className="text-purple-300 text-sm">Offline Sinif</div>
-                    <div className="text-white font-semibold">Canlı Təcrübə</div>
-                  </div>
-                </div>
-                
-                {/* Achievement Badges */}
-                <div className="flex justify-center gap-3">
-                  <div className="w-3 h-3 bg-orange-400 rounded-full animate-pulse"></div>
-                  <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse delay-300"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse delay-700"></div>
-                  <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse delay-1000"></div>
                 </div>
               </div>
               
               {/* Floating Elements */}
-              <div className="absolute -top-8 -right-8 w-20 h-20 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full opacity-20 animate-bounce"></div>
-              <div className="absolute -bottom-8 -left-8 w-16 h-16 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full opacity-30 animate-pulse"></div>
-              <div className="absolute top-1/2 -right-12 w-6 h-6 bg-purple-400 rounded-full opacity-40 animate-ping"></div>
+              <div className="absolute -top-4 -right-4 w-12 h-12 bg-yellow-400 rounded-lg rotate-12 opacity-80"></div>
+              <div className="absolute -bottom-4 -left-4 w-8 h-8 bg-red-500 rounded-full opacity-60"></div>
             </div>
           </div>
         </div>

@@ -19,6 +19,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import AdminCourses from "./pages/admin-courses";
 import AdminTeachers from "@/pages/admin-teachers";
 import AdminStudents from "@/pages/admin-students";
+import AdminOfflineCourses from "./pages/admin-offline-courses";
 import TeacherDashboard from "@/pages/teacher-dashboard";
 import TeacherCourses from "@/pages/teacher-courses";
 import TeacherStudents from "@/pages/teacher-students";
@@ -101,6 +102,11 @@ function Router() {
       <Route path="/admin/students">
         <ProtectedRoute allowedRoles={['admin']} isAuthenticated={isAuthenticated} userRole={user?.role}>
           <AdminStudents />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/offline-courses">
+        <ProtectedRoute allowedRoles={['admin']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <AdminOfflineCourses />
         </ProtectedRoute>
       </Route>
 
