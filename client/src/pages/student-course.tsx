@@ -269,7 +269,7 @@ export default function StudentCoursePage() {
   const handleSubmitAssignment = (assignment: any) => {
     const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
 
-    if (existingSubmission && existingSubmission.status === 'returned') {
+    if (existingSubmission && existingSubmission.feedback && existingSubmission.grade === null) {
       // Resubmit case - populate form with existing data
       setSubmissionForm({
         content: existingSubmission.content || "",
@@ -293,8 +293,8 @@ export default function StudentCoursePage() {
 
     const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
 
-    if (existingSubmission && existingSubmission.status === 'returned') {
-      // Resubmit - əgər status 'returned' isə
+    if (existingSubmission && existingSubmission.feedback && existingSubmission.grade === null) {
+      // Resubmit - əgər feedback var və grade yoxdursa
       resubmitAssignmentMutation.mutate({
         submissionId: existingSubmission.id,
         content: submissionForm.content,
@@ -577,7 +577,7 @@ export default function StudentCoursePage() {
 
                               const isSubmitted = !!studentSubmission;
                               const isGraded = isSubmitted && studentSubmission?.grade !== null;
-                              const isReturned = isSubmitted && studentSubmission?.status === 'returned';
+                              const isReturned = isSubmitted && studentSubmission?.feedback && studentSubmission?.grade === null;
                               const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
                               const isPending = isSubmitted && !isGraded && !isReturned && !isResubmitted;
 
@@ -756,7 +756,7 @@ export default function StudentCoursePage() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
+              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.feedback && s.grade === null) 
                 ? "Tapşırığı Düzəliş Et" 
                 : "Tapşırığı Göndər"
               }
@@ -787,7 +787,7 @@ export default function StudentCoursePage() {
               {/* Show previous submission and feedback if exists */}
               {(() => {
                 const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
-                if (existingSubmission && existingSubmission.status === 'returned') {
+                if (existingSubmission && existingSubmission.feedback && existingSubmission.grade === null) {
                   return (
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                       <div className="flex items-center space-x-2 mb-3">
@@ -893,7 +893,7 @@ export default function StudentCoursePage() {
                 >
                   {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
                     'Göndərilir...' : 
-                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned')
+                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.feedback && s.grade === null)
                       ? 'Düzəliş Et və Yenidən Göndər' 
                       : 'Göndər'
                     )
