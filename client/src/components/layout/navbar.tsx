@@ -58,7 +58,7 @@ export default function Navbar() {
             <Link href="/">
               <div className="flex items-center space-x-3 cursor-pointer">
                 <img 
-                  src="/assets/devcode_1751389375943.png" 
+                  src="/assets/devcode_1751391029827.png" 
                   alt="DevCode Academy" 
                   className="w-8 h-8"
                 />

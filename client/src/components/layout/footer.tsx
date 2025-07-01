@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
               <img 
-                src="/assets/devcode_1751389375943.png" 
+                src="/assets/devcode_1751391029827.png" 
                 alt="DevCode Academy" 
                 className="w-8 h-8"
               />
