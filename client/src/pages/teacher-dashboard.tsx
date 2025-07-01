@@ -8,13 +8,11 @@ import CreateCourseDialog from "@/components/create-course-dialog";
 import GlobalActiveSession from "@/components/global-active-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Users, CheckSquare, Menu } from "lucide-react";
-import { useState } from 'react';
+import { BookOpen, Users, CheckSquare } from "lucide-react";
 
 export default function TeacherDashboard() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Fetch courses for statistics
   const { data: courses = [] } = useQuery({
@@ -57,7 +55,7 @@ export default function TeacherDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <GlobalActiveSession />
-      <Sidebar userRole="teacher" isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar userRole="teacher" />
 
       {/* Main Content */}
       <div className="flex-1 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>
@@ -66,12 +64,6 @@ export default function TeacherDashboard() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div>
-                <button
-                  onClick={() => setSidebarOpen(true)}
-                  className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 lg:hidden"
-                >
-                  <Menu className="h-6 w-6" />
-                </button>
                 <h1 className="text-xl font-semibold text-gray-900">Müəllim Paneli</h1>
                 <p className="text-sm text-gray-600">
                   Xoş gəlmisiniz, {user.firstName || 'Müəllim'}!
