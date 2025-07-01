@@ -269,8 +269,8 @@ export default function StudentCoursePage() {
   const handleSubmitAssignment = (assignment: any) => {
     const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
 
-    if (existingSubmission && existingSubmission.status === 'returned') {
-      // Resubmit case
+    if (existingSubmission && (existingSubmission.status === 'returned' || existingSubmission.feedback && existingSubmission.grade === null)) {
+      // Resubmit case - populate form with existing data
       setSubmissionForm({
         content: existingSubmission.content || "",
         githubUrl: existingSubmission.githubUrl || "",
@@ -723,7 +723,7 @@ export default function StudentCoursePage() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
+              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && (s.status === 'returned' || (s.feedback && s.grade === null))) 
                 ? "Tapşırığı Düzəliş Et" 
                 : "Tapşırığı Göndər"
               }
@@ -750,6 +750,63 @@ export default function StudentCoursePage() {
                   </div>
                 </div>
               </div>
+
+              {/* Show previous submission and feedback if exists */}
+              {(() => {
+                const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
+                if (existingSubmission && (existingSubmission.status === 'returned' || (existingSubmission.feedback && existingSubmission.grade === null))) {
+                  return (
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <AlertCircle className="w-4 h-4 text-orange-600" />
+                        <span className="text-sm font-medium text-orange-800">Əvvəlki cavabınız və müəllim rəyi</span>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-sm font-medium text-orange-800">Əvvəlki cavabınız:</Label>
+                          <div 
+                            className="mt-1 p-3 bg-white border border-orange-200 rounded prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: existingSubmission.content }}
+                          />
+                        </div>
+                        
+                        {existingSubmission.githubUrl && (
+                          <div>
+                            <Label className="text-sm font-medium text-orange-800">GitHub:</Label>
+                            <div className="mt-1 p-2 bg-white border border-orange-200 rounded">
+                              <a href={existingSubmission.githubUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                                {existingSubmission.githubUrl}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {existingSubmission.fileUrl && (
+                          <div>
+                            <Label className="text-sm font-medium text-orange-800">Fayl:</Label>
+                            <div className="mt-1 p-2 bg-white border border-orange-200 rounded">
+                              <a href={existingSubmission.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                                {existingSubmission.fileUrl}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {existingSubmission.feedback && (
+                          <div>
+                            <Label className="text-sm font-medium text-orange-800">Müəllim rəyi:</Label>
+                            <div className="mt-1 p-3 bg-red-50 border border-red-200 rounded">
+                              <p className="text-sm text-red-700">{existingSubmission.feedback}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}</div>
 
               <div>
                 <Label htmlFor="assignment-content">Tapşırıq Cavabı *</Label>
@@ -803,8 +860,8 @@ export default function StudentCoursePage() {
                 >
                   {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
                     'Göndərilir...' : 
-                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
-                      ? 'Yenidən Göndər' 
+                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && (s.status === 'returned' || (s.feedback && s.grade === null)))
+                      ? 'Düzəliş Et və Yenidən Göndər' 
                       : 'Göndər'
                     )
                   }
