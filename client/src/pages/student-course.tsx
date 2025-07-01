@@ -765,7 +765,7 @@ export default function StudentCoursePage() {
                         <AlertCircle className="w-4 h-4 text-orange-600" />
                         <span className="text-sm font-medium text-orange-800">Əvvəlki cavabınız və müəllim rəyi</span>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div>
                           <Label className="text-sm font-medium text-orange-800">Əvvəlki cavabınız:</Label>
@@ -774,7 +774,7 @@ export default function StudentCoursePage() {
                             dangerouslySetInnerHTML={{ __html: existingSubmission.content }}
                           />
                         </div>
-                        
+
                         {existingSubmission.githubUrl && (
                           <div>
                             <Label className="text-sm font-medium text-orange-800">GitHub:</Label>
@@ -785,7 +785,7 @@ export default function StudentCoursePage() {
                             </div>
                           </div>
                         )}
-                        
+
                         {existingSubmission.fileUrl && (
                           <div>
                             <Label className="text-sm font-medium text-orange-800">Fayl:</Label>
@@ -796,7 +796,7 @@ export default function StudentCoursePage() {
                             </div>
                           </div>
                         )}
-                        
+
                         {existingSubmission.feedback && (
                           <div>
                             <Label className="text-sm font-medium text-orange-800">Müəllim rəyi:</Label>
