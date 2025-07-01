@@ -94,7 +94,28 @@ export default function StudentCoursePage() {
   // Use detailed progress data for lesson progress  
   const lessonProgress = courseProgress?.lessonDetails || [];
 
-
+  // Fetch lesson submissions for current lesson
+  const { data: lessonSubmissions = [] } = useQuery({
+    queryKey: ['/api/lessons', selectedLesson?.id, 'submissions'],
+    queryFn: async () => {
+      if (!selectedLesson?.id) return [];
+      
+      // Get all lesson assignments first
+      const assignmentsResponse = await fetch(`/api/lessons/${selectedLesson.id}/assignments`);
+      const assignments = await assignmentsResponse.json();
+      
+      // For each assignment, get submissions for current user
+      const submissionPromises = assignments.map(async (assignment: any) => {
+        const response = await fetch(`/api/assignments/${assignment.id}/submissions`);
+        const allSubmissions = await response.json();
+        return allSubmissions.filter((s: any) => s.studentId === user?.id);
+      });
+      
+      const submissionArrays = await Promise.all(submissionPromises);
+      return submissionArrays.flat();
+    },
+    enabled: !!selectedLesson?.id && !!user?.id
+  });
 
   // Fetch lesson materials when lesson is selected
   const { data: materials = [] } = useQuery({
