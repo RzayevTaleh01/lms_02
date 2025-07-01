@@ -1038,8 +1038,8 @@ export class DatabaseStorage implements IStorage {
         grade: null,
         gradedAt: null,
         gradedBy: null,
-        feedback: null,
-        status: 'submitted' // Reset status to submitted after resubmission
+        status: 'submitted', // Reset status to submitted
+	hasBeenResubmitted: true
       })
       .where(eq(submissions.id, submissionId));
   }

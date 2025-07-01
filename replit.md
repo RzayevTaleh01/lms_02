@@ -156,17 +156,6 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
   - Updated all data fetching to use backend APIs instead of static data
   - Added mobile menu toggle functionality for responsive navigation
   - Integrated dynamic user data loading through useAuth hook
-- July 1, 2025: Simplified assignment status management system:
-  - Restructured backend logic to use only 3 assignment statuses: "submitted", "graded", "returned"
-  - Removed complex "resubmitted" status and hasBeenResubmitted column for cleaner logic
-  - When students resubmit returned assignments, status resets to "submitted"
-  - Applied simplified status logic to student course page and assignment sections
-  - Fixed database schema conflicts and removed unnecessary fields
-  - Improved status display with clear Azerbaijani language labels:
-    * "Gözləyir" - Waiting to submit
-    * "Qiymətləndirmə Gözləyir" - Submitted, waiting for grading
-    * "Qiymətləndirilib" - Graded by teacher
-    * "Düzəliş Tələb Olunur" - Returned for revision
 
 ## User Preferences
 
