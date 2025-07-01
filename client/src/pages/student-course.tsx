@@ -40,8 +40,93 @@ import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import { StaticSidebar } from "@/components/layout/static-sidebar";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const [location] = useLocation();
+  const { user, logout } = useAuth();
+
+  const menuItems = [
+    { icon: Home, label: "Ana Səhifə", href: "/student", exact: true },
+    { icon: GraduationCap, label: "Kurslarım", href: "/student/courses" },
+    { icon: ClipboardList, label: "Davamiyyət", href: "/student/attendance" },
+    { icon: Award, label: "Qiymətlərim", href: "/student/grades" },
+    { icon: User, label: "Profil", href: "/student/profile" },
+  ];
+
+  return (
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={cn(
+        "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
+        isOpen ? "translate-x-0" : "-translate-x-full",
+        "lg:translate-x-0 lg:relative lg:z-0"
+      )}>
+        {/* Header */}
+        <div className="p-6 border-b">
+          <h2 className="text-xl font-bold text-gray-900">DevCode Academy</h2>
+          <p className="text-sm text-gray-600">Tələbə Paneli</p>
+        </div>
+
+        {/* User Info */}
+        <div className="p-4 border-b bg-gray-50">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">{user?.firstName} {user?.lastName}</p>
+              <p className="text-xs text-gray-600">{user?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="p-4 space-y-2 flex-1">
+          {menuItems.map((item) => {
+            const isActive = item.exact 
+              ? location === item.href 
+              : location.startsWith(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
+                  isActive 
+                    ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
+                    : "text-gray-700 hover:bg-gray-50"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Logout */}
+        <div className="p-4 border-t">
+          <button
+            onClick={logout}
+            className="flex items-center space-x-3 px-3 py-2 w-full text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Çıxış</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default function StudentCourse() {
   const { id } = useParams();
@@ -49,6 +134,7 @@ export default function StudentCourse() {
   const { toast } = useToast();
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [activeTab, setActiveTab] = useState("content");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [submissionForm, setSubmissionForm] = useState({
     content: "",
     githubUrl: "",
@@ -257,8 +343,8 @@ export default function StudentCourse() {
   if (!course) {
     return (
       <div className="flex h-screen">
-        <StaticSidebar />
-        <div className="flex-1 ml-64 p-8">
+        <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <div className="flex-1 lg:ml-64 p-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
             <div className="h-4 bg-gray-200 rounded w-2/3"></div>
@@ -270,15 +356,25 @@ export default function StudentCourse() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <StaticSidebar />
+      <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       
-      <div className="flex-1 ml-64 flex flex-col overflow-hidden">
+      <div className="flex-1 lg:ml-64 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div className="mb-4 sm:mb-0">
-              <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
-              <p className="text-gray-600 mt-1">Kurs Məzmunu</p>
+            <div className="mb-4 sm:mb-0 flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden"
+              >
+                <Menu size={20} />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
+                <p className="text-gray-600 mt-1">Kurs Məzmunu</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-500">
