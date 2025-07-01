@@ -155,6 +155,21 @@ export interface IStorage {
 
   // Student attendance statistics
   getStudentAttendanceStats(studentId: string): Promise<{ attendanceRate: number; totalSessions: number; attendedSessions: number }>;
+
+  // Course detailed progress for student course page
+  getCourseDetailedProgress(courseId: number, studentId: string): Promise<{
+    courseId: number;
+    overallProgress: number;
+    totalLessons: number;
+    lessonDetails: Array<{
+      lessonId: number;
+      lessonTitle: string;
+      progressPercentage: number;
+      isCompleted: boolean;
+      totalAssignments: number;
+      completedAssignments: number;
+    }>;
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1067,6 +1082,127 @@ export class DatabaseStorage implements IStorage {
       attendanceRate: rate,
       totalSessions: total,
       attendedSessions: attended
+    };
+  }
+
+  async getCourseDetailedProgress(courseId: number, studentId: string): Promise<{
+    courseId: number;
+    overallProgress: number;
+    totalLessons: number;
+    lessonDetails: Array<{
+      lessonId: number;
+      lessonTitle: string;
+      progressPercentage: number;
+      isCompleted: boolean;
+      totalAssignments: number;
+      completedAssignments: number;
+    }>;
+  }> {
+    // Get all lessons for this course
+    const courseLessons = await db.select({
+      id: lessons.id,
+      title: lessons.title
+    })
+    .from(lessons)
+    .where(eq(lessons.courseId, courseId))
+    .orderBy(asc(lessons.orderIndex));
+
+    if (courseLessons.length === 0) {
+      return {
+        courseId,
+        overallProgress: 0,
+        totalLessons: 0,
+        lessonDetails: []
+      };
+    }
+
+    // Get lesson progress data
+    const lessonProgressData = await db.select()
+      .from(lessonProgress)
+      .where(and(
+        eq(lessonProgress.courseId, courseId),
+        eq(lessonProgress.studentId, studentId)
+      ));
+
+    // Get lesson assignments for graded assignments
+    const lessonAssignmentsList = await db.select({
+      lessonId: lessonAssignments.lessonId,
+      id: lessonAssignments.id
+    })
+    .from(lessonAssignments)
+    .innerJoin(lessons, eq(lessonAssignments.lessonId, lessons.id))
+    .where(eq(lessons.courseId, courseId));
+
+    // Get submissions for lesson assignments (only graded ones)
+    const assignmentSubmissions = await db.select({
+      assignmentId: submissions.assignmentId,
+      grade: submissions.grade,
+      isLessonAssignment: sql<boolean>`true`
+    })
+    .from(submissions)
+    .innerJoin(lessonAssignments, eq(submissions.assignmentId, lessonAssignments.id))
+    .innerJoin(lessons, eq(lessonAssignments.lessonId, lessons.id))
+    .where(and(
+      eq(lessons.courseId, courseId),
+      eq(submissions.studentId, studentId),
+      isNotNull(submissions.grade)
+    ));
+
+    let totalProgressPoints = 0;
+    let earnedProgressPoints = 0;
+
+    // Calculate progress for each lesson
+    const lessonDetails = courseLessons.map(lesson => {
+      // Lesson view progress (50% of lesson progress)
+      const lessonViewProgress = lessonProgressData.find(lp => lp.lessonId === lesson.id);
+      const isLessonViewed = lessonViewProgress?.isCompleted || false;
+      
+      // Lesson assignments progress (50% of lesson progress)
+      const lessonAssignmentIds = lessonAssignmentsList
+        .filter(la => la.lessonId === lesson.id)
+        .map(la => la.id);
+      
+      const completedAssignments = assignmentSubmissions.filter(as => 
+        lessonAssignmentIds.includes(as.assignmentId)
+      );
+
+      let lessonProgress = 0;
+      
+      if (lessonAssignmentIds.length === 0) {
+        // No assignments, progress based only on lesson view
+        lessonProgress = isLessonViewed ? 100 : 0;
+      } else {
+        // Has assignments: 50% view + 50% assignments
+        const viewPoints = isLessonViewed ? 50 : 0;
+        const assignmentPoints = lessonAssignmentIds.length > 0 
+          ? (completedAssignments.length / lessonAssignmentIds.length) * 50 
+          : 0;
+        lessonProgress = viewPoints + assignmentPoints;
+      }
+
+      totalProgressPoints += 100;
+      earnedProgressPoints += lessonProgress;
+
+      return {
+        lessonId: lesson.id,
+        lessonTitle: lesson.title,
+        progressPercentage: Math.round(lessonProgress),
+        isCompleted: lessonProgress === 100,
+        totalAssignments: lessonAssignmentIds.length,
+        completedAssignments: completedAssignments.length
+      };
+    });
+
+    // Calculate overall course progress
+    const overallProgress = totalProgressPoints > 0 
+      ? Math.round((earnedProgressPoints / totalProgressPoints) * 100) 
+      : 0;
+
+    return {
+      courseId,
+      overallProgress,
+      totalLessons: courseLessons.length,
+      lessonDetails
     };
   }
 }

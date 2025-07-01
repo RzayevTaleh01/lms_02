@@ -893,13 +893,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get lesson progress data
       const lessonProgressData = await storage.getLessonProgress(studentId, courseId);
       
-      // Get lesson assignments
+      // Get lesson assignments  
       const courseAssignments = await db.select({
         id: lessonAssignments.id,
         lessonId: lessonAssignments.lessonId,
         title: lessonAssignments.title,
         description: lessonAssignments.description,
-        points: lessonAssignments.points
+        maxPoints: lessonAssignments.maxPoints
       })
       .from(lessonAssignments)
       .innerJoin(lessons, eq(lessonAssignments.lessonId, lessons.id))
@@ -956,7 +956,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return {
               id: assignment.id,
               title: assignment.title,
-              points: assignment.points,
+              maxPoints: assignment.maxPoints,
               isCompleted: submission && submission.grade !== null,
               grade: submission?.grade,
               submittedAt: submission?.submittedAt,
@@ -986,6 +986,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching lesson progress:', error);
       res.status(500).json({ message: 'Failed to fetch lesson progress' });
+    }
+  });
+
+  // Detailed progress for student course page
+  app.get('/api/courses/:courseId/detailed-progress', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      const courseId = parseInt(req.params.courseId);
+      const studentId = req.user!.id;
+
+      // Use the storage method for comprehensive progress calculation
+      const detailedProgressData = await storage.getCourseDetailedProgress(courseId, studentId);
+      
+      res.json(detailedProgressData);
+    } catch (error: any) {
+      console.error('Error fetching detailed course progress:', error);
+      res.status(500).json({ message: 'Failed to fetch detailed course progress' });
     }
   });
 

@@ -92,11 +92,8 @@ export default function StudentCoursePage() {
     enabled: !!user
   });
 
-  // Fetch lesson progress
-  const { data: lessonProgress = [] } = useQuery({
-    queryKey: [`/api/courses/${id}/progress`],
-    enabled: !!id && !!user
-  });
+  // Use detailed progress data for lesson progress  
+  const lessonProgress = courseProgress?.lessonDetails || [];
 
 
 
@@ -193,7 +190,7 @@ export default function StudentCoursePage() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/progress`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/courses', id, 'detailed-progress'] });
       queryClient.invalidateQueries({ queryKey: ["/api/enrollments"] });
       toast({ title: "Dərs tamamlandı!" });
     }
