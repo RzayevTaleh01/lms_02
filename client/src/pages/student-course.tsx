@@ -1,4 +1,4 @@
-import { useParams, Link } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -14,21 +14,33 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { 
+  BookOpen, 
   Video, 
   FileText, 
   Download, 
+  Upload, 
   Calendar, 
+  Clock,
   CheckCircle,
   PlayCircle,
+  ChevronRight,
   Award,
   Link2,
+  Menu,
+  Home,
+  GraduationCap,
+  ClipboardList,
+  User,
+  LogOut,
   AlertCircle,
   ExternalLink,
   Send,
-  Edit,
-  Upload,
-  ClipboardList,
-  Menu
+  Eye,
+  File,
+  Image,
+  Music,
+  Archive,
+  Edit
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
@@ -70,17 +82,13 @@ export default function StudentCoursePage() {
   const { data: courseProgress } = useQuery({
     queryKey: ['/api/courses', id, 'detailed-progress'],
     queryFn: () => fetch(`/api/courses/${id}/detailed-progress`).then(r => r.json()),
-    enabled: !!id && !!user,
-    refetchInterval: 10000, // Poll every 10 seconds for progress updates
-    refetchIntervalInBackground: true
+    enabled: !!id && !!user
   });
 
-  // Fetch submissions (with polling for real-time updates)
+  // Fetch submissions
   const { data: submissions = [] } = useQuery({
     queryKey: ['/api/submissions'],
-    enabled: !!user,
-    refetchInterval: 5000, // Poll every 5 seconds for real-time updates
-    refetchIntervalInBackground: true
+    enabled: !!user
   });
 
   // Use detailed progress data for lesson progress  
@@ -306,7 +314,7 @@ export default function StudentCoursePage() {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="flex h-screen">
         <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <div className="flex-1 lg:ml-64 p-8">
           <div className="animate-pulse">
