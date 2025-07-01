@@ -81,6 +81,7 @@ export default function Sidebar({
         return [
           { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
           { href: '/admin/users', label: 'User Management', icon: Users },
+          { href: '/admin/teachers', label: 'Müəllimlər', icon: GraduationCap },
           { href: '/admin/history', label: 'Class History', icon: History },
           { href: '/admin/statistics', label: 'Statistics', icon: BarChart3 },
           { href: '/admin/settings', label: 'Settings', icon: Settings },
