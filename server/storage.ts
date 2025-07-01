@@ -546,7 +546,7 @@ export class DatabaseStorage implements IStorage {
       console.error('Error grading submission:', error);
       throw error;
     }
-  },
+  }
 
   // Blog operations
   async getPublishedBlogPosts(): Promise<(BlogPost & { author: User })[]> {
