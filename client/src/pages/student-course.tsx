@@ -806,7 +806,8 @@ export default function StudentCoursePage() {
                   );
                 }
                 return null;
-              })()}</div>
+              })()
+              )}
 
               <div>
                 <Label htmlFor="assignment-content">Tapşırıq Cavabı *</Label>
