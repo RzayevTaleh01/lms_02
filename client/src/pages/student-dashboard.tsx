@@ -13,26 +13,38 @@ export default function StudentDashboard() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { data: enrollments = [], isLoading } = useQuery({
+  const { data: enrollments = [], isLoading: enrollmentsLoading } = useQuery({
     queryKey: ["/api/enrollments"],
-    enabled: !!user
+    enabled: !!user && user.role === "student"
   });
 
-  const { data: submissions = [] } = useQuery({
+  const { data: submissions = [], isLoading: submissionsLoading } = useQuery({
     queryKey: ["/api/submissions"],
-    enabled: !!user
+    enabled: !!user && user.role === "student"
   });
+
+  const isLoading = enrollmentsLoading || submissionsLoading;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="text-center">Yüklənir...</div>
+      <div className="min-h-screen bg-gray-50 flex">
+        <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="flex-1 lg:ml-64 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <div>Yüklənir...</div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const activeEnrollments = enrollments.filter(e => e.progress < 100);
-  const completedCourses = enrollments.filter(e => e.progress === 100);
+  // Debug: enrollments data-sını yoxla
+  console.log("Enrollments data:", enrollments);
+  console.log("User:", user);
+
+  const activeEnrollments = enrollments.filter((e: any) => (e.progress || 0) < 100);
+  const completedCourses = enrollments.filter((e: any) => (e.progress || 0) === 100);
   const totalSubmissions = submissions.length;
   const gradedSubmissions = submissions.filter(s => s.grade !== null);
   const averageGrade = gradedSubmissions.length > 0 
@@ -126,7 +138,7 @@ export default function StudentDashboard() {
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">Aktiv Kurslarınız</h2>
 
-            {activeEnrollments.length === 0 ? (
+            {enrollments.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
                   <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -141,28 +153,43 @@ export default function StudentDashboard() {
                   </Button>
                 </CardContent>
               </Card>
+            ) : activeEnrollments.length === 0 ? (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <Trophy className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Təbriklər! Bütün kurslarınızı tamamlamısınız
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Yeni kursları kəşf edin və öyrənməyə davam edin
+                  </p>
+                  <Button asChild>
+                    <Link href="/courses">Yeni Kursları Araşdır</Link>
+                  </Button>
+                </CardContent>
+              </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activeEnrollments.map((enrollment) => (
+                {activeEnrollments.map((enrollment: any) => (
                   <Card key={enrollment.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader>
-                      <CardTitle className="text-lg">{enrollment.course.title}</CardTitle>
+                      <CardTitle className="text-lg">{enrollment.course?.title || "Kurs adı mövcud deyil"}</CardTitle>
                       <Badge variant="secondary">
-                        {enrollment.progress}% tamamlandı
+                        {enrollment.progress || 0}% tamamlandı
                       </Badge>
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-600 mb-4 line-clamp-3">
-                        {enrollment.course.description}
+                        {enrollment.course?.description || "Kurs təsviri mövcud deyil"}
                       </p>
 
                       <div className="space-y-3">
                         <div>
                           <div className="flex justify-between text-sm mb-1">
                             <span>Tərəqqi</span>
-                            <span>{enrollment.progress}%</span>
+                            <span>{enrollment.progress || 0}%</span>
                           </div>
-                          <Progress value={enrollment.progress} className="h-2" />
+                          <Progress value={enrollment.progress || 0} className="h-2" />
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -173,7 +200,7 @@ export default function StudentDashboard() {
                         </div>
 
                         <Button asChild className="w-full">
-                          <Link href={`/student/course/${enrollment.course.id}`}>
+                          <Link href={`/student/course/${enrollment.course?.id || enrollment.courseId}`}>
                             Kursa Davam Et
                           </Link>
                         </Button>
