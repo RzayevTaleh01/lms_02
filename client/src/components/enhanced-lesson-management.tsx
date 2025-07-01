@@ -283,7 +283,7 @@ export default function EnhancedLessonManagement({
 
   // Assignment submissions query
   const { data: submissions = [] } = useQuery({
-    queryKey: [`/api/lesson-assignments/${selectedAssignment?.id}/submissions`],
+    queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`],
     enabled: !!selectedAssignment?.id
   });
 
@@ -448,7 +448,7 @@ export default function EnhancedLessonManagement({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/lesson-assignments/${selectedAssignment?.id}/submissions`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`] });
       toast({ title: "Tapşırıq düzəliş üçün qaytarıldı" });
     },
     onError: () => {
@@ -468,7 +468,7 @@ export default function EnhancedLessonManagement({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/lesson-assignments/${selectedAssignment?.id}/submissions`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`] });
       toast({ title: "Tapşırıq qiymətləndirildi" });
     },
     onError: () => {
