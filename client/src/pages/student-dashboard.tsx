@@ -31,13 +31,19 @@ export default function StudentDashboard() {
     );
   }
 
-  const activeEnrollments = enrollments.filter(e => e.progress < 100);
-  const completedCourses = enrollments.filter(e => e.progress === 100);
+  // Debug enrollments data
+  console.log("Enrollments data:", enrollments);
+  
+  const activeEnrollments = enrollments.filter(e => (e.progress || 0) < 100);
+  const completedCourses = enrollments.filter(e => (e.progress || 0) === 100);
   const totalSubmissions = submissions.length;
   const gradedSubmissions = submissions.filter(s => s.grade !== null);
   const averageGrade = gradedSubmissions.length > 0 
     ? gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) / gradedSubmissions.length 
     : 0;
+
+  console.log("Active enrollments:", activeEnrollments);
+  console.log("Completed courses:", completedCourses);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
