@@ -190,6 +190,17 @@ export default function StudentCoursePage() {
     }
   });
 
+  const handleMarkLessonComplete = (lessonId: number) => {
+    markLessonCompleteMutation.mutate(lessonId);
+  };
+
+  // Fetch course progress data
+  const { data: courseProgress = [] } = useQuery({
+    queryKey: ['/api/courses', id, 'progress'],
+    queryFn: () => fetch(`/api/courses/${id}/progress`).then(r => r.json()),
+    enabled: !!id && !!user
+  });
+
   // Set first lesson as selected by default
   useEffect(() => {
     if (lessons.length > 0 && !selectedLesson) {
@@ -198,33 +209,48 @@ export default function StudentCoursePage() {
   }, [lessons, selectedLesson]);
 
   const isLessonCompleted = (lessonId: number) => {
-    return lessonProgress.some((progress: any) => 
-      progress.lessonId === lessonId && progress.isCompleted
+    return courseProgress.some((progress: any) => 
+      progress.lessonId === lessonId && progress.completed
     );
   };
 
+  const getLessonAssignments = (lessonId: number) => {
+    // We need to fetch assignments for each lesson separately
+    // For now, we'll use the selected lesson's assignments as a proxy
+    // This will be improved when we fetch all lesson assignments at once
+    if (selectedLesson && selectedLesson.id === lessonId) {
+      return assignments;
+    }
+    return [];
+  };
+
   const calculateLessonProgress = (lessonId: number) => {
-    // Dərsə daxil olma (50%) + tapşırıqların tamamlanması (50%)
     const isCompleted = isLessonCompleted(lessonId);
-    
-    // Bu dərsin tapşırıqlarını əldə et
-    const lessonAssignments = assignments.filter((a: any) => a.lessonId === lessonId);
+    const lessonAssignments = getLessonAssignments(lessonId);
     
     let progressScore = 0;
     
-    // Dərsə daxil olma 50% verir
+    // Step 1: Lesson completion (50% of total progress)
     if (isCompleted) {
       progressScore += 50;
     }
     
-    // Tapşırıqlar varsa, onların tamamlanması 50% verir
+    // Step 2: Assignment completion (50% of total progress)
     if (lessonAssignments.length > 0) {
-      const submittedAssignments = lessonAssignments.filter((assignment: any) => 
-        submissions.some((s: any) => s.assignmentId === assignment.id && s.grade !== null)
-      );
-      progressScore += (submittedAssignments.length / lessonAssignments.length) * 50;
+      const completedAssignments = lessonAssignments.filter((assignment: any) => {
+        const submission = submissions.find((s: any) => 
+          s.assignmentId === assignment.id && 
+          s.studentId === user?.id &&
+          s.status !== 'returned' && // Don't count returned assignments
+          s.grade !== null // Must be graded to be considered complete
+        );
+        return !!submission;
+      });
+      
+      const assignmentProgress = (completedAssignments.length / lessonAssignments.length) * 50;
+      progressScore += assignmentProgress;
     } else {
-      // Tapşırıq yoxdursa, dərsə daxil olma 100% sayılır
+      // If no assignments exist, lesson completion is worth 100%
       if (isCompleted) {
         progressScore = 100;
       }
@@ -236,9 +262,12 @@ export default function StudentCoursePage() {
   const calculateOverallProgress = () => {
     if (lessons.length === 0) return 0;
     
-    const totalProgress = lessons.reduce((sum: number, lesson: any) => {
-      return sum + calculateLessonProgress(lesson.id);
-    }, 0);
+    let totalProgress = 0;
+    
+    lessons.forEach((lesson: any) => {
+      const lessonProgress = calculateLessonProgress(lesson.id);
+      totalProgress += lessonProgress;
+    });
     
     return Math.round(totalProgress / lessons.length);
   };
@@ -285,11 +314,7 @@ export default function StudentCoursePage() {
     }
   };
 
-  const handleMarkLessonComplete = (lessonId: number) => {
-    if (!isLessonCompleted(lessonId)) {
-      markLessonCompleteMutation.mutate(lessonId);
-    }
-  };
+
 
   const handleSubmitAssignment = (assignment: any) => {
     const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
@@ -406,8 +431,6 @@ export default function StudentCoursePage() {
                       )}
                       onClick={() => {
                         setSelectedLesson(lesson);
-                        // Dərs seçiləndə həmişə completed kimi işarələ
-                        handleMarkLessonComplete(lesson.id);
                       }}
                     >
                       <div className="flex items-start space-x-3">
