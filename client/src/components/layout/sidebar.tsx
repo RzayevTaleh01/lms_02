@@ -80,6 +80,7 @@ export default function Sidebar({
       case 'admin':
         return [
           { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+          { href: '/admin/courses', label: 'Kurslar', icon: BookOpen },
           { href: '/admin/teachers', label: 'Müəllimlər', icon: GraduationCap },
           { href: '/admin/settings', label: 'Settings', icon: Settings },
         ];

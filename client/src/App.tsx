@@ -15,6 +15,7 @@ import Contact from "@/pages/contact";
 
 // Dashboard pages
 import AdminDashboard from "@/pages/admin-dashboard";
+import AdminCourses from "./pages/admin-courses";
 import AdminTeachers from "@/pages/admin-teachers";
 import TeacherDashboard from "@/pages/teacher-dashboard";
 import TeacherCourses from "@/pages/teacher-courses";
@@ -59,6 +60,7 @@ function Router() {
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin-dashboard" component={AdminDashboard} />}
       {isAuthenticated && user?.role === 'admin' && <Route path="/admin/teachers" component={AdminTeachers} />}
+      {isAuthenticated && user?.role === 'admin' && <Route path="/admin/courses" component={AdminCourses} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses" component={TeacherCourses} />}
       {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses/:id" component={CourseManagementPage} />}

@@ -326,10 +326,9 @@ export default function AdminDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="users" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
             <TabsTrigger value="users" className="text-xs sm:text-sm">İstifadəçilər</TabsTrigger>
             <TabsTrigger value="courses" className="text-xs sm:text-sm">Kurslar</TabsTrigger>
-            <TabsTrigger value="enrollments" className="text-xs sm:text-sm lg:block hidden">Qeydiyyatlar</TabsTrigger>
             <TabsTrigger value="sessions" className="text-xs sm:text-sm lg:block hidden">Sessiyalar</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analitika</TabsTrigger>
           </TabsList>
@@ -598,97 +597,7 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* Enrollments Tab */}
-          <TabsContent value="enrollments" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Qeydiyyat İdarəetməsi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {enrollmentsLoading ? (
-                  <div className="text-center py-8">Qeydiyyatlar yüklənir...</div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">TƏLƏBƏ</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">KURS</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">TƏRƏQQİ</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">QEYDİYYAT TARİXİ</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">ƏMƏLİYYATLAR</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {enrollments.map((enrollment: Enrollment) => (
-                          <tr key={enrollment.id} className="border-b border-gray-100">
-                            <td className="py-4 px-2">
-                              <div className="flex items-center space-x-3">
-                                <Avatar>
-                                  <AvatarFallback className="bg-gray-500 text-white">
-                                    {enrollment.student?.firstName?.charAt(0)}{enrollment.student?.lastName?.charAt(0)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="font-medium text-gray-900">
-                                    {enrollment.student?.firstName} {enrollment.student?.lastName}
-                                  </div>
-                                  <div className="text-sm text-gray-500">{enrollment.student?.email}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="py-4 px-2">
-                              <div className="font-medium text-gray-900">{enrollment.course?.title}</div>
-                            </td>
-                            <td className="py-4 px-2">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-16 bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className="bg-blue-600 h-2 rounded-full" 
-                                    style={{ width: `${enrollment.progress || 0}%` }}
-                                  />
-                                </div>
-                                <span className="text-sm text-gray-600">{enrollment.progress || 0}%</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-2 text-sm text-gray-500">
-                              {format(new Date(enrollment.enrolledAt), 'dd MMM yyyy')}
-                            </td>
-                            <td className="py-4 px-2">
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="text-red-600">
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Qeydiyyatı Sil</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Bu qeydiyyatı silmək istədiyinizə əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün deyil.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Ləğv et</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => removeEnrollmentMutation.mutate({ enrollmentId: enrollment.id })}
-                                      className="bg-red-600 hover:bg-red-700"
-                                    >
-                                      Sil
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+          
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-4">
