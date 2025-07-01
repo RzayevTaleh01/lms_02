@@ -579,7 +579,7 @@ export default function StudentCoursePage() {
                               const isGraded = isSubmitted && studentSubmission?.grade !== null;
                               const isReturned = isSubmitted && studentSubmission?.feedback && studentSubmission?.grade === null;
                               const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
-                              const isPending = isSubmitted && !isGraded && !isReturned && !isResubmitted;
+                              const isPending = isSubmitted && !isGraded && !isReturned;
 
                               return (
                                 <Card key={assignment.id}>
@@ -597,14 +597,12 @@ export default function StudentCoursePage() {
                                           !isSubmitted ? "destructive" :
                                           isReturned ? "destructive" : 
                                           isGraded ? "default" : 
-                                          isResubmitted ? "secondary" : 
                                           "outline"
                                         }>
                                           {!isSubmitted ? "Gözləyir" :
                                            isReturned ? "Düzəliş Tələb Olunur" : 
                                            isGraded ? "Qiymətləndirilib" : 
-                                           isResubmitted ? "Yenidən Göndərilib" :
-                                           "Qiymətləndirmə Gözləyir"}
+                                           "Göndərildi"}
                                         </Badge>
                                         {assignment.dueDate && (
                                           <div className="text-xs text-gray-500 flex items-center">
@@ -625,7 +623,6 @@ export default function StudentCoursePage() {
                                         "border rounded-lg p-4",
                                         isGraded ? "bg-green-50 border-green-200" : 
                                         isReturned ? "bg-orange-50 border-orange-200" : 
-                                        isResubmitted ? "bg-yellow-50 border-yellow-200" :
                                         "bg-blue-50 border-blue-200"
                                       )}>
                                         <div className="flex items-center space-x-2 mb-3">
@@ -635,7 +632,6 @@ export default function StudentCoursePage() {
                                             <CheckCircle className={cn(
                                               "w-4 h-4",
                                               isGraded ? "text-green-600" : 
-                                              isResubmitted ? "text-yellow-600" :
                                               "text-blue-600"
                                             )} />
                                           )}
@@ -643,13 +639,11 @@ export default function StudentCoursePage() {
                                             "text-sm font-medium",
                                             isGraded ? "text-green-800" : 
                                             isReturned ? "text-orange-800" : 
-                                            isResubmitted ? "text-yellow-800" :
                                             "text-blue-800"
                                           )}>
                                             {isReturned ? "Düzəliş üçün qaytarılıb" : 
                                              isGraded ? "Qiymətləndirilib" : 
-                                             isResubmitted ? "Yenidən göndərilib" :
-                                             "Qiymətləndirmə gözləyir"}
+                                             "Göndərildi"}
                                           </span>
                                           {isGraded && (
                                             <Badge variant="default" className="ml-auto bg-green-600 text-white text-lg px-3 py-1">
@@ -705,12 +699,7 @@ export default function StudentCoursePage() {
                                             </div>
                                           )}
 
-                                          {isResubmitted && (
-                                            <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
-                                              <div className="text-sm font-medium text-yellow-800 mb-1">Status:</div>
-                                              <div className="text-sm text-yellow-700">Tapşırıq yenidən göndərilib və qiymətləndirmə gözləyir</div>
-                                            </div>
-                                          )}
+                                          
                                         </div>
 
                                         {isReturned && (
