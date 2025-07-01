@@ -27,22 +27,22 @@ export default function StudentGrades() {
   const isLoading = submissionsLoading || enrollmentsLoading;
 
   // Process grades data
-  const gradedSubmissions = submissions.filter(s => s.grade !== null);
+  const gradedSubmissions = submissions.filter(s => s.grade !== null && s.grade !== undefined);
   const averageGrade = gradedSubmissions.length > 0 
-    ? gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) / gradedSubmissions.length 
+    ? gradedSubmissions.reduce((sum, s) => sum + Number(s.grade || 0), 0) / gradedSubmissions.length 
     : 0;
 
   // Group submissions by course
   const gradesByCourse = enrollments.map(enrollment => {
     const courseSubmissions = submissions.filter(s => s.assignment?.courseId === enrollment.courseId);
-    const coursegraded = courseSubmissions.filter(s => s.grade !== null);
+    const coursegraded = courseSubmissions.filter(s => s.grade !== null && s.grade !== undefined);
     const courseAverage = coursegraded.length > 0
-      ? coursegraded.reduce((sum, s) => sum + (s.grade || 0), 0) / coursegraded.length
+      ? coursegraded.reduce((sum, s) => sum + Number(s.grade || 0), 0) / coursegraded.length
       : 0;
 
     return {
       courseId: enrollment.courseId,
-      courseName: enrollment.course.title,
+      courseName: enrollment.course?.title || 'Naməlum Kurs',
       submissions: courseSubmissions,
       gradedCount: coursegraded.length,
       totalCount: courseSubmissions.length,
@@ -51,7 +51,9 @@ export default function StudentGrades() {
   });
 
   const getGradeColor = (grade: number) => {
-    if (grade >= 90) return "text-green-600";
+    if (!grade || isNaN(grade)) return "text-gray-500";
+    if (grade >= 95) return "text-green-600"; // Maksimum bal üçün yaşıl
+    if (grade >= 90) return "text-green-500";
     if (grade >= 80) return "text-blue-600";
     if (grade >= 70) return "text-yellow-600";
     if (grade >= 60) return "text-orange-600";
@@ -59,8 +61,9 @@ export default function StudentGrades() {
   };
 
   const getGradeBadgeVariant = (grade: number) => {
-    if (grade >= 90) return "default";
-    if (grade >= 80) return "secondary";
+    if (!grade || isNaN(grade)) return "outline";
+    if (grade >= 95) return "default"; // Maksimum bal üçün default (yaşıl)
+    if (grade >= 90) return "secondary";
     if (grade >= 60) return "outline";
     return "destructive";
   };
@@ -111,7 +114,7 @@ export default function StudentGrades() {
               </CardHeader>
               <CardContent>
                 <div className={cn("text-2xl font-bold", getGradeColor(averageGrade))}>
-                  {averageGrade.toFixed(1)}
+                  {averageGrade > 0 ? averageGrade.toFixed(1) : "0.0"}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   100 bal üzərindən
@@ -189,7 +192,7 @@ export default function StudentGrades() {
                       <CardTitle className="text-lg">{course.courseName}</CardTitle>
                       <div className="flex items-center space-x-2">
                         <Badge variant={getGradeBadgeVariant(course.average)}>
-                          Orta: {course.average.toFixed(1)}
+                          Orta: {course.average > 0 ? course.average.toFixed(1) : "0.0"}
                         </Badge>
                         <Badge variant="outline">
                           {course.gradedCount}/{course.totalCount} qiymətləndirildi
@@ -218,10 +221,10 @@ export default function StudentGrades() {
                               )}
                             </div>
                             <div className="text-right">
-                              {submission.grade !== null ? (
+                              {submission.grade !== null && submission.grade !== undefined ? (
                                 <div>
-                                  <div className={cn("text-xl font-bold", getGradeColor(submission.grade))}>
-                                    {submission.grade}
+                                  <div className={cn("text-xl font-bold", getGradeColor(Number(submission.grade)))}>
+                                    {Number(submission.grade).toFixed(1)}
                                   </div>
                                   <p className="text-xs text-gray-500">100-dən</p>
                                 </div>
