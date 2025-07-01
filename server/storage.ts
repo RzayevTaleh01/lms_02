@@ -334,6 +334,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(enrollments.id, id));
   }
 
+  async deleteEnrollment(id: number): Promise<void> {
+    await db.delete(enrollments).where(eq(enrollments.id, id));
+  }
+
    async getAllEnrollments(): Promise<Enrollment[]> {
     return await db.select({
       id: enrollments.id,
@@ -342,8 +346,30 @@ export class DatabaseStorage implements IStorage {
       enrolledAt: enrollments.enrolledAt,
       completedAt: enrollments.completedAt,
       progress: enrollments.progress,
-      grade: enrollments.grade
-    }).from(enrollments);
+      grade: enrollments.grade,
+      student: {
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        role: users.role,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt
+      },
+      course: {
+        id: courses.id,
+        title: courses.title,
+        description: courses.description,
+        instructorId: courses.instructorId,
+        isActive: courses.isActive,
+        enrollmentCount: courses.enrollmentCount,
+        createdAt: courses.createdAt
+      }
+    })
+    .from(enrollments)
+    .innerJoin(users, eq(enrollments.studentId, users.id))
+    .innerJoin(courses, eq(enrollments.courseId, courses.id))
+    .orderBy(desc(enrollments.enrolledAt));
   }
 
   // Assignment operations
@@ -1039,7 +1065,7 @@ export class DatabaseStorage implements IStorage {
         gradedAt: null,
         gradedBy: null,
         status: 'submitted', // Reset status to submitted
-	hasBeenResubmitted: true
+        hasBeenResubmitted: true
       })
       .where(eq(submissions.id, submissionId));
   }
