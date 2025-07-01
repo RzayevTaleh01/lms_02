@@ -110,6 +110,31 @@ export default function StudentCoursePage() {
     enabled: !!selectedLesson
   });
 
+  // Fetch lesson assignment submissions for current lesson
+  const { data: lessonSubmissions = [] } = useQuery({
+    queryKey: ['/api/lessons', selectedLesson?.id, 'submissions'],
+    queryFn: async () => {
+      if (!selectedLesson?.id || !assignments.length) return [];
+      
+      const submissionsData = [];
+      for (const assignment of assignments) {
+        try {
+          const response = await fetch(`/api/assignments/${assignment.id}/submissions`);
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            // Filter only current user's submissions
+            const userSubmissions = data.filter((s: any) => s.studentId === user?.id);
+            submissionsData.push(...userSubmissions);
+          }
+        } catch (error) {
+          console.error(`Error fetching submissions for assignment ${assignment.id}:`, error);
+        }
+      }
+      return submissionsData;
+    },
+    enabled: !!selectedLesson?.id && assignments.length > 0 && !!user
+  });
+
   // Get material and assignment counts for current lesson
   const getCurrentLessonMaterialCount = (lessonId: number) => {
     if (selectedLesson?.id === lessonId) {
@@ -267,7 +292,8 @@ export default function StudentCoursePage() {
   };
 
   const handleSubmitAssignment = (assignment: any) => {
-    const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
+    const existingSubmission = Array.isArray(lessonSubmissions) ? 
+      lessonSubmissions.find((s: any) => s.assignmentId === assignment.id) : null;
 
     if (existingSubmission && existingSubmission.status === 'returned') {
       // Resubmit case - populate form with existing data
@@ -291,7 +317,7 @@ export default function StudentCoursePage() {
       return;
     }
 
-    const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
+    const existingSubmission = lessonSubmissions.find((s: any) => s.assignmentId === selectedAssignment.id);
 
     if (existingSubmission && existingSubmission.status === 'returned') {
       // Resubmit - əgər status 'returned' isə
@@ -571,7 +597,8 @@ export default function StudentCoursePage() {
                         ) : (
                           <div className="space-y-4">
                             {assignments.map((assignment) => {
-                              const studentSubmission = submissions?.find(
+                              // Use lesson submissions for accurate data
+                              const studentSubmission = lessonSubmissions?.find(
                                 (s: any) => s.assignmentId === assignment.id
                               );
 
@@ -727,7 +754,7 @@ export default function StudentCoursePage() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
+              {selectedAssignment && lessonSubmissions.find((s: any) => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
                 ? "Tapşırığı Düzəliş Et" 
                 : "Tapşırığı Göndər"
               }
@@ -757,7 +784,7 @@ export default function StudentCoursePage() {
 
               {/* Show previous submission and feedback if exists */}
               {(() => {
-                const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
+                const existingSubmission = lessonSubmissions.find((s: any) => s.assignmentId === selectedAssignment.id);
                 if (existingSubmission && existingSubmission.status === 'returned') {
                   return (
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
@@ -864,7 +891,7 @@ export default function StudentCoursePage() {
                 >
                   {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
                     'Göndərilir...' : 
-                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned')
+                    (selectedAssignment && lessonSubmissions.find((s: any) => s.assignmentId === selectedAssignment.id && s.status === 'returned')
                       ? 'Düzəliş Et və Yenidən Göndər' 
                       : 'Göndər'
                     )
