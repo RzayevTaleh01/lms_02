@@ -146,7 +146,7 @@ export default function TeacherStudentDetail() {
       <Sidebar userRole="teacher" />
 
       {/* Main Content */}
-      <div className="flex-1 p-8 ml-64 pt-16">
+      <div className="flex-1 p-8 pt-16 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">

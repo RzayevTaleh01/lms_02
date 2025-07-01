@@ -28,6 +28,10 @@
   --devcode-orange: hsl(24, 100%, 50%);
   --devcode-orange-light: hsl(24, 100%, 64%);
   --devcode-dark: hsl(218, 26%, 22%);
+  
+  /* Sidebar width variables */
+  --sidebar-width: 16rem;
+  --sidebar-width-collapsed: 4rem;
   --devcode-gray: hsl(218, 11%, 48%);
   --devcode-light: hsl(210, 40%, 98%);
 }
