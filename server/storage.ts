@@ -543,12 +543,33 @@ export class DatabaseStorage implements IStorage {
 
   async getSubmissionsByAssignment(assignmentId: number): Promise<(Submission & { student: User })[]> {
     return await db
-      .select()
+      .select({
+        id: submissions.id,
+        assignmentId: submissions.assignmentId,
+        studentId: submissions.studentId,
+        content: submissions.content,
+        githubUrl: submissions.githubUrl,
+        fileUrl: submissions.fileUrl,
+        submittedAt: submissions.submittedAt,
+        grade: submissions.grade,
+        feedback: submissions.feedback,
+        gradedAt: submissions.gradedAt,
+        gradedBy: submissions.gradedBy,
+        status: submissions.status,
+        student: {
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          role: users.role,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt
+        }
+      })
       .from(submissions)
       .innerJoin(users, eq(submissions.studentId, users.id))
       .where(eq(submissions.assignmentId, assignmentId))
-      .orderBy(desc(submissions.submittedAt))
-      .then(rows => rows.map(row => ({ ...row.submissions, student: row.users })));
+      .orderBy(desc(submissions.submittedAt));
   }
 
   async createSubmission(submissionData: InsertSubmission) {
@@ -1064,8 +1085,7 @@ export class DatabaseStorage implements IStorage {
         grade: null,
         gradedAt: null,
         gradedBy: null,
-        status: 'submitted', // Reset status to submitted
-        hasBeenResubmitted: true
+        status: 'resubmitted' // Set status to resubmitted
       })
       .where(eq(submissions.id, submissionId));
   }
