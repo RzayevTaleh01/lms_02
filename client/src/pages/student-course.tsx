@@ -1,3 +1,4 @@
+
 import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +10,8 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -37,14 +40,16 @@ import {
   File,
   Image,
   Music,
-  Archive
+  Archive,
+  Edit
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
 import { StudentSidebar } from "@/components/student-sidebar";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export default function StudentCoursePage() {
   const { id } = useParams<{ id: string }>();
@@ -53,6 +58,13 @@ export default function StudentCoursePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("content");
+  const [submissionDialog, setSubmissionDialog] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
+  const [submissionForm, setSubmissionForm] = useState({
+    content: "",
+    githubUrl: "",
+    fileUrl: ""
+  });
 
   // Fetch course details
   const { data: course } = useQuery({
@@ -73,6 +85,12 @@ export default function StudentCoursePage() {
     enabled: !!user
   });
 
+  // Fetch lesson progress
+  const { data: lessonProgress = [] } = useQuery({
+    queryKey: [`/api/courses/${id}/progress`],
+    enabled: !!id && !!user
+  });
+
   // Fetch lesson materials when lesson is selected
   const { data: materials = [] } = useQuery({
     queryKey: ['/api/lessons', selectedLesson?.id, 'materials'],
@@ -87,6 +105,76 @@ export default function StudentCoursePage() {
     enabled: !!selectedLesson
   });
 
+  // Submit assignment mutation
+  const submitAssignmentMutation = useMutation({
+    mutationFn: async ({ assignmentId, content, githubUrl, fileUrl }: {
+      assignmentId: number;
+      content: string;
+      githubUrl?: string;
+      fileUrl?: string;
+    }) => {
+      return apiRequest("POST", `/api/lesson-assignments/${assignmentId}/submissions`, {
+        content,
+        githubUrl,
+        fileUrl,
+        studentId: user?.id
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
+      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
+      setSubmissionDialog(false);
+      setSelectedAssignment(null);
+      toast({ title: "Tapşırıq uğurla göndərildi!" });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Tapşırıq göndərilərkən xəta baş verdi";
+      toast({ title: errorMessage, variant: "destructive" });
+    }
+  });
+
+  // Resubmit assignment mutation
+  const resubmitAssignmentMutation = useMutation({
+    mutationFn: async ({ submissionId, content, githubUrl, fileUrl }: {
+      submissionId: number;
+      content: string;
+      githubUrl?: string;
+      fileUrl?: string;
+    }) => {
+      return apiRequest("PATCH", `/api/submissions/${submissionId}/resubmit`, {
+        content,
+        githubUrl,
+        fileUrl,
+        studentId: user?.id
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
+      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
+      setSubmissionDialog(false);
+      setSelectedAssignment(null);
+      toast({ title: "Tapşırıq yenidən göndərildi!" });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Tapşırıq yenidən göndərilərkən xəta baş verdi";
+      toast({ title: errorMessage, variant: "destructive" });
+    }
+  });
+
+  // Mark lesson as completed mutation
+  const markLessonCompleteMutation = useMutation({
+    mutationFn: async (lessonId: number) => {
+      return apiRequest("POST", `/api/lessons/${lessonId}/complete`, {
+        courseId: parseInt(id!)
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/progress`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/enrollments"] });
+      toast({ title: "Dərs tamamlandı!" });
+    }
+  });
+
   // Set first lesson as selected by default
   useEffect(() => {
     if (lessons.length > 0 && !selectedLesson) {
@@ -94,18 +182,38 @@ export default function StudentCoursePage() {
     }
   }, [lessons, selectedLesson]);
 
+  const isLessonCompleted = (lessonId: number) => {
+    return lessonProgress.some((progress: any) => 
+      progress.lessonId === lessonId && progress.isCompleted
+    );
+  };
+
   const calculateLessonProgress = (lessonId: number) => {
-    // Həmin dərsin tapşırıqlarını tap
+    // Dərsə daxil olma (50%) + tapşırıqların tamamlanması (50%)
+    const isCompleted = isLessonCompleted(lessonId);
     const lessonAssignments = assignments.filter((a: any) => a.lessonId === lessonId);
     
-    if (lessonAssignments.length === 0) return 100; // Tapşırıq yoxdursa 100%
+    let progressScore = 0;
     
-    // Göndərilmiş tapşırıqları say
-    const submittedAssignments = lessonAssignments.filter((assignment: any) => 
-      submissions.some((s: any) => s.assignmentId === assignment.id)
-    );
+    // Dərsə daxil olma 50% verir
+    if (isCompleted) {
+      progressScore += 50;
+    }
     
-    return Math.round((submittedAssignments.length / lessonAssignments.length) * 100);
+    // Tapşırıqlar varsa, onların tamamlanması 50% verir
+    if (lessonAssignments.length > 0) {
+      const submittedAssignments = lessonAssignments.filter((assignment: any) => 
+        submissions.some((s: any) => s.assignmentId === assignment.id && s.grade !== null)
+      );
+      progressScore += (submittedAssignments.length / lessonAssignments.length) * 50;
+    } else {
+      // Tapşırıq yoxdursa, dərsə daxil olma 100% sayılır
+      if (isCompleted) {
+        progressScore = 100;
+      }
+    }
+    
+    return Math.round(progressScore);
   };
 
   const calculateOverallProgress = () => {
@@ -152,12 +260,63 @@ export default function StudentCoursePage() {
     if (material.videoUrl) {
       window.open(material.videoUrl, '_blank');
     } else if (material.content) {
-      // Link olarsa aç
       if (material.content.startsWith('http')) {
         window.open(material.content, '_blank');
       } else if (material.content.includes('.pdf') || material.content.includes('.doc')) {
         window.open(material.content, '_blank');
       }
+    }
+  };
+
+  const handleMarkLessonComplete = (lessonId: number) => {
+    if (!isLessonCompleted(lessonId)) {
+      markLessonCompleteMutation.mutate(lessonId);
+    }
+  };
+
+  const handleSubmitAssignment = (assignment: any) => {
+    const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
+    
+    if (existingSubmission && existingSubmission.status === 'returned') {
+      // Resubmit case
+      setSubmissionForm({
+        content: existingSubmission.content || "",
+        githubUrl: existingSubmission.githubUrl || "",
+        fileUrl: existingSubmission.fileUrl || ""
+      });
+    } else {
+      // New submission
+      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
+    }
+    
+    setSelectedAssignment(assignment);
+    setSubmissionDialog(true);
+  };
+
+  const submitAssignment = () => {
+    if (!submissionForm.content.trim()) {
+      toast({ title: "Tapşırıq məzmunu tələb olunur", variant: "destructive" });
+      return;
+    }
+
+    const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
+    
+    if (existingSubmission && existingSubmission.status === 'returned') {
+      // Resubmit
+      resubmitAssignmentMutation.mutate({
+        submissionId: existingSubmission.id,
+        content: submissionForm.content,
+        githubUrl: submissionForm.githubUrl,
+        fileUrl: submissionForm.fileUrl
+      });
+    } else {
+      // New submission
+      submitAssignmentMutation.mutate({
+        assignmentId: selectedAssignment.id,
+        content: submissionForm.content,
+        githubUrl: submissionForm.githubUrl,
+        fileUrl: submissionForm.fileUrl
+      });
     }
   };
 
@@ -219,6 +378,7 @@ export default function StudentCoursePage() {
                 {lessons.map((lesson: any, index: number) => {
                   const isActive = selectedLesson?.id === lesson.id;
                   const lessonProgress = calculateLessonProgress(lesson.id);
+                  const completed = isLessonCompleted(lesson.id);
                   
                   return (
                     <div
@@ -227,7 +387,12 @@ export default function StudentCoursePage() {
                         "p-4 rounded-lg cursor-pointer transition-colors mb-2",
                         isActive ? "bg-orange-50 border border-orange-200" : "hover:bg-gray-50"
                       )}
-                      onClick={() => setSelectedLesson(lesson)}
+                      onClick={() => {
+                        setSelectedLesson(lesson);
+                        if (!completed) {
+                          handleMarkLessonComplete(lesson.id);
+                        }
+                      }}
                     >
                       <div className="flex items-start space-x-3">
                         <div className="flex-shrink-0 mt-1">
@@ -249,10 +414,9 @@ export default function StudentCoursePage() {
                           <div className="flex items-center space-x-2 mt-1">
                             <Clock className="w-3 h-3 text-gray-400" />
                             <span className="text-xs text-gray-500">
-                              {lesson.duration || 0} həftə dəqiqə
+                              {lesson.duration || 0} dəqiqə
                             </span>
                           </div>
-                          {/* Dərs Progress Bar */}
                           <div className="mt-2">
                             <div className="flex items-center justify-between mb-1">
                               <span className="text-xs text-gray-500">Tərəqqi</span>
@@ -442,26 +606,64 @@ export default function StudentCoursePage() {
                                             {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
                                           </div>
                                         )}
+                                        <div className="text-xs text-gray-500 flex items-center">
+                                          <Award className="w-3 h-3 mr-1" />
+                                          Maksimum: {assignment.maxPoints} bal
+                                        </div>
                                       </div>
                                     </div>
                                   </CardHeader>
                                   <CardContent>
                                     {isSubmitted && studentSubmission ? (
-                                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                      <div className={cn(
+                                        "border rounded-lg p-4",
+                                        isGraded ? "bg-green-50 border-green-200" : 
+                                        isReturned ? "bg-orange-50 border-orange-200" : 
+                                        "bg-blue-50 border-blue-200"
+                                      )}>
                                         <div className="flex items-center space-x-2 mb-3">
-                                          <CheckCircle className="w-4 h-4 text-green-600" />
-                                          <span className="text-sm font-medium text-green-800">Tapşırıq göndərilib</span>
+                                          <CheckCircle className={cn(
+                                            "w-4 h-4",
+                                            isGraded ? "text-green-600" : 
+                                            isReturned ? "text-orange-600" : 
+                                            "text-blue-600"
+                                          )} />
+                                          <span className={cn(
+                                            "text-sm font-medium",
+                                            isGraded ? "text-green-800" : 
+                                            isReturned ? "text-orange-800" : 
+                                            "text-blue-800"
+                                          )}>
+                                            {isReturned ? "Düzəliş üçün qaytarılıb" : isGraded ? "Qiymətləndirilib" : "Tapşırıq göndərilib"}
+                                          </span>
+                                          {isGraded && (
+                                            <Badge variant="outline" className="ml-auto text-lg px-3 py-1">
+                                              {studentSubmission.grade}/{assignment.maxPoints} bal
+                                            </Badge>
+                                          )}
                                         </div>
                                         
                                         <div className="space-y-2 text-sm">
                                           <div>
-                                            <strong>Cavab:</strong> {studentSubmission.content}
+                                            <strong>Cavab:</strong>
+                                            <div 
+                                              className="mt-1 prose prose-sm max-w-none"
+                                              dangerouslySetInnerHTML={{ __html: studentSubmission.content }}
+                                            />
                                           </div>
                                           {studentSubmission.githubUrl && (
                                             <div>
                                               <strong>GitHub:</strong> 
                                               <a href={studentSubmission.githubUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
                                                 {studentSubmission.githubUrl}
+                                              </a>
+                                            </div>
+                                          )}
+                                          {studentSubmission.fileUrl && (
+                                            <div>
+                                              <strong>Fayl:</strong> 
+                                              <a href={studentSubmission.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+                                                {studentSubmission.fileUrl}
                                               </a>
                                             </div>
                                           )}
@@ -475,16 +677,34 @@ export default function StudentCoursePage() {
                                               <div className="text-sm text-blue-700">{studentSubmission.feedback}</div>
                                             </div>
                                           )}
+
+                                          {isReturned && studentSubmission.feedback && (
+                                            <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded">
+                                              <div className="text-sm font-medium text-orange-800 mb-1">Düzəliş tələbi:</div>
+                                              <div className="text-sm text-orange-700">{studentSubmission.feedback}</div>
+                                            </div>
+                                          )}
                                         </div>
+
+                                        {isReturned && (
+                                          <div className="mt-4">
+                                            <Button 
+                                              onClick={() => handleSubmitAssignment(assignment)}
+                                              className="bg-orange-500 hover:bg-orange-600"
+                                            >
+                                              <Edit className="w-4 h-4 mr-2" />
+                                              Düzəliş Et
+                                            </Button>
+                                          </div>
+                                        )}
                                       </div>
                                     ) : (
                                       <div className="text-center py-8">
                                         <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                                         <p className="text-gray-500 mb-4">Tapşırığı hələ göndərməmisiniz</p>
-                                        <Button asChild>
-                                          <Link href={`/student/assignments/${assignment.id}`}>
-                                            Tapşırığı Göndər
-                                          </Link>
+                                        <Button onClick={() => handleSubmitAssignment(assignment)}>
+                                          <Send className="w-4 h-4 mr-2" />
+                                          Tapşırığı Göndər
                                         </Button>
                                       </div>
                                     )}
@@ -503,6 +723,103 @@ export default function StudentCoursePage() {
           </div>
         </div>
       </div>
+
+      {/* Assignment Submission Dialog */}
+      <Dialog open={submissionDialog} onOpenChange={setSubmissionDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
+                ? "Tapşırığı Düzəliş Et" 
+                : "Tapşırığı Göndər"
+              }
+            </DialogTitle>
+          </DialogHeader>
+          {selectedAssignment && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium">{selectedAssignment.title}</h4>
+                <div 
+                  className="text-sm text-gray-600 mt-1 prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: selectedAssignment.description }}
+                />
+                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                  {selectedAssignment.dueDate && (
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Son tarix: {new Date(selectedAssignment.dueDate).toLocaleDateString('az-AZ')}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-1">
+                    <Award className="w-4 h-4" />
+                    <span>Maksimum: {selectedAssignment.maxPoints} bal</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="assignment-content">Tapşırıq Cavabı *</Label>
+                <div className="mt-2">
+                  <ReactQuill
+                    theme="snow"
+                    value={submissionForm.content}
+                    onChange={(content) => setSubmissionForm({...submissionForm, content})}
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'blockquote', 'code'],
+                        ['clean']
+                      ]
+                    }}
+                    style={{ height: '200px', marginBottom: '50px' }}
+                    placeholder="Tapşırığın cavabını yazın..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="assignment-github">GitHub Linki (İstəyə bağlı)</Label>
+                <Input
+                  id="assignment-github"
+                  value={submissionForm.githubUrl}
+                  onChange={(e) => setSubmissionForm({...submissionForm, githubUrl: e.target.value})}
+                  placeholder="https://github.com/..."
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="assignment-file">Fayl Linki (İstəyə bağlı)</Label>
+                <Input
+                  id="assignment-file"
+                  value={submissionForm.fileUrl}
+                  onChange={(e) => setSubmissionForm({...submissionForm, fileUrl: e.target.value})}
+                  placeholder="Fayl linki..."
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setSubmissionDialog(false)}>
+                  Ləğv Et
+                </Button>
+                <Button 
+                  onClick={submitAssignment}
+                  disabled={!submissionForm.content.trim() || submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending}
+                >
+                  {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
+                    'Göndərilir...' : 
+                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
+                      ? 'Yenidən Göndər' 
+                      : 'Göndər'
+                    )
+                  }
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
