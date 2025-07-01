@@ -993,6 +993,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get student attendance statistics
+  app.get('/api/attendance/stats', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || req.user.role !== 'student') {
+        return res.status(403).json({ message: "Access denied. Students only." });
+      }
+
+      const attendanceStats = await storage.getStudentAttendanceStats(req.user.id);
+      res.json(attendanceStats);
+    } catch (error) {
+      console.error("Error getting attendance statistics:", error);
+      res.status(500).json({ message: "Failed to get attendance statistics" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -23,6 +23,11 @@ export default function StudentDashboard() {
     enabled: !!user
   });
 
+  const { data: attendanceStats } = useQuery({
+    queryKey: ["/api/attendance/stats"],
+    enabled: !!user && user.role === 'student'
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -39,9 +44,10 @@ export default function StudentDashboard() {
     ? gradedSubmissions.reduce((sum: number, s: any) => sum + (s.grade || 0), 0) / gradedSubmissions.length 
     : 0;
 
-  // Calculate attendance statistics
-  const totalCourses = enrollments.length;
-  const attendanceRate = totalCourses > 0 ? 85 : 0; // Mock attendance rate for now
+  // Get real attendance statistics
+  const attendanceRate = attendanceStats?.attendanceRate || 0;
+  const totalSessions = attendanceStats?.totalSessions || 0;
+  const attendedSessions = attendanceStats?.attendedSessions || 0;
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

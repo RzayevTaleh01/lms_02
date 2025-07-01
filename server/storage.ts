@@ -42,7 +42,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { courses, lessons, enrollments, assignments, submissions, users, blogPosts, certificates, contactSubmissions, lessonSessions, attendance, lessonMaterials, lessonAssignments } from "@shared/schema";
-import { eq, and, desc, asc, sql, count } from "drizzle-orm";
+import { eq, and, desc, asc, sql, count, inArray, isNotNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -152,6 +152,9 @@ export interface IStorage {
   getTeacherSessionHistory(teacherId: string): Promise<(LessonSession & { courseName: string; attendanceCount?: number })[]>;
 
   resubmitAssignment(submissionId: number, content: string, githubUrl?: string, fileUrl?: string, studentId?: string): Promise<void>;
+
+  // Student attendance statistics
+  getStudentAttendanceStats(studentId: string): Promise<{ attendanceRate: number; totalSessions: number; attendedSessions: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -943,6 +946,50 @@ export class DatabaseStorage implements IStorage {
         gradedBy: null
       })
       .where(eq(submissions.id, submissionId));
+  }
+
+  // Get student attendance statistics
+  async getStudentAttendanceStats(studentId: string): Promise<{ attendanceRate: number; totalSessions: number; attendedSessions: number }> {
+    // Get all enrollments for the student
+    const studentEnrollments = await db
+      .select({ courseId: enrollments.courseId })
+      .from(enrollments)
+      .where(eq(enrollments.studentId, studentId));
+
+    if (studentEnrollments.length === 0) {
+      return { attendanceRate: 0, totalSessions: 0, attendedSessions: 0 };
+    }
+
+    const courseIds = studentEnrollments.map(e => e.courseId);
+
+    // Get all sessions for these courses
+    const totalSessions = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(lessonSessions)
+      .where(and(
+        inArray(lessonSessions.courseId, courseIds),
+        isNotNull(lessonSessions.duration)
+      ));
+
+    // Get attended sessions
+    const attendedSessions = await db
+      .select({ count: sql<number>`count(distinct ${attendance.sessionId})` })
+      .from(attendance)
+      .innerJoin(lessonSessions, eq(attendance.sessionId, lessonSessions.id))
+      .where(and(
+        eq(attendance.studentId, studentId),
+        inArray(lessonSessions.courseId, courseIds)
+      ));
+
+    const total = totalSessions[0]?.count || 0;
+    const attended = attendedSessions[0]?.count || 0;
+    const rate = total > 0 ? Math.round((attended / total) * 100) : 0;
+
+    return {
+      attendanceRate: rate,
+      totalSessions: total,
+      attendedSessions: attended
+    };
   }
 }
 
