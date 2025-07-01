@@ -85,6 +85,9 @@ export default function StudentDashboard() {
                 <p className="text-xs text-muted-foreground">
                   Hal-hazırda öyrəndiyiniz kurslar
                 </p>
+                <p className="text-xs text-red-500">
+                  Debug: Total enrollments: {enrollments.length}
+                </p>
               </CardContent>
             </Card>
 
@@ -132,7 +135,7 @@ export default function StudentDashboard() {
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">Aktiv Kurslarınız</h2>
 
-            {activeEnrollments.length === 0 ? (
+            {enrollments.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
                   <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -145,6 +148,21 @@ export default function StudentDashboard() {
                   <Button asChild>
                     <Link href="/courses">Kursları Araşdır</Link>
                   </Button>
+                </CardContent>
+              </Card>
+            ) : enrollments.every((e: any) => !e.course) ? (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <BookOpen className="h-12 w-12 text-red-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Kurs məlumatları yüklənmir
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Təkrar cəhd edin və ya administratorla əlaqə saxlayın
+                  </p>
+                  <p className="text-xs text-red-500">
+                    Debug: Enrollments without course data: {enrollments.length}
+                  </p>
                 </CardContent>
               </Card>
             ) : (
