@@ -24,43 +24,21 @@ import {
 
 interface SidebarProps {
   userRole: 'admin' | 'teacher' | 'student';
-  isMobileOpen?: boolean;
-  setIsMobileOpen?: (open: boolean) => void;
 }
 
-export default function Sidebar({ 
-  userRole, 
-  isMobileOpen: propIsMobileOpen, 
-  setIsMobileOpen: propSetIsMobileOpen 
-}: SidebarProps) {
+export default function Sidebar({ userRole }: SidebarProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [localIsMobileOpen, setLocalIsMobileOpen] = useState(false);
-  
-  // Use props if provided, otherwise use local state
-  const isMobileOpen = propIsMobileOpen !== undefined ? propIsMobileOpen : localIsMobileOpen;
-  const setIsMobileOpen = propSetIsMobileOpen || setLocalIsMobileOpen;
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Update CSS variable when sidebar state changes
   useEffect(() => {
     const root = document.documentElement;
-    const updateSidebarWidth = () => {
-      if (window.innerWidth >= 1024) {
-        // Desktop: use collapsed/expanded state
-        root.style.setProperty(
-          '--sidebar-width',
-          isCollapsed ? '4rem' : '16rem'
-        );
-      } else {
-        // Mobile: no margin when closed, full margin when open
-        root.style.setProperty('--sidebar-width', '0rem');
-      }
-    };
-    
-    updateSidebarWidth();
-    window.addEventListener('resize', updateSidebarWidth);
-    return () => window.removeEventListener('resize', updateSidebarWidth);
+    root.style.setProperty(
+      '--sidebar-width',
+      isCollapsed ? 'var(--sidebar-width-collapsed)' : '16rem'
+    );
   }, [isCollapsed]);
 
   // Handle mobile responsive behavior
@@ -192,90 +170,90 @@ export default function Sidebar({
             </button>
           </div>
 
-          {/* Logo */}
-          <Link href="/">
-            <div className={cn(
-              "flex items-center mb-8 cursor-pointer",
-              isCollapsed ? "lg:justify-center" : "space-x-3"
-            )}>
-              <div className="w-8 h-8 bg-devcode-orange rounded transform rotate-45 relative flex-shrink-0">
-                <div className="absolute inset-1 bg-white rounded transform -rotate-45"></div>
-              </div>
-              {(!isCollapsed || window.innerWidth < 1024) && (
-                <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
-              )}
+        {/* Logo */}
+        <Link href="/">
+          <div className={cn(
+            "flex items-center mb-8 cursor-pointer",
+            isCollapsed ? "justify-center" : "space-x-3"
+          )}>
+            <div className="w-8 h-8 bg-devcode-orange rounded transform rotate-45 relative flex-shrink-0">
+              <div className="absolute inset-1 bg-white rounded transform -rotate-45"></div>
             </div>
-          </Link>
-
-          {/* User Profile */}
-          <div className="mb-6">
-            <div className={cn(
-              "flex items-center p-3 bg-gray-50 rounded-lg",
-              isCollapsed ? "lg:justify-center" : "space-x-3"
-            )}>
-              <Avatar className="w-10 h-10 flex-shrink-0">
-                <AvatarFallback className="bg-devcode-orange text-white">
-                  {userInfo.avatar}
-                </AvatarFallback>
-              </Avatar>
-              {(!isCollapsed || window.innerWidth < 1024) && (
-                <div>
-                  <div className="font-medium text-devcode-dark">{userInfo.name}</div>
-                  <div className="text-sm text-devcode-gray">{userInfo.role}</div>
-                </div>
-              )}
-            </div>
+            {!isCollapsed && (
+              <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
+            )}
           </div>
+        </Link>
 
-          {/* Navigation */}
-          <nav className="space-y-2">
-            {navigationItems.map((item) => {
-              const IconComponent = item.icon;
-              const isActive = location === item.href;
-
-              return (
-                <Link key={item.href} href={item.href}>
-                  <div className={cn(
-                    "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer relative group",
-                    isActive 
-                      ? "bg-devcode-dark text-white" 
-                      : "text-devcode-gray hover:text-devcode-dark hover:bg-gray-50",
-                    isCollapsed ? "lg:justify-center" : "space-x-3"
-                  )}>
-                    <IconComponent className="w-5 h-5 flex-shrink-0" />
-                    {(!isCollapsed || window.innerWidth < 1024) && <span>{item.label}</span>}
-                    
-                    {/* Tooltip for collapsed state on desktop */}
-                    {isCollapsed && window.innerWidth >= 1024 && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                        {item.label}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
-            
-            <div
-              className={cn(
-                "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer text-devcode-gray hover:text-devcode-dark hover:bg-gray-50 relative group",
-                isCollapsed ? "lg:justify-center" : "space-x-3"
-              )}
-              onClick={handleLogout}
-            >
-              <Clock className="w-5 h-5 flex-shrink-0" />
-              {(!isCollapsed || window.innerWidth < 1024) && <span>Logout</span>}
-              
-              {/* Tooltip for collapsed state on desktop */}
-              {isCollapsed && window.innerWidth >= 1024 && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                  Logout
-                </div>
-              )}
-            </div>
-          </nav>
+        {/* User Profile */}
+        <div className="mb-6">
+          <div className={cn(
+            "flex items-center p-3 bg-gray-50 rounded-lg",
+            isCollapsed ? "justify-center" : "space-x-3"
+          )}>
+            <Avatar className="w-10 h-10 flex-shrink-0">
+              <AvatarFallback className="bg-devcode-orange text-white">
+                {userInfo.avatar}
+              </AvatarFallback>
+            </Avatar>
+            {!isCollapsed && (
+              <div>
+                <div className="font-medium text-devcode-dark">{userInfo.name}</div>
+                <div className="text-sm text-devcode-gray">{userInfo.role}</div>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Navigation */}
+        <nav className="space-y-2">
+          {navigationItems.map((item) => {
+            const IconComponent = item.icon;
+            const isActive = location === item.href;
+
+            return (
+              <Link key={item.href} href={item.href}>
+                <div className={cn(
+                  "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer relative group",
+                  isActive 
+                    ? "bg-devcode-dark text-white" 
+                    : "text-devcode-gray hover:text-devcode-dark hover:bg-gray-50",
+                  isCollapsed ? "justify-center" : "space-x-3"
+                )}>
+                  <IconComponent className="w-5 h-5 flex-shrink-0" />
+                  {!isCollapsed && <span>{item.label}</span>}
+                  
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                      {item.label}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+          
+          <div
+            className={cn(
+              "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer text-devcode-gray hover:text-devcode-dark hover:bg-gray-50 relative group",
+              isCollapsed ? "justify-center" : "space-x-3"
+            )}
+            onClick={handleLogout}
+          >
+            <Clock className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span>Logout</span>}
+            
+            {/* Tooltip for collapsed state */}
+            {isCollapsed && (
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                Logout
+              </div>
+            )}
+          </div>
+        </nav>
       </div>
+    </div>
     </>
   );
 }

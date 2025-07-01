@@ -14,13 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Users, Clock, Edit, Trash2, Save, X } from "lucide-react";
+import { BookOpen, Users, Clock, Edit, Trash2, Save, X, Menu } from "lucide-react";
 
 export default function TeacherCourses() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingCourse, setEditingCourse] = useState<any>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     title: "",
     description: "",
@@ -150,19 +151,32 @@ export default function TeacherCourses() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <GlobalActiveSession />
-      <Sidebar userRole="teacher" />
+      <Sidebar 
+        userRole="teacher" 
+        isMobileOpen={isMobileMenuOpen} 
+        setIsMobileOpen={setIsMobileMenuOpen} 
+      />
 
       {/* Main Content */}
-      <div className="flex-1 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>
+      <div className="flex-1 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 0)' }}>
         {/* Top Navigation */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Mənim Kurslarım</h1>
-                <p className="text-sm text-gray-600">
-                  Bütün kurslarınızı burada idarə edin və yenilərini yaradın.
-                </p>
+              <div className="flex items-center">
+                {/* Mobile menu button */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(true)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden mr-3"
+                >
+                  <Menu className="w-5 h-5 text-gray-600" />
+                </button>
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">Mənim Kurslarım</h1>
+                  <p className="text-sm text-gray-600">
+                    Bütün kurslarınızı burada idarə edin və yenilərini yaradın.
+                  </p>
+                </div>
               </div>
               <CreateCourseDialog />
             </div>

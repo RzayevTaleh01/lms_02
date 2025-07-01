@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -8,11 +8,12 @@ import CreateCourseDialog from "@/components/create-course-dialog";
 import GlobalActiveSession from "@/components/global-active-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Users, CheckSquare } from "lucide-react";
+import { BookOpen, Users, CheckSquare, Menu } from "lucide-react";
 
 export default function TeacherDashboard() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch courses for statistics
   const { data: courses = [] } = useQuery({
@@ -55,19 +56,32 @@ export default function TeacherDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <GlobalActiveSession />
-      <Sidebar userRole="teacher" />
+      <Sidebar 
+        userRole="teacher" 
+        isMobileOpen={isMobileMenuOpen} 
+        setIsMobileOpen={setIsMobileMenuOpen} 
+      />
 
       {/* Main Content */}
-      <div className="flex-1 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>
+      <div className="flex-1 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 0)' }}>
         {/* Top Navigation */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Müəllim Paneli</h1>
-                <p className="text-sm text-gray-600">
-                  Xoş gəlmisiniz, {user.firstName || 'Müəllim'}!
-                </p>
+              <div className="flex items-center">
+                {/* Mobile menu button */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(true)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden mr-3"
+                >
+                  <Menu className="w-5 h-5 text-gray-600" />
+                </button>
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">Müəllim Paneli</h1>
+                  <p className="text-sm text-gray-600">
+                    Xoş gəlmisiniz, {user.firstName || 'Müəllim'}!
+                  </p>
+                </div>
               </div>
               <CreateCourseDialog />
             </div>
