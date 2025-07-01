@@ -1,4 +1,4 @@
-import { useParams, Link, useLocation } from "wouter";
+import { useParams, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -14,33 +14,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { 
-  BookOpen, 
   Video, 
   FileText, 
   Download, 
-  Upload, 
   Calendar, 
-  Clock,
   CheckCircle,
   PlayCircle,
-  ChevronRight,
   Award,
   Link2,
-  Menu,
-  Home,
-  GraduationCap,
-  ClipboardList,
-  User,
-  LogOut,
   AlertCircle,
   ExternalLink,
   Send,
-  Eye,
-  File,
-  Image,
-  Music,
-  Archive,
-  Edit
+  Edit,
+  Upload,
+  ClipboardList,
+  Menu
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
@@ -318,7 +306,7 @@ export default function StudentCoursePage() {
 
   if (!course) {
     return (
-      <div className="flex h-screen">
+      <div className="min-h-screen bg-gray-50 flex">
         <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <div className="flex-1 lg:ml-64 p-8">
           <div className="animate-pulse">
