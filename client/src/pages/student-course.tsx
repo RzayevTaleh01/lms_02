@@ -576,9 +576,10 @@ export default function StudentCoursePage() {
                               );
 
                               const isSubmitted = !!studentSubmission;
-                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.status === 'graded';
+                              const isGraded = isSubmitted && studentSubmission?.grade !== null;
                               const isReturned = isSubmitted && studentSubmission?.status === 'returned';
                               const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
+                              const isPending = isSubmitted && !isGraded && !isReturned && !isResubmitted;</old_str>
 
                               return (
                                 <Card key={assignment.id}>
@@ -592,12 +593,18 @@ export default function StudentCoursePage() {
                                         />
                                       </div>
                                       <div className="flex flex-col items-end space-y-2">
-                                        <Badge variant={isSubmitted ? (isGraded ? "default" : isReturned ? "destructive" : isResubmitted ? "secondary" : "secondary") : "destructive"}>
+                                        <Badge variant={
+                                          isReturned ? "destructive" : 
+                                          isGraded ? "default" : 
+                                          isResubmitted ? "secondary" : 
+                                          isPending ? "secondary" : 
+                                          "outline"
+                                        }>
                                           {isReturned ? "Düzəliş Tələb Olunur" : 
                                            isGraded ? "Qiymətləndirilib" : 
                                            isResubmitted ? "Yenidən Göndərilib" :
-                                           isSubmitted ? "Göndərilib" : "Gözləyir"}
-                                        </Badge>
+                                           isPending ? "Göndərilib" : "Gözləyir"}
+                                        </Badge></old_str>
                                         {assignment.dueDate && (
                                           <div className="text-xs text-gray-500 flex items-center">
                                             <Calendar className="w-3 h-3 mr-1" />
@@ -615,25 +622,27 @@ export default function StudentCoursePage() {
                                     {isSubmitted && studentSubmission ? (
                                       <div className={cn(
                                         "border rounded-lg p-4",
+                                        isReturned ? "bg-red-50 border-red-200" : 
                                         isGraded ? "bg-green-50 border-green-200" : 
-                                        isReturned ? "bg-orange-50 border-orange-200" : 
                                         "bg-blue-50 border-blue-200"
-                                      )}>
+                                      )}></old_str>
                                         <div className="flex items-center space-x-2 mb-3">
-                                          <CheckCircle className={cn(
-                                            "w-4 h-4",
-                                            isGraded ? "text-green-600" : 
-                                            isReturned ? "text-orange-600" : 
-                                            "text-blue-600"
-                                          )} />
+                                          {isReturned ? (
+                                            <AlertCircle className="w-4 h-4 text-red-600" />
+                                          ) : (
+                                            <CheckCircle className={cn(
+                                              "w-4 h-4",
+                                              isGraded ? "text-green-600" : "text-blue-600"
+                                            )} />
+                                          )}
                                           <span className={cn(
                                             "text-sm font-medium",
+                                            isReturned ? "text-red-800" : 
                                             isGraded ? "text-green-800" : 
-                                            isReturned ? "text-orange-800" : 
                                             "text-blue-800"
                                           )}>
                                             {isReturned ? "Düzəliş üçün qaytarılıb" : isGraded ? "Qiymətləndirilib" : "Tapşırıq göndərilib"}
-                                          </span>
+                                          </span></old_str>
                                           {isGraded && (
                                             <Badge variant="outline" className="ml-auto text-lg px-3 py-1">
                                               {studentSubmission.grade}/{assignment.maxPoints} bal
@@ -677,14 +686,14 @@ export default function StudentCoursePage() {
                                           )}
 
                                           {isReturned && studentSubmission.feedback && (
-                                            <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded">
-                                              <div className="text-sm font-medium text-orange-800 mb-1">Düzəliş tələbi:</div>
-                                              <div className="text-sm text-orange-700">{studentSubmission.feedback}</div>
+                                            <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">
+                                              <div className="text-sm font-medium text-red-800 mb-1">Düzəliş tələbi:</div>
+                                              <div className="text-sm text-red-700">{studentSubmission.feedback}</div>
                                             </div>
-                                          )}
+                                          )}</old_str>
                                         </div>
 
-                                        {isReturned && !isGraded && !isResubmitted && (
+                                        {isReturned && (
                                           <div className="mt-4">
                                             <Button 
                                               onClick={() => handleSubmitAssignment(assignment)}
@@ -694,7 +703,7 @@ export default function StudentCoursePage() {
                                               Düzəliş Et
                                             </Button>
                                           </div>
-                                        )}
+                                        )}</old_str>
                                       </div>
                                     ) : (
                                       <div className="text-center py-8">
