@@ -1044,31 +1044,36 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getSubmissionHistory(assignmentId: number, studentId: string) {
-    // Get all submissions for this assignment and student ordered by submission date
-    const submissionHistory = await db
-      .select({
-        id: submissions.id,
-        content: submissions.content,
-        githubUrl: submissions.githubUrl,
-        fileUrl: submissions.fileUrl,
-        submittedAt: submissions.submittedAt,
-        grade: submissions.grade,
-        feedback: submissions.feedback,
-        gradedAt: submissions.gradedAt,
-        status: submissions.status,
-        teacherName: sql<string>`CONCAT(${users.firstName}, ' ', ${users.lastName})`.as('teacherName')
-      })
-      .from(submissions)
-      .leftJoin(users, eq(submissions.gradedBy, users.id))
-      .where(
-        and(
-          eq(submissions.assignmentId, assignmentId),
-          eq(submissions.studentId, studentId)
+    try {
+      // Get all submissions for this assignment and student ordered by submission date
+      const submissionHistory = await db
+        .select({
+          id: submissions.id,
+          content: submissions.content,
+          githubUrl: submissions.githubUrl,
+          fileUrl: submissions.fileUrl,
+          submittedAt: submissions.submittedAt,
+          grade: submissions.grade,
+          feedback: submissions.feedback,
+          gradedAt: submissions.gradedAt,
+          status: submissions.status,
+          teacherName: sql<string>`COALESCE(CONCAT(${users.firstName}, ' ', ${users.lastName}), 'Naməlum')`.as('teacherName')
+        })
+        .from(submissions)
+        .leftJoin(users, eq(submissions.gradedBy, users.id))
+        .where(
+          and(
+            eq(submissions.assignmentId, assignmentId),
+            eq(submissions.studentId, studentId)
+          )
         )
-      )
-      .orderBy(desc(submissions.submittedAt));
+        .orderBy(desc(submissions.submittedAt));
 
-    return submissionHistory;
+      return submissionHistory || [];
+    } catch (error) {
+      console.error("Error fetching submission history:", error);
+      return [];
+    }
   }
 
   // Get student attendance statistics

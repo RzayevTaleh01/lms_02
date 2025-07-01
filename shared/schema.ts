@@ -105,6 +105,7 @@ export const submissions = pgTable("submissions", {
   feedback: text("feedback"),
   gradedAt: timestamp("graded_at"),
   gradedBy: varchar("graded_by"),
+  status: varchar("status", { enum: ["submitted", "graded", "returned", "resubmitted"] }).default("submitted"),
 });
 
 // Blog posts

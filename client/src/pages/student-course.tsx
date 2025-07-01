@@ -578,6 +578,7 @@ export default function StudentCoursePage() {
                               const isSubmitted = !!studentSubmission;
                               const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.status === 'graded';
                               const isReturned = isSubmitted && studentSubmission?.status === 'returned';
+                              const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
 
                               return (
                                 <Card key={assignment.id}>
@@ -591,8 +592,11 @@ export default function StudentCoursePage() {
                                         />
                                       </div>
                                       <div className="flex flex-col items-end space-y-2">
-                                        <Badge variant={isSubmitted ? (isGraded ? "default" : isReturned ? "destructive" : "secondary") : "destructive"}>
-                                          {isReturned ? "Düzəliş Tələb Olunur" : isGraded ? "Qiymətləndirilib" : isSubmitted ? "Göndərilib" : "Gözləyir"}
+                                        <Badge variant={isSubmitted ? (isGraded ? "default" : isReturned ? "destructive" : isResubmitted ? "secondary" : "secondary") : "destructive"}>
+                                          {isReturned ? "Düzəliş Tələb Olunur" : 
+                                           isGraded ? "Qiymətləndirilib" : 
+                                           isResubmitted ? "Yenidən Göndərilib" :
+                                           isSubmitted ? "Göndərilib" : "Gözləyir"}
                                         </Badge>
                                         {assignment.dueDate && (
                                           <div className="text-xs text-gray-500 flex items-center">
@@ -680,7 +684,7 @@ export default function StudentCoursePage() {
                                           )}
                                         </div>
 
-                                        {isReturned && (
+                                        {isReturned && !isGraded && !isResubmitted && (
                                           <div className="mt-4">
                                             <Button 
                                               onClick={() => handleSubmitAssignment(assignment)}
