@@ -33,116 +33,18 @@ import {
   AlertCircle,
   ExternalLink,
   Send,
-  Eye
+  Eye,
+  File,
+  Image,
+  Music,
+  Archive
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-
-const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const [location] = useLocation();
-  const { user, logout } = useAuth();
-
-  const menuItems = [
-    { icon: Home, label: "Ana Səhifə", href: "/student", exact: true },
-    { icon: GraduationCap, label: "Kurslarım", href: "/student/courses" },
-    { icon: ClipboardList, label: "Davamiyyət", href: "/student/attendance" },
-    { icon: ClipboardList, label: "Qiymətləndirmə", href: "/student/submissions" },
-    { icon: User, label: "Profil", href: "/student/profile" }
-  ];
-
-  if (!user) {
-    return null;
-  }
-
-  return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <div className={cn(
-        "fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto",
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <Link href="/student" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">DA</span>
-              </div>
-              <span className="font-semibold text-gray-800">DevCode Academy</span>
-            </Link>
-          </div>
-
-          {/* User info */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-medium text-sm">
-                  {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                <Badge variant="secondary" className="text-xs mt-1">Tələbə Paneli</Badge>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-            {menuItems.map((item) => {
-              const isActive = item.exact 
-                ? location === item.href
-                : location.startsWith(item.href);
-              
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-orange-100 text-orange-700"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                  )}
-                  onClick={onClose}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Footer */}
-          <div className="p-4 border-t border-gray-200">
-            <Button
-              onClick={logout}
-              variant="ghost"
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Çıxış
-            </Button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
+import { StudentSidebar } from "@/components/student-sidebar";
 
 export default function StudentCoursePage() {
   const { id } = useParams<{ id: string }>();
@@ -192,14 +94,71 @@ export default function StudentCoursePage() {
     }
   }, [lessons, selectedLesson]);
 
+  const calculateLessonProgress = (lessonId: number) => {
+    // Həmin dərsin tapşırıqlarını tap
+    const lessonAssignments = assignments.filter((a: any) => a.lessonId === lessonId);
+    
+    if (lessonAssignments.length === 0) return 100; // Tapşırıq yoxdursa 100%
+    
+    // Göndərilmiş tapşırıqları say
+    const submittedAssignments = lessonAssignments.filter((assignment: any) => 
+      submissions.some((s: any) => s.assignmentId === assignment.id)
+    );
+    
+    return Math.round((submittedAssignments.length / lessonAssignments.length) * 100);
+  };
+
   const calculateOverallProgress = () => {
     if (lessons.length === 0) return 0;
-    return Math.round((lessons.filter((l: any) => l.completed).length / lessons.length) * 100);
+    
+    const totalProgress = lessons.reduce((sum: number, lesson: any) => {
+      return sum + calculateLessonProgress(lesson.id);
+    }, 0);
+    
+    return Math.round(totalProgress / lessons.length);
   };
 
   const getVideoId = (url: string) => {
     const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
     return match ? match[1] : null;
+  };
+
+  const getMaterialIcon = (material: any) => {
+    const type = material.materialType?.toLowerCase() || material.type?.toLowerCase() || 'document';
+    
+    switch (type) {
+      case 'video':
+        return <Video className="w-5 h-5 text-red-500" />;
+      case 'document':
+      case 'pdf':
+        return <FileText className="w-5 h-5 text-red-600" />;
+      case 'link':
+      case 'url':
+        return <Link2 className="w-5 h-5 text-blue-500" />;
+      case 'image':
+      case 'img':
+        return <Image className="w-5 h-5 text-green-500" />;
+      case 'audio':
+        return <Music className="w-5 h-5 text-purple-500" />;
+      case 'archive':
+      case 'zip':
+        return <Archive className="w-5 h-5 text-orange-500" />;
+      default:
+        return <File className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  const handleMaterialClick = (material: any) => {
+    if (material.videoUrl) {
+      window.open(material.videoUrl, '_blank');
+    } else if (material.content) {
+      // Link olarsa aç
+      if (material.content.startsWith('http')) {
+        window.open(material.content, '_blank');
+      } else if (material.content.includes('.pdf') || material.content.includes('.doc')) {
+        window.open(material.content, '_blank');
+      }
+    }
   };
 
   if (!course) {
@@ -217,7 +176,7 @@ export default function StudentCoursePage() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex">
       <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       
       <div className="flex-1 lg:ml-64 flex flex-col overflow-hidden">
@@ -273,13 +232,13 @@ export default function StudentCoursePage() {
                         <div className="flex-shrink-0 mt-1">
                           <div className={cn(
                             "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium",
-                            lesson.completed 
+                            calculateLessonProgress(lesson.id) === 100
                               ? "bg-green-100 text-green-700"
                               : isActive 
                                 ? "bg-orange-100 text-orange-700"
                                 : "bg-gray-100 text-gray-600"
                           )}>
-                            {lesson.completed ? <CheckCircle className="w-4 h-4" /> : index + 1}
+                            {calculateLessonProgress(lesson.id) === 100 ? <CheckCircle className="w-4 h-4" /> : index + 1}
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -404,24 +363,28 @@ export default function StudentCoursePage() {
                         ) : (
                           <div className="space-y-4">
                             {materials.map((material: any) => (
-                              <Card key={material.id}>
-                                <CardContent className="p-4">
+                              <Card key={material.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                                <CardContent className="p-4" onClick={() => handleMaterialClick(material)}>
                                   <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                      <h4 className="font-medium">{material.title}</h4>
-                                      <p className="text-sm text-gray-600 mt-1">{material.description}</p>
-                                      <Badge variant="secondary" className="mt-2">
-                                        {material.type}
-                                      </Badge>
+                                    <div className="flex items-start space-x-3 flex-1">
+                                      {getMaterialIcon(material)}
+                                      <div className="flex-1">
+                                        <h4 className="font-medium">{material.title}</h4>
+                                        {material.description && (
+                                          <p className="text-sm text-gray-600 mt-1">{material.description}</p>
+                                        )}
+                                        <Badge variant="secondary" className="mt-2">
+                                          {material.materialType || material.type || 'Sənəd'}
+                                        </Badge>
+                                      </div>
                                     </div>
-                                    {material.fileUrl && (
-                                      <Button variant="outline" size="sm" asChild>
-                                        <a href={material.fileUrl} target="_blank" rel="noopener noreferrer">
-                                          <ExternalLink className="w-4 h-4 mr-2" />
-                                          Aç
-                                        </a>
-                                      </Button>
-                                    )}
+                                    <Button variant="outline" size="sm" onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMaterialClick(material);
+                                    }}>
+                                      <ExternalLink className="w-4 h-4 mr-2" />
+                                      Aç
+                                    </Button>
                                   </div>
                                 </CardContent>
                               </Card>
