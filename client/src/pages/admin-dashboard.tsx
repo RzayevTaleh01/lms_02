@@ -71,6 +71,19 @@ interface Stats {
   totalCertificates: number;
 }
 
+interface LessonSession {
+  id: number;
+  courseId: number;
+  teacherId: string;
+  title: string;
+  description: string;
+  startedAt: string;
+  endedAt?: string;
+  duration?: number;
+  course: Course;
+  teacher: User;
+}
+
 export default function AdminDashboard() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -108,6 +121,13 @@ export default function AdminDashboard() {
   // Fetch all enrollments
   const { data: enrollments = [], isLoading: enrollmentsLoading } = useQuery<Enrollment[]>({
     queryKey: ["/api/enrollments/all"],
+    enabled: !!user && user.role === 'admin',
+    retry: false,
+  });
+
+  // Fetch all lesson sessions
+  const { data: lessonSessions = [], isLoading: sessionsLoading } = useQuery<LessonSession[]>({
+    queryKey: ["/api/sessions/history"],
     enabled: !!user && user.role === 'admin',
     retry: false,
   });
@@ -196,8 +216,8 @@ export default function AdminDashboard() {
   const handleAddUser = () => {
     if (!newUserData.firstName || !newUserData.lastName || !newUserData.email || !newUserData.password) {
       toast({
-        title: "Error",
-        description: "Please fill in all fields",
+        title: "Xəta",
+        description: "Bütün sahələri doldurun",
         variant: "destructive",
       });
       return;
@@ -218,8 +238,8 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-            <p className="text-gray-600">Manage users, courses, and system settings</p>
+            <h1 className="text-3xl font-bold text-gray-900">İdarəetmə Paneli</h1>
+            <p className="text-gray-600">İstifadəçiləri, kursları və sistem ayarlarını idarə edin</p>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm">
@@ -237,46 +257,46 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <CardTitle className="text-sm font-medium">Ümumi İstifadəçilər</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{statsLoading ? "..." : stats?.totalUsers || 0}</div>
               <p className="text-xs text-muted-foreground">
-                {studentUsers.length} students, {teacherUsers.length} teachers
+                {studentUsers.length} tələbə, {teacherUsers.length} müəllim
               </p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Courses</CardTitle>
+              <CardTitle className="text-sm font-medium">Aktiv Kurslar</CardTitle>
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{statsLoading ? "..." : stats?.totalCourses || 0}</div>
               <p className="text-xs text-muted-foreground">
-                {courses.filter((c: Course) => c.isActive).length} active courses
+                {courses.filter((c: Course) => c.isActive).length} aktiv kurs
               </p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
+              <CardTitle className="text-sm font-medium">Ümumi Qeydiyyatlar</CardTitle>
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{statsLoading ? "..." : stats?.totalEnrollments || 0}</div>
               <p className="text-xs text-muted-foreground">
-                Active student enrollments
+                Aktiv tələbə qeydiyyatları
               </p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">System Activity</CardTitle>
+              <CardTitle className="text-sm font-medium">Sistem Aktivliyi</CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -284,7 +304,7 @@ export default function AdminDashboard() {
                 {enrollments.filter((e: Enrollment) => e.progress > 0).length}
               </div>
               <p className="text-xs text-muted-foreground">
-                Active learners
+                Aktiv öyrənənlər
               </p>
             </CardContent>
           </Card>
@@ -292,11 +312,12 @@ export default function AdminDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="users" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-            <TabsTrigger value="enrollments">Enrollments</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="users">İstifadəçilər</TabsTrigger>
+            <TabsTrigger value="courses">Kurslar</TabsTrigger>
+            <TabsTrigger value="enrollments">Qeydiyyatlar</TabsTrigger>
+            <TabsTrigger value="sessions">Dərs Sessiyaları</TabsTrigger>
+            <TabsTrigger value="analytics">Analitika</TabsTrigger>
           </TabsList>
 
           {/* Users Tab */}
@@ -304,22 +325,22 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>User Management</CardTitle>
+                  <CardTitle>İstifadəçi İdarəetməsi</CardTitle>
                   <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
                     <DialogTrigger asChild>
                       <Button className="bg-gray-900 text-white hover:bg-gray-800">
                         <UserPlus className="w-4 h-4 mr-2" />
-                        Add User
+                        İstifadəçi Əlavə Et
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Add New User</DialogTitle>
+                        <DialogTitle>Yeni İstifadəçi Əlavə Et</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="firstName">First Name</Label>
+                            <Label htmlFor="firstName">Ad</Label>
                             <Input
                               id="firstName"
                               value={newUserData.firstName}
@@ -327,7 +348,7 @@ export default function AdminDashboard() {
                             />
                           </div>
                           <div>
-                            <Label htmlFor="lastName">Last Name</Label>
+                            <Label htmlFor="lastName">Soyad</Label>
                             <Input
                               id="lastName"
                               value={newUserData.lastName}
@@ -345,7 +366,7 @@ export default function AdminDashboard() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="password">Password</Label>
+                          <Label htmlFor="password">Parol</Label>
                           <Input
                             id="password"
                             type="password"
@@ -354,14 +375,14 @@ export default function AdminDashboard() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="role">Role</Label>
+                          <Label htmlFor="role">Rol</Label>
                           <Select value={newUserData.role} onValueChange={(value) => setNewUserData({...newUserData, role: value as 'student' | 'teacher' | 'admin'})}>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="student">Student</SelectItem>
-                              <SelectItem value="teacher">Teacher</SelectItem>
+                              <SelectItem value="student">Tələbə</SelectItem>
+                              <SelectItem value="teacher">Müəllim</SelectItem>
                               <SelectItem value="admin">Admin</SelectItem>
                             </SelectContent>
                           </Select>
@@ -371,7 +392,7 @@ export default function AdminDashboard() {
                           className="w-full"
                           disabled={addUserMutation.isPending}
                         >
-                          {addUserMutation.isPending ? "Adding..." : "Add User"}
+                          {addUserMutation.isPending ? "Əlavə edilir..." : "İstifadəçi Əlavə Et"}
                         </Button>
                       </div>
                     </DialogContent>
@@ -380,15 +401,15 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 {usersLoading ? (
-                  <div className="text-center py-8">Loading users...</div>
+                  <div className="text-center py-8">İstifadəçilər yüklənir...</div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-gray-200">
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">USER</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">ROLE</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">CREATED</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">İSTİFADƏÇİ</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">ROL</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">YARADILMA TARİXİ</th>
                           <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">STATUS</th>
                         </tr>
                       </thead>
@@ -413,15 +434,15 @@ export default function AdminDashboard() {
                                 variant={userData.role === 'admin' ? 'default' : userData.role === 'teacher' ? 'secondary' : 'outline'}
                                 className="capitalize"
                               >
-                                {userData.role}
+                                {userData.role === 'admin' ? 'Admin' : userData.role === 'teacher' ? 'Müəllim' : 'Tələbə'}
                               </Badge>
                             </td>
                             <td className="py-4 px-2 text-sm text-gray-500">
-                              {format(new Date(userData.createdAt), 'MMM dd, yyyy')}
+                              {format(new Date(userData.createdAt), 'dd MMM yyyy')}
                             </td>
                             <td className="py-4 px-2">
                               <Badge variant="outline" className="text-green-800 border-green-200">
-                                Active
+                                Aktiv
                               </Badge>
                             </td>
                           </tr>
@@ -438,21 +459,21 @@ export default function AdminDashboard() {
           <TabsContent value="courses" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Course Management</CardTitle>
+                <CardTitle>Kurs İdarəetməsi</CardTitle>
               </CardHeader>
               <CardContent>
                 {coursesLoading ? (
-                  <div className="text-center py-8">Loading courses...</div>
+                  <div className="text-center py-8">Kurslar yüklənir...</div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-gray-200">
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">COURSE</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">INSTRUCTOR</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">ENROLLMENTS</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">KURS</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">MÜƏLLİM</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">QEYDİYYATLAR</th>
                           <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">STATUS</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">CREATED</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">YARADILMA TARİXİ</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -470,7 +491,7 @@ export default function AdminDashboard() {
                               </td>
                               <td className="py-4 px-2">
                                 <div className="text-sm text-gray-900">
-                                  {instructor ? `${instructor.firstName} ${instructor.lastName}` : 'Unknown'}
+                                  {instructor ? `${instructor.firstName} ${instructor.lastName}` : 'Naməlum'}
                                 </div>
                               </td>
                               <td className="py-4 px-2">
@@ -478,11 +499,11 @@ export default function AdminDashboard() {
                               </td>
                               <td className="py-4 px-2">
                                 <Badge variant={course.isActive ? "default" : "secondary"}>
-                                  {course.isActive ? "Active" : "Inactive"}
+                                  {course.isActive ? "Aktiv" : "Qeyri-aktiv"}
                                 </Badge>
                               </td>
                               <td className="py-4 px-2 text-sm text-gray-500">
-                                {format(new Date(course.createdAt), 'MMM dd, yyyy')}
+                                {format(new Date(course.createdAt), 'dd MMM yyyy')}
                               </td>
                             </tr>
                           );
@@ -495,25 +516,91 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* Enrollments Tab */}
-          <TabsContent value="enrollments" className="space-y-4">
+          {/* Sessions Tab */}
+          <TabsContent value="sessions" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Enrollment Management</CardTitle>
+                <CardTitle>Dərs Sessiyaları İdarəetməsi</CardTitle>
               </CardHeader>
               <CardContent>
-                {enrollmentsLoading ? (
-                  <div className="text-center py-8">Loading enrollments...</div>
+                {sessionsLoading ? (
+                  <div className="text-center py-8">Dərs sessiyaları yüklənir...</div>
+                ) : lessonSessions.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    Hələlik heç bir dərs sessiyası yoxdur
+                  </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-gray-200">
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">STUDENT</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">COURSE</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">PROGRESS</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">ENROLLED</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">ACTIONS</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">BAŞLIQ</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">KURS</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">MÜƏLLİM</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">BAŞLAMA TARİXİ</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">MÜDDƏTİ</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">STATUS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lessonSessions.map((session: LessonSession) => (
+                          <tr key={session.id} className="border-b border-gray-100">
+                            <td className="py-4 px-2">
+                              <div>
+                                <div className="font-medium text-gray-900">{session.title}</div>
+                                <div className="text-sm text-gray-500">{session.description}</div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-2">
+                              <div className="text-sm text-gray-900">{session.course?.title}</div>
+                            </td>
+                            <td className="py-4 px-2">
+                              <div className="text-sm text-gray-900">
+                                {session.teacher ? `${session.teacher.firstName} ${session.teacher.lastName}` : 'Naməlum'}
+                              </div>
+                            </td>
+                            <td className="py-4 px-2 text-sm text-gray-500">
+                              {format(new Date(session.startedAt), 'dd MMM yyyy HH:mm')}
+                            </td>
+                            <td className="py-4 px-2">
+                              <Badge variant="outline">
+                                {session.duration ? `${session.duration} dəq` : 'Bilinmir'}
+                              </Badge>
+                            </td>
+                            <td className="py-4 px-2">
+                              <Badge variant={session.endedAt ? "default" : "secondary"}>
+                                {session.endedAt ? "Bitib" : "Davam edir"}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Enrollments Tab */}
+          <TabsContent value="enrollments" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Qeydiyyat İdarəetməsi</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {enrollmentsLoading ? (
+                  <div className="text-center py-8">Qeydiyyatlar yüklənir...</div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">TƏLƏBƏ</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">KURS</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">TƏRƏQQİ</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">QEYDİYYAT TARİXİ</th>
+                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">ƏMƏLİYYATLAR</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -549,7 +636,7 @@ export default function AdminDashboard() {
                               </div>
                             </td>
                             <td className="py-4 px-2 text-sm text-gray-500">
-                              {format(new Date(enrollment.enrolledAt), 'MMM dd, yyyy')}
+                              {format(new Date(enrollment.enrolledAt), 'dd MMM yyyy')}
                             </td>
                             <td className="py-4 px-2">
                               <AlertDialog>
@@ -560,18 +647,18 @@ export default function AdminDashboard() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Remove Enrollment</AlertDialogTitle>
+                                    <AlertDialogTitle>Qeydiyyatı Sil</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Are you sure you want to remove this enrollment? This action cannot be undone.
+                                      Bu qeydiyyatı silmək istədiyinizə əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün deyil.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>Ləğv et</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() => removeEnrollmentMutation.mutate({ enrollmentId: enrollment.id })}
                                       className="bg-red-600 hover:bg-red-700"
                                     >
-                                      Remove
+                                      Sil
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -592,12 +679,12 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>User Distribution</CardTitle>
+                  <CardTitle>İstifadəçi Paylanması</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Students</span>
+                      <span className="text-sm text-gray-600">Tələbələr</span>
                       <div className="flex items-center space-x-2">
                         <div className="w-24 bg-gray-200 rounded-full h-2">
                           <div 
@@ -609,7 +696,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Teachers</span>
+                      <span className="text-sm text-gray-600">Müəllimlər</span>
                       <div className="flex items-center space-x-2">
                         <div className="w-24 bg-gray-200 rounded-full h-2">
                           <div 
@@ -621,7 +708,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Admins</span>
+                      <span className="text-sm text-gray-600">Adminlər</span>
                       <div className="flex items-center space-x-2">
                         <div className="w-24 bg-gray-200 rounded-full h-2">
                           <div 
@@ -638,12 +725,12 @@ export default function AdminDashboard() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Course Status</CardTitle>
+                  <CardTitle>Kurs Statusu</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Active Courses</span>
+                      <span className="text-sm text-gray-600">Aktiv Kurslar</span>
                       <div className="flex items-center space-x-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                         <span className="text-sm font-medium">
@@ -652,7 +739,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Inactive Courses</span>
+                      <span className="text-sm text-gray-600">Qeyri-aktiv Kurslar</span>
                       <div className="flex items-center space-x-2">
                         <AlertCircle className="w-4 h-4 text-yellow-600" />
                         <span className="text-sm font-medium">
@@ -661,7 +748,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Total Enrollments</span>
+                      <span className="text-sm text-gray-600">Ümumi Qeydiyyatlar</span>
                       <div className="flex items-center space-x-2">
                         <School className="w-4 h-4 text-blue-600" />
                         <span className="text-sm font-medium">{enrollments.length}</span>
