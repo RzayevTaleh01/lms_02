@@ -39,22 +39,22 @@ export default function Landing() {
       <Navbar />
       
       {/* Hero Section - Modern DevCode Style */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-orange-900 to-yellow-900 text-white py-24 lg:py-32 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-orange-900 via-red-900 to-orange-800 text-white py-24 lg:py-32 overflow-hidden">
         {/* Enhanced Background Animation */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-orange-500/30 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-yellow-400/25 rounded-full blur-3xl animate-pulse delay-700"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-orange-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-20 left-20 w-96 h-96 bg-orange-600/40 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-red-500/30 rounded-full blur-3xl animate-pulse delay-700"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-orange-500/25 rounded-full blur-3xl animate-pulse delay-1000"></div>
           
           {/* Floating Code Elements */}
-          <div className="absolute top-32 right-32 text-orange-300/30 text-6xl font-mono animate-bounce delay-500">{'{'}</div>
-          <div className="absolute bottom-32 left-32 text-yellow-300/30 text-6xl font-mono animate-bounce delay-1000">{'}'}</div>
-          <div className="absolute top-1/3 left-1/4 text-orange-200/40 text-4xl font-mono animate-pulse delay-300">&lt;/&gt;</div>
-          <div className="absolute bottom-1/3 right-1/4 text-yellow-200/40 text-4xl font-mono animate-pulse delay-800">( )</div>
+          <div className="absolute top-32 right-32 text-orange-300/40 text-6xl font-mono animate-bounce delay-500">{'{'}</div>
+          <div className="absolute bottom-32 left-32 text-red-300/40 text-6xl font-mono animate-bounce delay-1000">{'}'}</div>
+          <div className="absolute top-1/3 left-1/4 text-orange-200/50 text-4xl font-mono animate-pulse delay-300">&lt;/&gt;</div>
+          <div className="absolute bottom-1/3 right-1/4 text-red-200/50 text-4xl font-mono animate-pulse delay-800">( )</div>
           
           {/* Moving Geometric Shapes */}
-          <div className="absolute top-16 left-1/3 w-8 h-8 bg-orange-400/40 rotate-45 animate-spin"></div>
-          <div className="absolute bottom-16 right-1/3 w-6 h-6 bg-yellow-400/40 rounded-full animate-ping delay-500"></div>
+          <div className="absolute top-16 left-1/3 w-8 h-8 bg-orange-500/50 rotate-45 animate-spin"></div>
+          <div className="absolute bottom-16 right-1/3 w-6 h-6 bg-red-400/50 rounded-full animate-ping delay-500"></div>
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,22 +84,16 @@ export default function Landing() {
             {/* Description */}
             <p className="text-xl lg:text-2xl text-gray-100 mb-12 max-w-4xl mx-auto leading-relaxed animate-slide-up">
               DevCode Academy ilə texnologiya sektorunda karyeranızı qurun. 
-              <strong className="text-yellow-300">Sıfırdan mütəxəssis səviyyəyə</strong> qədər tam təhsil proqramı və 
-              <strong className="text-orange-300">100% iş təminatı</strong> ilə gələcəyinizi təmin edin.
+              <strong className="text-orange-300">Sıfırdan mütəxəssis səviyyəyə</strong> qədər keyfiyyətli təhsil və 
+              <strong className="text-yellow-300">praktik bilik</strong> ilə öz potensialınızı realize edin.
             </p>
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+            <div className="flex justify-center items-center mb-16">
               <Link href="/contact">
-                <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-12 py-4 text-xl font-bold rounded-xl shadow-2xl shadow-yellow-500/25 transform hover:scale-105 transition-all animate-pulse">
+                <Button size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-12 py-4 text-xl font-bold rounded-xl shadow-2xl shadow-orange-500/30 transform hover:scale-105 transition-all">
                   <Phone className="w-6 h-6 mr-3" />
                   Əlaqə
-                </Button>
-              </Link>
-              <Link href="/courses">
-                <Button variant="outline" size="lg" className="border-2 border-yellow-300 text-yellow-100 hover:bg-yellow-500/20 px-10 py-4 text-xl font-bold rounded-xl backdrop-blur-sm transition-all hover:border-yellow-200">
-                  <BookOpen className="w-6 h-6 mr-3" />
-                  Kurslar
                 </Button>
               </Link>
             </div>
