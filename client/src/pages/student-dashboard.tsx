@@ -33,17 +33,21 @@ export default function StudentDashboard() {
 
   // Debug enrollments data
   console.log("Enrollments data:", enrollments);
+  console.log("First enrollment:", enrollments[0]);
   
-  const activeEnrollments = enrollments.filter(e => (e.progress || 0) < 100);
-  const completedCourses = enrollments.filter(e => (e.progress || 0) === 100);
+  const activeEnrollments = enrollments.filter((e: any) => (e.progress || 0) < 100);
+  const completedCourses = enrollments.filter((e: any) => (e.progress || 0) === 100);
   const totalSubmissions = submissions.length;
-  const gradedSubmissions = submissions.filter(s => s.grade !== null);
+  const gradedSubmissions = submissions.filter((s: any) => s.grade !== null);
   const averageGrade = gradedSubmissions.length > 0 
-    ? gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) / gradedSubmissions.length 
+    ? gradedSubmissions.reduce((sum: number, s: any) => sum + (s.grade || 0), 0) / gradedSubmissions.length 
     : 0;
 
   console.log("Active enrollments:", activeEnrollments);
   console.log("Completed courses:", completedCourses);
+  
+  // Force show enrollments with course data  
+  const enrollmentsWithCourse = enrollments.filter((e: any) => e.course);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -150,34 +154,21 @@ export default function StudentDashboard() {
                   </Button>
                 </CardContent>
               </Card>
-            ) : enrollments.every((e: any) => !e.course) ? (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <BookOpen className="h-12 w-12 text-red-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Kurs məlumatları yüklənmir
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Təkrar cəhd edin və ya administratorla əlaqə saxlayın
-                  </p>
-                  <p className="text-xs text-red-500">
-                    Debug: Enrollments without course data: {enrollments.length}
-                  </p>
-                </CardContent>
-              </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activeEnrollments.map((enrollment) => (
+                {enrollments.map((enrollment: any) => (
                   <Card key={enrollment.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader>
-                      <CardTitle className="text-lg">{enrollment.course.title}</CardTitle>
+                      <CardTitle className="text-lg">
+                        {enrollment.course?.title || `Kurs ID: ${enrollment.courseId}`}
+                      </CardTitle>
                       <Badge variant="secondary">
                         {enrollment.progress}% tamamlandı
                       </Badge>
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-600 mb-4 line-clamp-3">
-                        {enrollment.course.description}
+                        {enrollment.course?.description || 'Kurs təsviri mövcud deyil'}
                       </p>
 
                       <div className="space-y-3">
