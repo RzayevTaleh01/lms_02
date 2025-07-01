@@ -576,7 +576,7 @@ export default function StudentCoursePage() {
                               );
 
                               const isSubmitted = !!studentSubmission;
-                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.status === 'graded';
+                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.status !== 'returned';
                               const isReturned = isSubmitted && studentSubmission?.status === 'returned';
                               const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
 
@@ -592,7 +592,12 @@ export default function StudentCoursePage() {
                                         />
                                       </div>
                                       <div className="flex flex-col items-end space-y-2">
-                                        <Badge variant={isSubmitted ? (isGraded ? "default" : isReturned ? "destructive" : isResubmitted ? "secondary" : "secondary") : "destructive"}>
+                                        <Badge variant={
+                                          isReturned ? "destructive" :
+                                          isGraded ? "default" : 
+                                          isResubmitted ? "secondary" :
+                                          isSubmitted ? "secondary" : "destructive"
+                                        }>
                                           {isReturned ? "Düzəliş Tələb Olunur" : 
                                            isGraded ? "Qiymətləndirilib" : 
                                            isResubmitted ? "Yenidən Göndərilib" :
@@ -684,7 +689,7 @@ export default function StudentCoursePage() {
                                           )}
                                         </div>
 
-                                        {isReturned && !isGraded && !isResubmitted && (
+                                        {isReturned && (
                                           <div className="mt-4">
                                             <Button 
                                               onClick={() => handleSubmitAssignment(assignment)}
@@ -727,7 +732,7 @@ export default function StudentCoursePage() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
+              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id)?.status === 'returned'
                 ? "Tapşırığı Düzəliş Et" 
                 : "Tapşırığı Göndər"
               }
@@ -864,7 +869,7 @@ export default function StudentCoursePage() {
                 >
                   {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
                     'Göndərilir...' : 
-                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned')
+                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id)?.status === 'returned'
                       ? 'Düzəliş Et və Yenidən Göndər' 
                       : 'Göndər'
                     )
