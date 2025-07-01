@@ -1,7 +1,7 @@
 import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -199,6 +199,32 @@ export default function StudentCourse() {
     }
   });
 
+  // Resubmit assignment mutation
+  const resubmitAssignmentMutation = useMutation({
+    mutationFn: async ({ submissionId, content, githubUrl, fileUrl }: {
+      submissionId: number;
+      content: string;
+      githubUrl?: string;
+      fileUrl?: string;
+    }) => {
+      return apiRequest("PATCH", `/api/submissions/${submissionId}/resubmit`, {
+        content,
+        githubUrl,
+        fileUrl,
+        studentId: user?.id
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
+      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
+      toast({ title: "Tapşırıq yenidən göndərildi!" });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Tapşırıq yenidən göndərilərkən xəta baş verdi";
+      toast({ title: errorMessage, variant: "destructive" });
+    }
+  });
+
   // Mark lesson as completed mutation
   const markLessonCompleteMutation = useMutation({
     mutationFn: async (lessonId: number) => {
@@ -264,6 +290,36 @@ export default function StudentCourse() {
       });
     }
   };
+
+  const handleResubmitAssignment = (submissionId: number) => {
+    if (submissionForm.content.trim()) {
+      resubmitAssignmentMutation.mutate({
+        submissionId: submissionId,
+        content: submissionForm.content,
+        githubUrl: submissionForm.githubUrl || undefined,
+        fileUrl: submissionForm.fileUrl || undefined
+      });
+    }
+  };
+
+  // Populate form when assignment changes and has returned submission
+  useEffect(() => {
+    if (selectedLesson && assignments.length > 0 && submissions.length > 0) {
+      const currentAssignment = assignments.find(a => a.id === selectedLesson.id);
+      if (currentAssignment) {
+        const returnedSubmission = submissions.find(s => 
+          s.assignmentId === currentAssignment.id && s.status === 'returned'
+        );
+        if (returnedSubmission) {
+          setSubmissionForm({
+            content: returnedSubmission.content || "",
+            githubUrl: returnedSubmission.githubUrl || "",
+            fileUrl: returnedSubmission.fileUrl || ""
+          });
+        }
+      }
+    }
+  }, [selectedLesson, assignments, submissions]);
 
   const isLessonCompleted = (lessonId: number) => {
     return lessonProgress.some((progress: any) => 
@@ -522,10 +578,14 @@ export default function StudentCourse() {
                                     </div>
                                     {studentSubmission && (
                                       <Badge 
-                                        variant={studentSubmission.grade ? "default" : "secondary"}
+                                        variant={
+                                          studentSubmission.status === 'returned' ? "destructive" :
+                                          studentSubmission.grade ? "default" : "secondary"
+                                        }
                                         className="ml-4"
                                       >
-                                        {studentSubmission.grade ? `${studentSubmission.grade} bal` : "Gözləyir"}
+                                        {studentSubmission.status === 'returned' ? "Yenidən Göndər" :
+                                         studentSubmission.grade ? `${studentSubmission.grade} bal` : "Gözləyir"}
                                       </Badge>
                                     )}
                                   </div>
@@ -541,8 +601,23 @@ export default function StudentCourse() {
                                   <Separator />
 
                                   {/* Submission Section */}
-                                  {!studentSubmission ? (
+                                  {!studentSubmission || (studentSubmission && studentSubmission.status === 'returned') ? (
                                     <div className="space-y-4">
+                                      {/* Show returned submission notice */}
+                                      {studentSubmission && studentSubmission.status === 'returned' && (
+                                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                                          <div className="flex items-center space-x-2 mb-2">
+                                            <AlertCircle className="w-4 h-4 text-red-600" />
+                                            <span className="text-sm font-medium text-red-800">Tapşırıq yenidən göndərilməlidir</span>
+                                          </div>
+                                          {studentSubmission.feedback && (
+                                            <p className="text-sm text-red-700 mt-2">
+                                              <strong>Müəllim rəyi:</strong> {studentSubmission.feedback}
+                                            </p>
+                                          )}
+                                        </div>
+                                      )}
+
                                       <div>
                                         <Label htmlFor="assignmentContent">Cavab məzmunu</Label>
                                         <Textarea
@@ -565,23 +640,50 @@ export default function StudentCourse() {
                                         />
                                       </div>
 
-                                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-                                        <div className="flex items-center space-x-2">
-                                          <AlertCircle className="w-4 h-4 text-amber-600" />
-                                          <p className="text-sm text-amber-800">
-                                            <strong>Diqqət:</strong> Hər tapşırığı yalnız bir dəfə göndərə bilərsiniz. Göndərdikdən sonra yenidən dəyişdirmək mümkün olmayacaq.
-                                          </p>
+                                      {/* Conditional warning message */}
+                                      {!studentSubmission ? (
+                                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                                          <div className="flex items-center space-x-2">
+                                            <AlertCircle className="w-4 h-4 text-amber-600" />
+                                            <p className="text-sm text-amber-800">
+                                              <strong>Diqqət:</strong> Hər tapşırığı yalnız bir dəfə göndərə bilərsiniz. Göndərdikdən sonra yenidən dəyişdirmək mümkün olmayacaq.
+                                            </p>
+                                          </div>
                                         </div>
-                                      </div>
+                                      ) : (
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                          <div className="flex items-center space-x-2">
+                                            <AlertCircle className="w-4 h-4 text-blue-600" />
+                                            <p className="text-sm text-blue-800">
+                                              <strong>İnfo:</strong> Tapşırığı yenidən göndərərkən əvvəlki cavabınız əvəzlənəcək.
+                                            </p>
+                                          </div>
+                                        </div>
+                                      )}
 
                                       <div>
                                         <Button
-                                          onClick={() => handleSubmitAssignment(assignment.id)}
-                                          disabled={!submissionForm.content.trim() || submitAssignmentMutation.isPending}
+                                          onClick={() => {
+                                            if (studentSubmission && studentSubmission.status === 'returned') {
+                                              handleResubmitAssignment(studentSubmission.id);
+                                            } else {
+                                              handleSubmitAssignment(assignment.id);
+                                            }
+                                          }}
+                                          disabled={
+                                            !submissionForm.content.trim() ||
+                                            submitAssignmentMutation.isPending ||
+                                            resubmitAssignmentMutation.isPending
+                                          }
                                           className="w-full"
                                         >
                                           <Upload className="w-4 h-4 mr-2" />
-                                          {submitAssignmentMutation.isPending ? "Göndərilir..." : "Tapşırığı Göndər"}
+                                          {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
+                                            "Göndərilir..." : 
+                                            (studentSubmission && studentSubmission.status === 'returned') ? 
+                                              "Yenidən Göndər" : 
+                                              "Tapşırığı Göndər"
+                                          }
                                         </Button>
                                       </div>
                                     </div>
