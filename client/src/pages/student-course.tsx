@@ -575,12 +575,11 @@ export default function StudentCoursePage() {
                                 (s: any) => s.assignmentId === assignment.id
                               );
 
-                              const isSubmitted = !!studentSubmission;
-                              const isGraded = isSubmitted && studentSubmission?.grade !== null;
-                              const isReturned = isSubmitted && studentSubmission?.feedback && studentSubmission?.grade === null && !studentSubmission?.hasBeenResubmitted;
-                              const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
-                              const isPending = isSubmitted && !isGraded && !isReturned && !isResubmitted;
-                              const hasBeenResubmitted = isSubmitted && studentSubmission?.hasBeenResubmitted;
+                              // Simplified status logic using only 3 statuses
+                              const status = studentSubmission?.status;
+                              const isSubmitted = status === 'submitted';
+                              const isGraded = status === 'graded';
+                              const isReturned = status === 'returned';
 
                               return (
                                 <Card key={assignment.id}>
@@ -595,17 +594,17 @@ export default function StudentCoursePage() {
                                       </div>
                                       <div className="flex flex-col items-end space-y-2">
                                         <Badge variant={
-                                          !isSubmitted ? "destructive" :
+                                          !studentSubmission ? "destructive" :
                                           isReturned ? "destructive" : 
                                           isGraded ? "default" : 
-                                          isResubmitted || hasBeenResubmitted ? "secondary" : 
-                                          "outline"
+                                          isSubmitted ? "outline" :
+                                          "secondary"
                                         }>
-                                          {!isSubmitted ? "Gözləyir" :
+                                          {!studentSubmission ? "Gözləyir" :
                                            isReturned ? "Düzəliş Tələb Olunur" : 
                                            isGraded ? "Qiymətləndirilib" : 
-                                           isResubmitted || hasBeenResubmitted ? "Göndərildi" :
-                                           "Qiymətləndirmə Gözləyir"}
+                                           isSubmitted ? "Qiymətləndirmə Gözləyir" :
+                                           "Bilinmir"}
                                         </Badge>
                                         {assignment.dueDate && (
                                           <div className="text-xs text-gray-500 flex items-center">
@@ -626,7 +625,6 @@ export default function StudentCoursePage() {
                                         "border rounded-lg p-4",
                                         isGraded ? "bg-green-50 border-green-200" : 
                                         isReturned ? "bg-orange-50 border-orange-200" : 
-                                        isResubmitted ? "bg-yellow-50 border-yellow-200" :
                                         "bg-blue-50 border-blue-200"
                                       )}>
                                         <div className="flex items-center space-x-2 mb-3">
@@ -636,7 +634,6 @@ export default function StudentCoursePage() {
                                             <CheckCircle className={cn(
                                               "w-4 h-4",
                                               isGraded ? "text-green-600" : 
-                                              isResubmitted ? "text-yellow-600" :
                                               "text-blue-600"
                                             )} />
                                           )}
@@ -644,12 +641,10 @@ export default function StudentCoursePage() {
                                             "text-sm font-medium",
                                             isGraded ? "text-green-800" : 
                                             isReturned ? "text-orange-800" : 
-                                            isResubmitted ? "text-yellow-800" :
                                             "text-blue-800"
                                           )}>
                                             {isReturned ? "Düzəliş üçün qaytarılıb" : 
                                              isGraded ? "Qiymətləndirilib" : 
-                                             isResubmitted ? "Yenidən göndərilib" :
                                              "Qiymətləndirmə gözləyir"}
                                           </span>
                                           {isGraded && (
@@ -706,7 +701,7 @@ export default function StudentCoursePage() {
                                             </div>
                                           )}
 
-                                          {isResubmitted && (
+                                          {false && (
                                             <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
                                               <div className="text-sm font-medium text-yellow-800 mb-1">Status:</div>
                                               <div className="text-sm text-yellow-700">Tapşırıq yenidən göndərilib və qiymətləndirmə gözləyir</div>
@@ -714,7 +709,7 @@ export default function StudentCoursePage() {
                                           )}
                                         </div>
 
-                                        {isReturned && !hasBeenResubmitted && (
+                                        {isReturned && (
                                           <div className="mt-4">
                                             <Button 
                                               onClick={() => handleSubmitAssignment(assignment)}
@@ -726,7 +721,7 @@ export default function StudentCoursePage() {
                                           </div>
                                         )}
 
-                                        {hasBeenResubmitted && studentSubmission?.feedback && studentSubmission?.grade === null && (
+                                        {false && (
                                           <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
                                             <div className="text-sm font-medium text-blue-800 mb-1">Qeyd:</div>
                                             <div className="text-sm text-blue-700">Bu tapşırığı artıq bir dəfə düzəliş etmisiniz. Qiymətləndirmə gözləyin.</div>
