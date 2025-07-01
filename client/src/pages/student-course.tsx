@@ -218,6 +218,7 @@ export default function StudentCoursePage() {
               <div className="p-2">
                 {lessons.map((lesson: any, index: number) => {
                   const isActive = selectedLesson?.id === lesson.id;
+                  const lessonProgress = calculateLessonProgress(lesson.id);
                   
                   return (
                     <div
@@ -232,13 +233,13 @@ export default function StudentCoursePage() {
                         <div className="flex-shrink-0 mt-1">
                           <div className={cn(
                             "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium",
-                            calculateLessonProgress(lesson.id) === 100
+                            lessonProgress === 100
                               ? "bg-green-100 text-green-700"
                               : isActive 
                                 ? "bg-orange-100 text-orange-700"
                                 : "bg-gray-100 text-gray-600"
                           )}>
-                            {calculateLessonProgress(lesson.id) === 100 ? <CheckCircle className="w-4 h-4" /> : index + 1}
+                            {lessonProgress === 100 ? <CheckCircle className="w-4 h-4" /> : index + 1}
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -250,6 +251,17 @@ export default function StudentCoursePage() {
                             <span className="text-xs text-gray-500">
                               {lesson.duration || 0} həftə dəqiqə
                             </span>
+                          </div>
+                          {/* Dərs Progress Bar */}
+                          <div className="mt-2">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-500">Tərəqqi</span>
+                              <span className="text-xs font-medium text-gray-700">{lessonProgress}%</span>
+                            </div>
+                            <Progress 
+                              value={lessonProgress} 
+                              className="h-1.5" 
+                            />
                           </div>
                         </div>
                         {isActive && (
