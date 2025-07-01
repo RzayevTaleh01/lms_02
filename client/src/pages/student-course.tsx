@@ -576,7 +576,7 @@ export default function StudentCoursePage() {
                               );
 
                               const isSubmitted = !!studentSubmission;
-                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.grade !== undefined;
+                              const isGraded = isSubmitted && studentSubmission?.status === 'graded';
                               const isReturned = isSubmitted && studentSubmission?.status === 'returned';
 
                               return (
@@ -723,7 +723,7 @@ export default function StudentCoursePage() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
+              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id)?.status === 'returned' 
                 ? "Tapşırığı Düzəliş Et" 
                 : "Tapşırığı Göndər"
               }
@@ -860,7 +860,7 @@ export default function StudentCoursePage() {
                 >
                   {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
                     'Göndərilir...' : 
-                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned')
+                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id)?.status === 'returned'
                       ? 'Düzəliş Et və Yenidən Göndər' 
                       : 'Göndər'
                     )

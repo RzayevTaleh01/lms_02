@@ -530,12 +530,23 @@ export class DatabaseStorage implements IStorage {
     return submission;
   }
 
-  async gradeSubmission(id: number, grade: number, feedback: string, gradedBy: string): Promise<void> {
-    await db
-      .update(submissions)
-      .set({ grade, feedback, gradedBy, gradedAt: new Date() })
-      .where(eq(submissions.id, id));
-  }
+  async gradeSubmission(submissionId: number, grade: number, feedback: string, gradedBy: string) {
+    try {
+      await db
+        .update(submissions)
+        .set({
+          grade,
+          feedback,
+          gradedAt: new Date(),
+          gradedBy,
+          status: 'graded'
+        })
+        .where(eq(submissions.id, submissionId));
+    } catch (error) {
+      console.error('Error grading submission:', error);
+      throw error;
+    }
+  },
 
   // Blog operations
   async getPublishedBlogPosts(): Promise<(BlogPost & { author: User })[]> {
@@ -900,23 +911,22 @@ export class DatabaseStorage implements IStorage {
     let totalProgressPoints = 0;
     let earnedProgressPoints = 0;
 
-    // Calculate progress for each lesson (50% view + 50% assignments)
-    for (const lesson of courseLessons) {
+    // Calculate progress for each lesson    for (const lesson of courseLessons) {
       // Lesson view progress (50% of lesson progress)
       const lessonViewProgress = lessonProgressData.find(lp => lp.lessonId === lesson.id);
       const isLessonViewed = lessonViewProgress?.isCompleted || false;
-      
+
       // Lesson assignments progress (50% of lesson progress)
       const lessonAssignmentIds = lessonAssignmentsList
         .filter(la => la.lessonId === lesson.id)
         .map(la => la.id);
-      
+
       const completedAssignments = assignmentSubmissions.filter(as => 
         lessonAssignmentIds.includes(as.assignmentId)
       );
 
       let lessonProgress = 0;
-      
+
       if (lessonAssignmentIds.length === 0) {
         // No assignments, progress based only on lesson view
         lessonProgress = isLessonViewed ? 100 : 0;
@@ -1015,30 +1025,43 @@ export class DatabaseStorage implements IStorage {
   }
 
   async returnSubmissionForRevision(submissionId: number, feedback: string, teacherId: string) {
-    await db
-      .update(submissions)
-      .set({
-        feedback,
-        gradedBy: teacherId,
-        gradedAt: new Date(),
-        grade: null // Clear any existing grade
-      })
-      .where(eq(submissions.id, submissionId));
+    try {
+      await db
+        .update(submissions)
+        .set({
+          feedback,
+          gradedBy: teacherId,
+          gradedAt: new Date(),
+          grade: null, // Clear any existing grade
+          status: 'returned'
+        })
+        .where(eq(submissions.id, submissionId));
+    } catch (error) {
+      console.error('Error returning submission for revision:', error);
+      throw error;
+    }
   }
 
   async resubmitAssignment(submissionId: number, content: string, githubUrl?: string, fileUrl?: string, studentId?: string) {
-    await db
-      .update(submissions)
-      .set({
-        content,
-        githubUrl,
-        fileUrl,
-        submittedAt: new Date(),
-        grade: null,
-        gradedAt: null,
-        gradedBy: null
-      })
-      .where(eq(submissions.id, submissionId));
+    try {
+      await db
+        .update(submissions)
+        .set({
+          content,
+          githubUrl,
+          fileUrl,
+          submittedAt: new Date(),
+          grade: null,
+          feedback: null,
+          gradedAt: null,
+          gradedBy: null,
+          status: 'submitted'
+        })
+        .where(eq(submissions.id, submissionId));
+    } catch (error) {
+      console.error('Error resubmitting assignment:', error);
+      throw error;
+    }
   }
 
   // Get student attendance statistics
@@ -1156,18 +1179,18 @@ export class DatabaseStorage implements IStorage {
       // Lesson view progress (50% of lesson progress)
       const lessonViewProgress = lessonProgressData.find(lp => lp.lessonId === lesson.id);
       const isLessonViewed = lessonViewProgress?.isCompleted || false;
-      
+
       // Lesson assignments progress (50% of lesson progress)
       const lessonAssignmentIds = lessonAssignmentsList
         .filter(la => la.lessonId === lesson.id)
         .map(la => la.id);
-      
+
       const completedAssignments = assignmentSubmissions.filter(as => 
         lessonAssignmentIds.includes(as.assignmentId)
       );
 
       let lessonProgress = 0;
-      
+
       if (lessonAssignmentIds.length === 0) {
         // No assignments, progress based only on lesson view
         lessonProgress = isLessonViewed ? 100 : 0;
