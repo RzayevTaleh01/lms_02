@@ -885,6 +885,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update lesson material
+  app.patch('/api/lessons/materials/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can update materials" });
+      }
+      
+      const materialId = parseInt(req.params.id);
+      const materialData = insertLessonMaterialSchema.partial().parse(req.body);
+      const material = await storage.updateLessonMaterial(materialId, materialData);
+      
+      if (!material) {
+        return res.status(404).json({ message: "Material not found" });
+      }
+      
+      res.json(material);
+    } catch (error) {
+      console.error("Error updating lesson material:", error);
+      res.status(500).json({ message: "Failed to update lesson material" });
+    }
+  });
+
+  // Update lesson assignment
+  app.patch('/api/lessons/assignments/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can update assignments" });
+      }
+      
+      const assignmentId = parseInt(req.params.id);
+      const assignmentData = insertLessonAssignmentSchema.partial().parse(req.body);
+      const assignment = await storage.updateLessonAssignment(assignmentId, assignmentData);
+      
+      if (!assignment) {
+        return res.status(404).json({ message: "Assignment not found" });
+      }
+      
+      res.json(assignment);
+    } catch (error) {
+      console.error("Error updating lesson assignment:", error);
+      res.status(500).json({ message: "Failed to update lesson assignment" });
+    }
+  });
+
   // Delete lesson material
   app.delete('/api/lessons/materials/:id', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {

@@ -17,15 +17,14 @@ import {
   Trash2, 
   Play, 
   FileText, 
-  Download, 
+  Video, 
+  File, 
+  Link, 
   ExternalLink,
-  Calendar,
-  CheckCircle,
-  Upload,
-  Clock,
-  Video,
-  File,
-  Link,
+  Clock, 
+  Calendar, 
+  Target, 
+  Users,
   ArrowLeft
 } from "lucide-react";
 import ReactQuill from 'react-quill';
@@ -46,22 +45,7 @@ export default function EnhancedLessonManagement({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Dialog states
-  const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
-  const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
-  const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
-  const [isSubmissionsDialogOpen, setIsSubmissionsDialogOpen] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
-
   // Form states
-  const [lessonForm, setLessonForm] = useState({
-    title: "",
-    description: "",
-    content: "",
-    videoUrl: "",
-    duration: ""
-  });
-
   const [materialForm, setMaterialForm] = useState({
     title: "",
     content: "",
@@ -78,152 +62,174 @@ export default function EnhancedLessonManagement({
     maxPoints: 100
   });
 
-  const [gradingForm, setGradingForm] = useState({
-    grade: "",
-    feedback: ""
-  });
+  // Dialog states
+  const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
+  const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("materials");
+  
+  // Edit states
+  const [editingMaterial, setEditingMaterial] = useState<any>(null);
+  const [editingAssignment, setEditingAssignment] = useState<any>(null);
 
-  // Fetch lessons
+  // Queries
   const { data: lessons = [] } = useQuery({
     queryKey: [`/api/courses/${courseId}/lessons`],
-    enabled: !!courseId,
+    enabled: !!courseId
   });
 
-  // Fetch materials for selected lesson
   const { data: materials = [] } = useQuery({
     queryKey: [`/api/lessons/${selectedLesson?.id}/materials`],
-    enabled: !!selectedLesson?.id,
+    enabled: !!selectedLesson?.id
   });
 
-  // Fetch assignments for selected lesson
   const { data: assignments = [] } = useQuery({
     queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`],
-    enabled: !!selectedLesson?.id,
-  });
-
-  // Fetch submissions for selected assignment
-  const { data: submissions = [] } = useQuery({
-    queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`],
-    enabled: !!selectedAssignment?.id,
-  });
-
-  // Create lesson mutation
-  const createLessonMutation = useMutation({
-    mutationFn: async (lessonData: any) => {
-      const response = await fetch(`/api/courses/${courseId}/lessons`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lessonData),
-      });
-      if (!response.ok) throw new Error("Failed to create lesson");
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/lessons`] });
-      setIsLessonDialogOpen(false);
-      setLessonForm({ title: "", description: "", content: "", videoUrl: "", duration: "" });
-      toast({ title: "Dərs uğurla əlavə edildi!" });
-    },
-    onError: () => {
-      toast({ title: "Xəta", description: "Dərs əlavə edilərkən xəta baş verdi", variant: "destructive" });
-    }
+    enabled: !!selectedLesson?.id
   });
 
   // Create material mutation
   const createMaterialMutation = useMutation({
-    mutationFn: async (materialData: any) => {
+    mutationFn: async (data: any) => {
       const response = await fetch(`/api/lessons/${selectedLesson.id}/materials`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(materialData),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
-      if (!response.ok) throw new Error("Failed to create material");
+      if (!response.ok) throw new Error('Failed to create material');
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/materials`] });
       setIsMaterialDialogOpen(false);
+      setEditingMaterial(null);
       setMaterialForm({ title: "", content: "", videoUrl: "", materialType: "video", fileUrl: "", orderIndex: 0 });
-      toast({ title: "Material uğurla əlavə edildi!" });
+      toast({ title: "Material əlavə edildi!" });
     },
     onError: () => {
       toast({ title: "Xəta", description: "Material əlavə edilərkən xəta baş verdi", variant: "destructive" });
     }
   });
 
+  // Update material mutation
+  const updateMaterialMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/lessons/materials/${data.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to update material');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/materials`] });
+      setIsMaterialDialogOpen(false);
+      setEditingMaterial(null);
+      setMaterialForm({ title: "", content: "", videoUrl: "", materialType: "video", fileUrl: "", orderIndex: 0 });
+      toast({ title: "Material yeniləndi!" });
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Material yenilənərkən xəta baş verdi", variant: "destructive" });
+    }
+  });
+
+  // Delete material mutation
+  const deleteMaterialMutation = useMutation({
+    mutationFn: async (materialId: number) => {
+      const response = await fetch(`/api/lessons/materials/${materialId}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete material');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/materials`] });
+      toast({ title: "Material silindi!" });
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Material silinərkən xəta baş verdi", variant: "destructive" });
+    }
+  });
+
   // Create assignment mutation
   const createAssignmentMutation = useMutation({
-    mutationFn: async (assignmentData: any) => {
+    mutationFn: async (data: any) => {
       const response = await fetch(`/api/lessons/${selectedLesson.id}/assignments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...assignmentData,
-          courseId,
-          lessonId: selectedLesson.id
-        }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
-      if (!response.ok) throw new Error("Failed to create assignment");
+      if (!response.ok) throw new Error('Failed to create assignment');
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`] });
       setIsAssignmentDialogOpen(false);
+      setEditingAssignment(null);
       setAssignmentForm({ title: "", description: "", dueDate: "", maxPoints: 100 });
-      toast({ title: "Tapşırıq uğurla əlavə edildi!" });
+      toast({ title: "Tapşırıq əlavə edildi!" });
     },
     onError: () => {
       toast({ title: "Xəta", description: "Tapşırıq əlavə edilərkən xəta baş verdi", variant: "destructive" });
     }
   });
 
-  // Grade submission mutation
-  const gradeSubmissionMutation = useMutation({
-    mutationFn: async ({ submissionId, grade, feedback }: { submissionId: number, grade: number, feedback: string }) => {
-      const response = await fetch(`/api/submissions/${submissionId}/grade`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          grade,
-          feedback,
-          gradedBy: user?.id
-        }),
+  // Update assignment mutation
+  const updateAssignmentMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/lessons/assignments/${data.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
-      if (!response.ok) throw new Error("Failed to grade submission");
+      if (!response.ok) throw new Error('Failed to update assignment');
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`] });
-      setGradingForm({ grade: "", feedback: "" });
-      toast({ title: "Qiymət uğurla verildi!" });
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`] });
+      setIsAssignmentDialogOpen(false);
+      setEditingAssignment(null);
+      setAssignmentForm({ title: "", description: "", dueDate: "", maxPoints: 100 });
+      toast({ title: "Tapşırıq yeniləndi!" });
     },
     onError: () => {
-      toast({ title: "Xəta", description: "Qiymət verərkən xəta baş verdi", variant: "destructive" });
+      toast({ title: "Xəta", description: "Tapşırıq yenilənərkən xəta baş verdi", variant: "destructive" });
     }
   });
 
-  const handleCreateLesson = () => {
-    if (!lessonForm.title.trim()) {
-      toast({ title: "Xəta", description: "Dərs başlığını daxil edin", variant: "destructive" });
-      return;
+  // Delete assignment mutation
+  const deleteAssignmentMutation = useMutation({
+    mutationFn: async (assignmentId: number) => {
+      const response = await fetch(`/api/lessons/assignments/${assignmentId}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete assignment');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`] });
+      toast({ title: "Tapşırıq silindi!" });
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Tapşırıq silinərkən xəta baş verdi", variant: "destructive" });
     }
+  });
 
-    createLessonMutation.mutate({
-      title: lessonForm.title,
-      description: lessonForm.description,
-      content: lessonForm.content,
-      videoUrl: lessonForm.videoUrl,
-      duration: lessonForm.duration ? parseInt(lessonForm.duration) : null
-    });
-  };
-
+  // Handlers
   const handleCreateMaterial = () => {
     if (!materialForm.title.trim()) {
       toast({ title: "Xəta", description: "Material başlığını daxil edin", variant: "destructive" });
       return;
     }
 
-    createMaterialMutation.mutate(materialForm);
+    if (editingMaterial) {
+      updateMaterialMutation.mutate({
+        id: editingMaterial.id,
+        ...materialForm
+      });
+    } else {
+      createMaterialMutation.mutate(materialForm);
+    }
   };
 
   const handleCreateAssignment = () => {
@@ -232,176 +238,85 @@ export default function EnhancedLessonManagement({
       return;
     }
 
-    createAssignmentMutation.mutate({
-      ...assignmentForm,
-      dueDate: assignmentForm.dueDate ? new Date(assignmentForm.dueDate).toISOString() : null
-    });
+    if (editingAssignment) {
+      updateAssignmentMutation.mutate({
+        id: editingAssignment.id,
+        ...assignmentForm,
+        dueDate: assignmentForm.dueDate ? new Date(assignmentForm.dueDate).toISOString() : null
+      });
+    } else {
+      createAssignmentMutation.mutate({
+        ...assignmentForm,
+        dueDate: assignmentForm.dueDate ? new Date(assignmentForm.dueDate).toISOString() : null
+      });
+    }
   };
 
-  // Extract YouTube video ID
-  const extractYouTubeId = (url: string) => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+  const handleEditMaterial = (material: any) => {
+    setEditingMaterial(material);
+    setMaterialForm({
+      title: material.title,
+      content: material.content || "",
+      videoUrl: material.videoUrl || "",
+      materialType: material.materialType || "video",
+      fileUrl: material.fileUrl || "",
+      orderIndex: material.orderIndex || 0
+    });
+    setIsMaterialDialogOpen(true);
+  };
+
+  const handleDeleteMaterial = (materialId: number) => {
+    if (window.confirm('Bu materialı silmək istədiyinizə əminsiniz?')) {
+      deleteMaterialMutation.mutate(materialId);
+    }
+  };
+
+  const handleEditAssignment = (assignment: any) => {
+    setEditingAssignment(assignment);
+    setAssignmentForm({
+      title: assignment.title,
+      description: assignment.description || "",
+      dueDate: assignment.dueDate ? new Date(assignment.dueDate).toISOString().slice(0, 16) : "",
+      maxPoints: assignment.maxPoints || 100
+    });
+    setIsAssignmentDialogOpen(true);
+  };
+
+  const handleDeleteAssignment = (assignmentId: number) => {
+    if (window.confirm('Bu tapşırığı silmək istədiyinizə əminsiniz?')) {
+      deleteAssignmentMutation.mutate(assignmentId);
+    }
   };
 
   if (!selectedLesson) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Dərslər</h2>
-          {user?.role === "teacher" && (
-            <Dialog open={isLessonDialogOpen} onOpenChange={setIsLessonDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-devcode-orange hover:bg-orange-600">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Yeni Dərs
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Yeni Dərs Yaradın</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="lessonTitle">Başlıq *</Label>
-                      <Input
-                        id="lessonTitle"
-                        value={lessonForm.title}
-                        onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
-                        placeholder="Dərsin başlığı"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lessonDuration">Müddət (dəqiqə)</Label>
-                      <Input
-                        id="lessonDuration"
-                        type="number"
-                        value={lessonForm.duration}
-                        onChange={(e) => setLessonForm({ ...lessonForm, duration: e.target.value })}
-                        placeholder="45"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="lessonDescription">Qısa Təsvir</Label>
-                    <Textarea
-                      id="lessonDescription"
-                      value={lessonForm.description}
-                      onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
-                      placeholder="Dərsin qısa təsviri"
-                      className="h-20"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="videoUrl">Video URL</Label>
-                    <Input
-                      id="videoUrl"
-                      value={lessonForm.videoUrl}
-                      onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
-                      placeholder="https://youtube.com/watch?v=..."
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Dərs Məzmunu (Detallı Təsvir)</Label>
-                    <div className="mt-2">
-                      <ReactQuill
-                        theme="snow"
-                        value={lessonForm.content}
-                        onChange={(content) => setLessonForm({ ...lessonForm, content })}
-                        modules={{
-                          toolbar: [
-                            [{ 'header': [1, 2, 3, false] }],
-                            ['bold', 'italic', 'underline'],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            ['link', 'blockquote'],
-                            ['clean']
-                          ]
-                        }}
-                        style={{ height: '200px', marginBottom: '50px' }}
-                      />
-                    </div>
-                  </div>
-
-                  <Button 
-                    onClick={handleCreateLesson} 
-                    disabled={createLessonMutation.isPending}
-                    className="bg-devcode-orange hover:bg-orange-600 w-full"
-                  >
-                    {createLessonMutation.isPending ? "Yaradılır..." : "Dərs Yaradın"}
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
-
-        <div className="grid gap-4">
-          {lessons.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-10">
-                <Video className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Bu kursa hələ dərs əlavə edilməyib</p>
-              </CardContent>
-            </Card>
-          ) : (
-            lessons.map((lesson: any, index: number) => (
-              <Card key={lesson.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardContent className="p-6" onClick={() => onSelectLesson(lesson)}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-devcode-orange/10 rounded-full flex items-center justify-center">
-                        <span className="text-devcode-orange font-semibold">{index + 1}</span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold">{lesson.title}</h3>
-                        <p className="text-sm text-muted-foreground">{lesson.description}</p>
-                        {lesson.duration && (
-                          <div className="flex items-center text-sm text-muted-foreground mt-1">
-                            <Clock className="w-4 h-4 mr-1" />
-                            {lesson.duration} dəqiqə
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {lesson.videoUrl && (
-                        <Badge variant="secondary">
-                          <Video className="w-3 h-3 mr-1" />
-                          Video
-                        </Badge>
-                      )}
-                      <Button variant="outline" size="sm">
-                        Görüntülə
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+        <div className="text-center py-10">
+          <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
+          <p className="text-muted-foreground">Material və tapşırıqları idarə etmək üçün dərs seçin</p>
         </div>
       </div>
     );
   }
 
-  // Lesson detail view
   return (
     <div className="space-y-6">
+      {/* Lesson Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <Button variant="outline" onClick={() => onSelectLesson(null)} className="mb-4">
-            ← Dərslər Siyahısı
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onSelectLesson(null)}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Geri
           </Button>
-          <h2 className="text-2xl font-semibold">{selectedLesson.title}</h2>
-          {selectedLesson.description && (
-            <p className="text-muted-foreground mt-1">{selectedLesson.description}</p>
-          )}
+          <div>
+            <h2 className="text-2xl font-bold">{selectedLesson.title}</h2>
+            <p className="text-muted-foreground">{selectedLesson.description}</p>
+          </div>
         </div>
       </div>
 
@@ -410,51 +325,38 @@ export default function EnhancedLessonManagement({
         <Card>
           <CardContent className="p-0">
             <div className="aspect-video">
-              {extractYouTubeId(selectedLesson.videoUrl) ? (
+              {selectedLesson.videoUrl.includes('youtube.com') || selectedLesson.videoUrl.includes('youtu.be') ? (
                 <iframe
-                  src={`https://www.youtube.com/embed/${extractYouTubeId(selectedLesson.videoUrl)}`}
-                  className="w-full h-full rounded-t-lg"
+                  src={selectedLesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                  className="w-full h-full rounded-lg"
                   allowFullScreen
-                  title={selectedLesson.title}
                 />
               ) : (
-                <div className="w-full h-full bg-muted rounded-t-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <Video className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground">Video yüklənmir</p>
-                    <a 
-                      href={selectedLesson.videoUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-devcode-orange hover:underline"
-                    >
-                      Birbaşa baxın
-                    </a>
-                  </div>
-                </div>
+                <video
+                  src={selectedLesson.videoUrl}
+                  controls
+                  className="w-full h-full rounded-lg"
+                />
               )}
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Lesson Content */}
+      {/* Content Section */}
       {selectedLesson.content && (
         <Card>
-          <CardHeader>
-            <CardTitle>Dərs Məzmunu</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <div 
-              className="prose max-w-none"
+              className="prose prose-sm max-w-none"
               dangerouslySetInnerHTML={{ __html: selectedLesson.content }}
             />
           </CardContent>
         </Card>
       )}
 
-      {/* Tabs for Materials and Assignments */}
-      <Tabs defaultValue="materials" className="w-full">
+      {/* Materials and Assignments Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
           <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
@@ -466,14 +368,21 @@ export default function EnhancedLessonManagement({
             {user?.role === "teacher" && (
               <Dialog open={isMaterialDialogOpen} onOpenChange={setIsMaterialDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="bg-devcode-orange hover:bg-orange-600">
+                  <Button 
+                    size="sm" 
+                    className="bg-devcode-orange hover:bg-orange-600"
+                    onClick={() => {
+                      setEditingMaterial(null);
+                      setMaterialForm({ title: "", content: "", videoUrl: "", materialType: "video", fileUrl: "", orderIndex: 0 });
+                    }}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Material Əlavə Et
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Yeni Material Əlavə Et</DialogTitle>
+                    <DialogTitle>{editingMaterial ? "Material Düzəlt" : "Yeni Material Əlavə Et"}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -499,8 +408,8 @@ export default function EnhancedLessonManagement({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="video">Video</SelectItem>
-                            <SelectItem value="document">Sənəd/PDF</SelectItem>
-                            <SelectItem value="link">Xarici Link</SelectItem>
+                            <SelectItem value="document">Sənəd</SelectItem>
+                            <SelectItem value="link">Link</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -513,7 +422,7 @@ export default function EnhancedLessonManagement({
                           id="materialVideoUrl"
                           value={materialForm.videoUrl}
                           onChange={(e) => setMaterialForm({ ...materialForm, videoUrl: e.target.value })}
-                          placeholder="https://youtube.com/watch?v=..."
+                          placeholder="YouTube və ya digər video linki"
                         />
                       </div>
                     )}
@@ -548,17 +457,20 @@ export default function EnhancedLessonManagement({
                               ['clean']
                             ]
                           }}
-                          style={{ height: '150px', marginBottom: '50px' }}
+                          style={{ height: '200px', marginBottom: '50px' }}
                         />
                       </div>
                     </div>
 
                     <Button 
                       onClick={handleCreateMaterial} 
-                      disabled={createMaterialMutation.isPending}
+                      disabled={createMaterialMutation.isPending || updateMaterialMutation.isPending}
                       className="bg-devcode-orange hover:bg-orange-600 w-full"
                     >
-                      {createMaterialMutation.isPending ? "Əlavə edilir..." : "Material Əlavə Et"}
+                      {(createMaterialMutation.isPending || updateMaterialMutation.isPending) ? 
+                        (editingMaterial ? "Yenilənir..." : "Əlavə edilir...") : 
+                        (editingMaterial ? "Material Yenilə" : "Material Əlavə Et")
+                      }
                     </Button>
                   </div>
                 </DialogContent>
@@ -612,6 +524,25 @@ export default function EnhancedLessonManagement({
                             </a>
                           </Button>
                         )}
+                        {user?.role === "teacher" && (
+                          <>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEditMaterial(material)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleDeleteMaterial(material.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -627,46 +558,54 @@ export default function EnhancedLessonManagement({
             {user?.role === "teacher" && (
               <Dialog open={isAssignmentDialogOpen} onOpenChange={setIsAssignmentDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="bg-devcode-orange hover:bg-orange-600">
+                  <Button 
+                    size="sm" 
+                    className="bg-devcode-orange hover:bg-orange-600"
+                    onClick={() => {
+                      setEditingAssignment(null);
+                      setAssignmentForm({ title: "", description: "", dueDate: "", maxPoints: 100 });
+                    }}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Tapşırıq Əlavə Et
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Yeni Tapşırıq Əlavə Et</DialogTitle>
+                    <DialogTitle>{editingAssignment ? "Tapşırıq Düzəlt" : "Yeni Tapşırıq Əlavə Et"}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="assignmentTitle">Başlıq *</Label>
+                      <Input
+                        id="assignmentTitle"
+                        value={assignmentForm.title}
+                        onChange={(e) => setAssignmentForm({ ...assignmentForm, title: e.target.value })}
+                        placeholder="Tapşırıq başlığı"
+                      />
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="assignmentTitle">Tapşırıq Adı *</Label>
+                        <Label htmlFor="assignmentDueDate">Son Tarix</Label>
                         <Input
-                          id="assignmentTitle"
-                          value={assignmentForm.title}
-                          onChange={(e) => setAssignmentForm({ ...assignmentForm, title: e.target.value })}
-                          placeholder="Tapşırıq başlığı"
+                          id="assignmentDueDate"
+                          type="datetime-local"
+                          value={assignmentForm.dueDate}
+                          onChange={(e) => setAssignmentForm({ ...assignmentForm, dueDate: e.target.value })}
                         />
                       </div>
                       <div>
-                        <Label htmlFor="assignmentPoints">Maksimum Bal</Label>
+                        <Label htmlFor="assignmentMaxPoints">Maksimum Bal</Label>
                         <Input
-                          id="assignmentPoints"
+                          id="assignmentMaxPoints"
                           type="number"
                           value={assignmentForm.maxPoints}
                           onChange={(e) => setAssignmentForm({ ...assignmentForm, maxPoints: parseInt(e.target.value) || 100 })}
-                          placeholder="100"
+                          min={1}
+                          max={1000}
                         />
                       </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="assignmentDueDate">Son Tarix</Label>
-                      <Input
-                        id="assignmentDueDate"
-                        type="datetime-local"
-                        value={assignmentForm.dueDate}
-                        onChange={(e) => setAssignmentForm({ ...assignmentForm, dueDate: e.target.value })}
-                      />
                     </div>
 
                     <div>
@@ -681,21 +620,24 @@ export default function EnhancedLessonManagement({
                               [{ 'header': [1, 2, 3, false] }],
                               ['bold', 'italic', 'underline'],
                               [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                              ['link', 'blockquote'],
+                              ['link', 'blockquote', 'code'],
                               ['clean']
                             ]
                           }}
-                          style={{ height: '150px', marginBottom: '50px' }}
+                          style={{ height: '200px', marginBottom: '50px' }}
                         />
                       </div>
                     </div>
 
                     <Button 
                       onClick={handleCreateAssignment} 
-                      disabled={createAssignmentMutation.isPending}
+                      disabled={createAssignmentMutation.isPending || updateAssignmentMutation.isPending}
                       className="bg-devcode-orange hover:bg-orange-600 w-full"
                     >
-                      {createAssignmentMutation.isPending ? "Əlavə edilir..." : "Tapşırıq Əlavə Et"}
+                      {(createAssignmentMutation.isPending || updateAssignmentMutation.isPending) ? 
+                        (editingAssignment ? "Yenilənir..." : "Əlavə edilir...") : 
+                        (editingAssignment ? "Tapşırıq Yenilə" : "Tapşırıq Əlavə Et")
+                      }
                     </Button>
                   </div>
                 </DialogContent>
@@ -707,7 +649,7 @@ export default function EnhancedLessonManagement({
             {assignments.length === 0 ? (
               <Card>
                 <CardContent className="text-center py-10">
-                  <CheckCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <Target className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">Bu dərsə hələ tapşırıq əlavə edilməyib</p>
                 </CardContent>
               </Card>
@@ -718,14 +660,9 @@ export default function EnhancedLessonManagement({
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
+                          <Target className="w-5 h-5 text-devcode-orange" />
                           <h4 className="font-semibold">{assignment.title}</h4>
-                          <Badge variant="secondary">{assignment.maxPoints} bal</Badge>
-                          {assignment.dueDate && (
-                            <Badge variant="outline">
-                              <Calendar className="w-3 h-3 mr-1" />
-                              {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
-                            </Badge>
-                          )}
+                          <Badge variant="outline">{assignment.maxPoints} bal</Badge>
                         </div>
                         {assignment.description && (
                           <div 
@@ -733,573 +670,32 @@ export default function EnhancedLessonManagement({
                             dangerouslySetInnerHTML={{ __html: assignment.description }}
                           />
                         )}
+                        {assignment.dueDate && (
+                          <div className="flex items-center space-x-2 mt-2 text-sm text-muted-foreground">
+                            <Calendar className="w-4 h-4" />
+                            <span>Son tarix: {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}</span>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {user?.role === "teacher" && (
+                      {user?.role === "teacher" && (
+                        <div className="flex items-center space-x-2">
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => {
-                              setSelectedAssignment(assignment);
-                              setIsSubmissionsDialogOpen(true);
-                            }}
+                            onClick={() => handleEditAssignment(assignment)}
                           >
-                            <FileText className="w-4 h-4 mr-1" />
-                            Cavabları Gör
+                            <Edit className="w-4 h-4" />
                           </Button>
-                        )}
-                        {user?.role === "student" && (
-                          <Button variant="outline" size="sm">
-                            <Upload className="w-4 h-4 mr-1" />
-                            Cavab Yüklə
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleDeleteAssignment(assignment.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Submissions Dialog */}
-      <Dialog open={isSubmissionsDialogOpen} onOpenChange={setIsSubmissionsDialogOpen}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedAssignment ? `"${selectedAssignment.title}" tapşırığının cavabları` : "Tapşırıq cavabları"}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="max-h-[600px] overflow-y-auto">
-            {submissions.length === 0 ? (
-              <div className="text-center py-10">
-                <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Bu tapşırığa hələ cavab verilməyib</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {submissions.map((submission: any) => (
-                  <Card key={submission.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h4 className="font-semibold">
-                              {submission.student.firstName} {submission.student.lastName}
-                            </h4>
-                            <Badge variant="secondary">{submission.student.email}</Badge>
-                            {submission.grade && (
-                              <Badge variant="default">{submission.grade} bal</Badge>
-                            )}
-                          </div>
-
-                          {submission.content && (
-                            <div className="mb-3">
-                              <p className="text-sm font-medium mb-1">Cavab məzmunu:</p>
-                              <p className="text-sm text-muted-foreground">{submission.content}</p>
-                            </div>
-                          )}
-
-                          {submission.githubUrl && (
-                            <div className="mb-3">
-                              <p className="text-sm font-medium mb-1">GitHub linki:</p>
-                              <a 
-                                href={submission.githubUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-sm text-blue-600 hover:underline"
-                              >
-                                {submission.githubUrl}
-                              </a>
-                            </div>
-                          )}
-
-                          {submission.fileUrl && (
-                            <div className="mb-3">
-                              <p className="text-sm font-medium mb-1">Yüklənmiş fayl:</p>
-                              <a 
-                                href={submission.fileUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-sm text-blue-600 hover:underline"
-                              >
-                                Faylı yüklə
-                              </a>
-                            </div>
-                          )}
-
-                          {submission.feedback && (
-                            <div className="mb-3">
-                              <p className="text-sm font-medium mb-1">Müəllim rəyi:</p>
-                              <p className="text-sm text-muted-foreground">{submission.feedback}</p>
-                            </div>
-                          )}
-
-                          <p className="text-xs text-muted-foreground">
-                            Təqdim olunub: {new Date(submission.submittedAt).toLocaleString('az-AZ')}
-                          </p>
                         </div>
-
-                        {!submission.grade && (
-                          <div className="flex flex-col space-y-2 ml-4">
-                            <div className="space-y-2">
-                              <input
-                                type="number"
-                                placeholder="Qiymət (bal)"
-                                value={gradingForm.grade}
-                                onChange={(e) => setGradingForm(prev => ({ ...prev, grade: e.target.value }))}
-                                className="w-24 px-2 py-1 text-sm border rounded"
-                                max={selectedAssignment?.maxPoints}
-                              />
-                              <textarea
-                                placeholder="Rəy və təklif..."
-                                value={gradingForm.feedback}
-                                onChange={(e) => setGradingForm(prev => ({ ...prev, feedback: e.target.value }))}
-                                className="w-full px-2 py-1 text-sm border rounded"
-                                rows={2}
-                              />
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  if (gradingForm.grade) {
-                                    gradeSubmissionMutation.mutate({
-                                      submissionId: submission.id,
-                                      grade: parseFloat(gradingForm.grade),
-                                      feedback: gradingForm.feedback
-                                    });
-                                  }
-                                }}
-                                disabled={!gradingForm.grade || gradeSubmissionMutation.isPending}
-                              >
-                                {gradeSubmissionMutation.isPending ? "Saxlanılır..." : "Qiymət Ver"}
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-
-interface LessonDetailViewProps {
-  lesson: any;
-  materials: any[];
-  assignments: any[];
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-  onBack: () => void;
-  onCreateMaterial: () => void;
-  onCreateAssignment: () => void;
-  materialForm: any;
-  setMaterialForm: (form: any) => void;
-  assignmentForm: any;
-  setAssignmentForm: (form: any) => void;
-  isMaterialDialogOpen: boolean;
-  setIsMaterialDialogOpen: (open: boolean) => void;
-  isAssignmentDialogOpen: boolean;
-  setIsAssignmentDialogOpen: (open: boolean) => void;
-  handleCreateMaterial: () => void;
-  handleCreateAssignment: () => void;
-  createMaterialMutation: any;
-  createAssignmentMutation: any;
-}
-
-const LessonDetailView: React.FC<LessonDetailViewProps> = ({
-  lesson,
-  materials,
-  assignments,
-  activeTab,
-  onTabChange,
-  onBack,
-  onCreateMaterial,
-  onCreateAssignment,
-  materialForm,
-  setMaterialForm,
-  assignmentForm,
-  setAssignmentForm,
-  isMaterialDialogOpen,
-  setIsMaterialDialogOpen,
-  isAssignmentDialogOpen,
-  setIsAssignmentDialogOpen,
-  handleCreateMaterial,
-  handleCreateAssignment,
-  createMaterialMutation,
-  createAssignmentMutation,
-}) => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Extract YouTube video ID
-  const extractYouTubeId = (url: string) => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <Button variant="outline" onClick={onBack} className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Dərslər Siyahısı
-          </Button>
-          <h2 className="text-2xl font-semibold">{lesson.title}</h2>
-          {lesson.description && (
-            <p className="text-muted-foreground mt-1">{lesson.description}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Video Section */}
-      {lesson.videoUrl && (
-        <Card>
-          <CardContent className="p-0">
-            <div className="aspect-video">
-              {extractYouTubeId(lesson.videoUrl) ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${extractYouTubeId(lesson.videoUrl)}`}
-                  className="w-full h-full rounded-t-lg"
-                  allowFullScreen
-                  title={lesson.title}
-                />
-              ) : (
-                <div className="w-full h-full bg-muted rounded-t-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <Video className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground">Video yüklənmir</p>
-                    <a
-                      href={lesson.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-devcode-orange hover:underline"
-                    >
-                      Birbaşa baxın
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Lesson Content */}
-      {lesson.content && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Dərs Məzmunu</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: lesson.content }}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Tabs for Materials and Assignments */}
-      {/* Tabs for Materials and Assignments */}
-      <Tabs defaultValue={activeTab} className="w-full" onValueChange={onTabChange}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
-          <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="materials" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Dərs Materialları</h3>
-            {user?.role === "teacher" && (
-              <Dialog open={isMaterialDialogOpen} onOpenChange={setIsMaterialDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="bg-devcode-orange hover:bg-orange-600" onClick={onCreateMaterial}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Material Əlavə Et
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Yeni Material Əlavə Et</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="materialTitle">Başlıq *</Label>
-                        <Input
-                          id="materialTitle"
-                          value={materialForm.title}
-                          onChange={(e) => setMaterialForm({ ...materialForm, title: e.target.value })}
-                          placeholder="Material başlığı"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="materialType">Material Növü</Label>
-                        <Select
-                          value={materialForm.materialType}
-                          onValueChange={(value: "video" | "document" | "link") =>
-                            setMaterialForm({ ...materialForm, materialType: value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="video">Video</SelectItem>
-                            <SelectItem value="document">Sənəd/PDF</SelectItem>
-                            <SelectItem value="link">Xarici Link</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    {materialForm.materialType === "video" && (
-                      <div>
-                        <Label htmlFor="materialVideoUrl">Video URL</Label>
-                        <Input
-                          id="materialVideoUrl"
-                          value={materialForm.videoUrl}
-                          onChange={(e) => setMaterialForm({ ...materialForm, videoUrl: e.target.value })}
-                          placeholder="https://youtube.com/watch?v=..."
-                        />
-                      </div>
-                    )}
-
-                    {(materialForm.materialType === "document" || materialForm.materialType === "link") && (
-                      <div>
-                        <Label htmlFor="materialFileUrl">
-                          {materialForm.materialType === "document" ? "Fayl URL" : "Link URL"}
-                        </Label>
-                        <Input
-                          id="materialFileUrl"
-                          value={materialForm.fileUrl}
-                          onChange={(e) => setMaterialForm({ ...materialForm, fileUrl: e.target.value })}
-                          placeholder={materialForm.materialType === "document" ? "PDF və ya digər fayl linki" : "Xarici sayt linki"}
-                        />
-                      </div>
-                    )}
-
-                    <div>
-                      <Label>Material Təsviri</Label>
-                      <div className="mt-2">
-                        <ReactQuill
-                          theme="snow"
-                          value={materialForm.content}
-                          onChange={(content) => setMaterialForm({ ...materialForm, content })}
-                          modules={{
-                            toolbar: [
-                              [{ 'header': [1, 2, 3, false] }],
-                              ['bold', 'italic', 'underline'],
-                              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                              ['link', 'blockquote'],
-                              ['clean']
-                            ]
-                          }}
-                          style={{ height: '150px', marginBottom: '50px' }}
-                        />
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={handleCreateMaterial}
-                      disabled={createMaterialMutation.isPending}
-                      className="bg-devcode-orange hover:bg-orange-600 w-full"
-                    >
-                      {createMaterialMutation.isPending ? "Əlavə edilir..." : "Material Əlavə Et"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
-
-          <div className="grid gap-4">
-            {materials.length === 0 ? (
-              <Card>
-                <CardContent className="text-center py-10">
-                  <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Bu dərsə hələ material əlavə edilməyib</p>
-                </CardContent>
-              </Card>
-            ) : (
-              materials.map((material: any) => (
-                <Card key={material.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-10 h-10 bg-devcode-orange/10 rounded-lg flex items-center justify-center">
-                          {material.materialType === "video" && <Video className="w-5 h-5 text-devcode-orange" />}
-                          {material.materialType === "document" && <File className="w-5 h-5 text-devcode-orange" />}
-                          {material.materialType === "link" && <Link className="w-5 h-5 text-devcode-orange" />}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold">{material.title}</h4>
-                          {material.content && (
-                            <div
-                              className="text-sm text-muted-foreground mt-2 prose prose-sm"
-                              dangerouslySetInnerHTML={{ __html: material.content }}
-                            />
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {material.videoUrl && (
-                          <Button variant="outline" size="sm" asChild>
-                            <a href={material.videoUrl} target="_blank" rel="noopener noreferrer">
-                              <Play className="w-4 h-4 mr-1" />
-                              İzlə
-                            </a>
-                          </Button>
-                        )}
-                        {material.fileUrl && (
-                          <Button variant="outline" size="sm" asChild>
-                            <a href={material.fileUrl} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="w-4 h-4 mr-1" />
-                              Aç
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="assignments" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Dərs Tapşırıqları</h3>
-            {user?.role === "teacher" && (
-              <Dialog open={isAssignmentDialogOpen} onOpenChange={setIsAssignmentDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="bg-devcode-orange hover:bg-orange-600" onClick={onCreateAssignment}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Tapşırıq Əlavə Et
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Yeni Tapşırıq Əlavə Et</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="assignmentTitle">Tapşırıq Adı *</Label>
-                        <Input
-                          id="assignmentTitle"
-                          value={assignmentForm.title}
-                          onChange={(e) => setAssignmentForm({ ...assignmentForm, title: e.target.value })}
-                          placeholder="Tapşırıq başlığı"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="assignmentPoints">Maksimum Bal</Label>
-                        <Input
-                          id="assignmentPoints"
-                          type="number"
-                          value={assignmentForm.maxPoints}
-                          onChange={(e) => setAssignmentForm({ ...assignmentForm, maxPoints: parseInt(e.target.value) || 100 })}
-                          placeholder="100"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="assignmentDueDate">Son Tarix</Label>
-                      <Input
-                        id="assignmentDueDate"
-                        type="datetime-local"
-                        value={assignmentForm.dueDate}
-                        onChange={(e) => setAssignmentForm({ ...assignmentForm, dueDate: e.target.value })}
-                      />
-                    </div>
-
-                    <div>
-                      <Label>Tapşırıq Təsviri</Label>
-                      <div className="mt-2">
-                        <ReactQuill
-                          theme="snow"
-                          value={assignmentForm.description}
-                          onChange={(description) => setAssignmentForm({ ...assignmentForm, description })}
-                          modules={{
-                            toolbar: [
-                              [{ 'header': [1, 2, 3, false] }],
-                              ['bold', 'italic', 'underline'],
-                              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                              ['link', 'blockquote'],
-                              ['clean']
-                            ]
-                          }}
-                          style={{ height: '150px', marginBottom: '50px' }}
-                        />
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={handleCreateAssignment}
-                      disabled={createAssignmentMutation.isPending}
-                      className="bg-devcode-orange hover:bg-orange-600 w-full"
-                    >
-                      {createAssignmentMutation.isPending ? "Əlavə edilir..." : "Tapşırıq Əlavə Et"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
-
-          <div className="grid gap-4">
-            {assignments.length === 0 ? (
-              <Card>
-                <CardContent className="text-center py-10">
-                  <CheckCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Bu dərsə hələ tapşırıq əlavə edilməyib</p>
-                </CardContent>
-              </Card>
-            ) : (
-              assignments.map((assignment: any) => (
-                <Card key={assignment.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h4 className="font-semibold">{assignment.title}</h4>
-                          <Badge variant="secondary">{assignment.maxPoints} bal</Badge>
-                          {assignment.dueDate && (
-                            <Badge variant="outline">
-                              <Calendar className="w-3 h-3 mr-1" />
-                              {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
-                            </Badge>
-                          )}
-                        </div>
-                        {assignment.description && (
-                          <div
-                            className="text-sm text-muted-foreground prose prose-sm"
-                            dangerouslySetInnerHTML={{ __html: assignment.description }}
-                          />
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {/* <Button variant="outline" size="sm">
-                          <Upload className="w-4 h-4 mr-1" />
-                          Cavab Yüklə
-                        </Button> */}
-                      </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -1310,4 +706,4 @@ const LessonDetailView: React.FC<LessonDetailViewProps> = ({
       </Tabs>
     </div>
   );
-};
+}

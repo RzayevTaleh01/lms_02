@@ -134,6 +134,7 @@ export interface IStorage {
   createLessonAssignment(assignment: InsertLessonAssignment): Promise<LessonAssignment>;
   getLessonAssignments(lessonId: number): Promise<LessonAssignment[]>;
   getAssignmentSubmissions(assignmentId: number): Promise<(Submission & { student: User })[]>;
+  updateLessonAssignment(id: number, assignment: Partial<InsertLessonAssignment>): Promise<LessonAssignment | undefined>;
   deleteLessonAssignment(assignmentId: number): Promise<void>;
 
   // Delete operations
@@ -674,6 +675,15 @@ export class DatabaseStorage implements IStorage {
       .where(eq(lessonMaterials.id, id))
       .returning();
     return updatedMaterial;
+  }
+
+  async updateLessonAssignment(id: number, assignment: Partial<InsertLessonAssignment>): Promise<LessonAssignment | undefined> {
+    const [updatedAssignment] = await db
+      .update(lessonAssignments)
+      .set(assignment)
+      .where(eq(lessonAssignments.id, id))
+      .returning();
+    return updatedAssignment;
   }
 
   // Lesson assignments operations
