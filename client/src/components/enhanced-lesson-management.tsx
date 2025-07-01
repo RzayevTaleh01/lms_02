@@ -30,6 +30,187 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
+// Lesson Creation Interface Component
+function LessonCreationInterface({ courseId, onLessonCreated }: { courseId: number; onLessonCreated: (lesson: any) => void }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [lessonForm, setLessonForm] = useState({
+    title: "",
+    description: "",
+    content: "",
+    videoUrl: "",
+    duration: ""
+  });
+
+  const createLessonMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/courses/${courseId}/lessons`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to create lesson');
+      return response.json();
+    },
+    onSuccess: (newLesson) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/lessons`] });
+      toast({ title: "Dərs uğurla yaradıldı!" });
+      onLessonCreated(newLesson);
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Dərs yaradılarkən xəta baş verdi", variant: "destructive" });
+    }
+  });
+
+  const handleCreateLesson = () => {
+    if (!lessonForm.title.trim()) {
+      toast({ title: "Xəta", description: "Dərs başlığını daxil edin", variant: "destructive" });
+      return;
+    }
+
+    createLessonMutation.mutate({
+      ...lessonForm,
+      duration: lessonForm.duration ? parseInt(lessonForm.duration) : null
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <FileText className="w-16 h-16 mx-auto text-devcode-orange mb-4" />
+        <h2 className="text-2xl font-bold mb-2">İlk Dərsinizi Yaradın</h2>
+        <p className="text-muted-foreground">Bu kursda hələ dərs yoxdur. İlk dərsinizi yaratmaq üçün aşağıdakı formu doldurun.</p>
+      </div>
+
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Yeni Dərs Əlavə Et</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="lessonTitle">Dərs Başlığı *</Label>
+              <Input
+                id="lessonTitle"
+                value={lessonForm.title}
+                onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                placeholder="Məsələn: JavaScript əsasları"
+              />
+            </div>
+            <div>
+              <Label htmlFor="lessonDuration">Müddət (dəqiqə)</Label>
+              <Input
+                id="lessonDuration"
+                type="number"
+                value={lessonForm.duration}
+                onChange={(e) => setLessonForm({ ...lessonForm, duration: e.target.value })}
+                placeholder="45"
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="lessonDescription">Qısa Təsvir</Label>
+            <Textarea
+              id="lessonDescription"
+              value={lessonForm.description}
+              onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+              placeholder="Bu dərsdə nə öyrənəcəksiniz?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="lessonVideoUrl">Video URL (məcburi deyil)</Label>
+            <Input
+              id="lessonVideoUrl"
+              value={lessonForm.videoUrl}
+              onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+              placeholder="YouTube və ya digər video linki"
+            />
+          </div>
+
+          <div>
+            <Label>Dərs Məzmunu</Label>
+            <div className="mt-2">
+              <ReactQuill
+                theme="snow"
+                value={lessonForm.content}
+                onChange={(content) => setLessonForm({ ...lessonForm, content })}
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link', 'blockquote', 'code'],
+                    ['clean']
+                  ]
+                }}
+                style={{ height: '200px', marginBottom: '50px' }}
+              />
+            </div>
+          </div>
+
+          <Button 
+            onClick={handleCreateLesson} 
+            disabled={createLessonMutation.isPending}
+            className="bg-devcode-orange hover:bg-orange-600 w-full"
+            size="lg"
+          >
+            {createLessonMutation.isPending ? "Yaradılır..." : "Dərs Yarat"}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Lesson Selection Interface Component
+function LessonSelectionInterface({ lessons, onSelectLesson }: { lessons: any[]; onSelectLesson: (lesson: any) => void }) {
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
+        <p className="text-muted-foreground">Material və tapşırıqları idarə etmək üçün dərs seçin</p>
+      </div>
+
+      <div className="grid gap-4">
+        {lessons.map((lesson: any) => (
+          <Card key={lesson.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onSelectLesson(lesson)}>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h4 className="font-semibold">{lesson.title}</h4>
+                  {lesson.description && (
+                    <p className="text-sm text-muted-foreground mt-1">{lesson.description}</p>
+                  )}
+                  <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+                    {lesson.duration && (
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{lesson.duration} dəq</span>
+                      </div>
+                    )}
+                    {lesson.videoUrl && (
+                      <div className="flex items-center space-x-1">
+                        <Video className="w-4 h-4" />
+                        <span>Video</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <ArrowLeft className="w-5 h-5 rotate-180 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface EnhancedLessonManagementProps {
   courseId: number;
   selectedLesson: any;
@@ -60,6 +241,14 @@ export default function EnhancedLessonManagement({
     description: "",
     dueDate: "",
     maxPoints: 100
+  });
+
+  const [lessonForm, setLessonForm] = useState({
+    title: "",
+    description: "",
+    content: "",
+    videoUrl: "",
+    duration: ""
   });
 
   // Dialog states
@@ -215,7 +404,40 @@ export default function EnhancedLessonManagement({
     }
   });
 
+  // Create lesson mutation
+  const createLessonMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/courses/${courseId}/lessons`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to create lesson');
+      return response.json();
+    },
+    onSuccess: (newLesson) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/lessons`] });
+      toast({ title: "Dərs uğurla yaradıldı!" });
+      onSelectLesson(newLesson);
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Dərs yaradılarkən xəta baş verdi", variant: "destructive" });
+    }
+  });
+
   // Handlers
+  const handleCreateLesson = () => {
+    if (!lessonForm.title.trim()) {
+      toast({ title: "Xəta", description: "Dərs başlığını daxil edin", variant: "destructive" });
+      return;
+    }
+
+    createLessonMutation.mutate({
+      ...lessonForm,
+      duration: lessonForm.duration ? parseInt(lessonForm.duration) : null
+    });
+  };
+
   const handleCreateMaterial = () => {
     if (!materialForm.title.trim()) {
       toast({ title: "Xəta", description: "Material başlığını daxil edin", variant: "destructive" });
@@ -289,12 +511,139 @@ export default function EnhancedLessonManagement({
   };
 
   if (!selectedLesson) {
+    // Show lesson creation interface if no lessons exist
+    if (lessons.length === 0) {
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <FileText className="w-16 h-16 mx-auto text-devcode-orange mb-4" />
+            <h2 className="text-2xl font-bold mb-2">İlk Dərsinizi Yaradın</h2>
+            <p className="text-muted-foreground">Bu kursda hələ dərs yoxdur. İlk dərsinizi yaratmaq üçün aşağıdakı formu doldurun.</p>
+          </div>
+
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader>
+              <CardTitle>Yeni Dərs Əlavə Et</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="lessonTitle">Dərs Başlığı *</Label>
+                  <Input
+                    id="lessonTitle"
+                    value={lessonForm.title}
+                    onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                    placeholder="Məsələn: JavaScript əsasları"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lessonDuration">Müddət (dəqiqə)</Label>
+                  <Input
+                    id="lessonDuration"
+                    type="number"
+                    value={lessonForm.duration}
+                    onChange={(e) => setLessonForm({ ...lessonForm, duration: e.target.value })}
+                    placeholder="45"
+                    min="1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="lessonDescription">Qısa Təsvir</Label>
+                <Textarea
+                  id="lessonDescription"
+                  value={lessonForm.description}
+                  onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                  placeholder="Bu dərsdə nə öyrənəcəksiniz?"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="lessonVideoUrl">Video URL (məcburi deyil)</Label>
+                <Input
+                  id="lessonVideoUrl"
+                  value={lessonForm.videoUrl}
+                  onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+                  placeholder="YouTube və ya digər video linki"
+                />
+              </div>
+
+              <div>
+                <Label>Dərs Məzmunu</Label>
+                <div className="mt-2">
+                  <ReactQuill
+                    theme="snow"
+                    value={lessonForm.content}
+                    onChange={(content) => setLessonForm({ ...lessonForm, content })}
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'blockquote', 'code'],
+                        ['clean']
+                      ]
+                    }}
+                    style={{ height: '200px', marginBottom: '50px' }}
+                  />
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleCreateLesson} 
+                disabled={createLessonMutation.isPending}
+                className="bg-devcode-orange hover:bg-orange-600 w-full"
+                size="lg"
+              >
+                {createLessonMutation.isPending ? "Yaradılır..." : "Dərs Yarat"}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    
+    // Show lesson selection interface if lessons exist
     return (
       <div className="space-y-6">
-        <div className="text-center py-10">
+        <div className="text-center">
           <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
           <p className="text-muted-foreground">Material və tapşırıqları idarə etmək üçün dərs seçin</p>
+        </div>
+
+        <div className="grid gap-4">
+          {lessons.map((lesson: any) => (
+            <Card key={lesson.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onSelectLesson(lesson)}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-semibold">{lesson.title}</h4>
+                    {lesson.description && (
+                      <p className="text-sm text-muted-foreground mt-1">{lesson.description}</p>
+                    )}
+                    <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+                      {lesson.duration && (
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{lesson.duration} dəq</span>
+                        </div>
+                      )}
+                      {lesson.videoUrl && (
+                        <div className="flex items-center space-x-1">
+                          <Video className="w-4 h-4" />
+                          <span>Video</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <ArrowLeft className="w-5 h-5 rotate-180 text-muted-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     );
