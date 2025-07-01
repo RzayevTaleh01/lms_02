@@ -304,11 +304,20 @@ export default function StudentCourse() {
 
   // Populate form when assignment changes and has returned submission
   useEffect(() => {
-    if (selectedLesson && assignments.length > 0 && submissions.length > 0) {
-      const currentAssignment = assignments.find(a => a.id === selectedLesson.id);
-      if (currentAssignment) {
+    // Clear form when changing lessons
+    setSubmissionForm({
+      content: "",
+      githubUrl: "",
+      fileUrl: ""
+    });
+  }, [selectedLesson]);
+
+  // Populate form for returned submissions when viewing assignments
+  useEffect(() => {
+    if (assignments.length > 0 && submissions.length > 0) {
+      assignments.forEach(assignment => {
         const returnedSubmission = submissions.find(s => 
-          s.assignmentId === currentAssignment.id && s.status === 'returned'
+          s.assignmentId === assignment.id && s.status === 'returned'
         );
         if (returnedSubmission) {
           setSubmissionForm({
@@ -317,9 +326,9 @@ export default function StudentCourse() {
             fileUrl: returnedSubmission.fileUrl || ""
           });
         }
-      }
+      });
     }
-  }, [selectedLesson, assignments, submissions]);
+  }, [assignments, submissions]);
 
   const isLessonCompleted = (lessonId: number) => {
     return lessonProgress.some((progress: any) => 
@@ -554,6 +563,7 @@ export default function StudentCourse() {
                       ) : (
                         assignments.map((assignment: any) => {
                           const studentSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
+                          console.log('Assignment:', assignment.id, 'Submission:', studentSubmission);
 
                           return (
                             <Card key={assignment.id}>
