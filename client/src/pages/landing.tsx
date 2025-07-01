@@ -62,18 +62,18 @@ export default function Landing() {
             
             {/* Main Heading */}
             <h2 className="text-3xl lg:text-6xl font-bold leading-tight mb-8 max-w-5xl mx-auto">
-              <span className="text-orange-400">Azərbaycanda</span> ən müasir 
+              <span className="text-yellow-300">Rəqəmsal Karyeranıza</span>
               <br className="hidden lg:block" />
-              <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                Proqramlaşdırma Təhsili
+              <span className="bg-gradient-to-r from-orange-300 to-yellow-200 bg-clip-text text-transparent">
+                Bugündən Başlayın
               </span>
             </h2>
             
             {/* Description */}
             <p className="text-xl lg:text-2xl text-orange-100 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Modern təhsil metodları və təcrübəli müəllimlərlə proqramlaşdırma öyrənin. 
-              <strong className="text-yellow-300">Kursları bitirdikdən sonra iş təminatı</strong> alın və 
-              <strong className="text-orange-300">karyeranızı uğurla qurun</strong>.
+              DevCode Academy ilə proqramlaşdırma dünyasına addım atın. 
+              <strong className="text-yellow-200">0-dan Profesional səviyyəyə</strong> qədər yolculuğunuzu bizimlə keçin və 
+              <strong className="text-orange-200">iş təminatı ilə karyeranıza başlayın</strong>.
             </p>
             
             {/* CTA Buttons */}
@@ -183,87 +183,92 @@ export default function Landing() {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">DevCode Təhsil Platforması</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              <span className="bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
+                DevCode LMS Sistemi
+              </span>
+            </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              Müasir texnologiyalar və expert müəllimlər ilə proqramlaşdırma öyrənmə təcrübəsi
+              Müasir təhsil idarəetmə sistemi ilə proqramlaşdırmada peşəkar səviyyəyə çatın. 
+              Bütün təhsil prosesi bir platformada - dərslər, tapşırıqlar, qiymətləndirmə və sertifikatlaşdırma.
             </p>
           </div>
           
           <div className="grid lg:grid-cols-3 gap-8 mb-16">
-            {/* Interactive Learning */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mb-6">
-                <Monitor className="w-8 h-8 text-orange-600" />
+            {/* Student Dashboard */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-t-4 border-orange-500">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-6">
+                <Monitor className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">İnteraktiv Dərslər</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Tələbə Paneli</h3>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Video dərslər və canlı kodlama sessiyaları</span>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>HD Video Dərslər</strong> - Peşəkar çəkilmiş dərslər və praktiki nümunələr</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Praktiki tapşırıqlar və layihələr</span>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Real-time İrəliləyiş</strong> - Hər dərsin tamamlanma faizi və ümumi proqres</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Proqres izləmə və qiymətləndirmə</span>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Tapşırıq Sistemi</strong> - Mərhələli tapşırıqlar və avtomatik qiymətləndirmə</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Mentor dəstəyi və feedback</span>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Sertifikat Alması</strong> - Kurs tamamlandıqda avtomatik sertifikat yaradılması</span>
                 </li>
               </ul>
             </div>
 
-            {/* Expert Teaching */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                <Users className="w-8 h-8 text-blue-600" />
+            {/* Teacher Dashboard */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-t-4 border-blue-500">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+                <Users className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Expert Müəllimlər</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Müəllim Paneli</h3>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>İndustry təcrübəsi olan mütəxəssislər</span>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Kurs İdarəetməsi</strong> - Tam kurs yaradılması, dərs planlaması və material yükləmə</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Kiçik qruplarla şəxsi yanaşma</span>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Tələbə İzləmə</strong> - Hər tələbənin proqresi və performansının detallı analizi</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Real iş təcrübəsi paylaşımı</span>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Tapşırıq Qiymətləndirilməsi</strong> - Avtomatik və manual qiymətləndirmə sistemi</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Karyera məsləhətləri və yönləndirmə</span>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Kommunikasiya Alətləri</strong> - Tələbələrlə ünsiyyət və feedback sistemi</span>
                 </li>
               </ul>
             </div>
 
-            {/* Comprehensive Support */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-                <Award className="w-8 h-8 text-green-600" />
+            {/* Admin Control Panel */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-t-4 border-green-500">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6">
+                <Award className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Tam Dəstək Sistemi</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Admin Paneli</h3>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Sertifikat və iş təminatı proqramı</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Sistem İdarəetməsi</strong> - Bütün platformanın tam nəzarəti və idarəedilməsi</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Portfolyo yaradılması dəstəyi</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>İstifadəçi Rolu</strong> - Admin, müəllim və tələbə rollarının təyin edilməsi</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Alumni şəbəkəsi və komunit</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Analytics Dashboard</strong> - Real-time statistikalar və performans analizi</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Müştərək iş imkanları</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span><strong>Sertifikat Sistemi</strong> - Avtomatik sertifikat yaratma və doğrulama</span>
                 </li>
               </ul>
             </div>
@@ -361,7 +366,7 @@ export default function Landing() {
       </section>
 
       {/* Featured Courses */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-20 bg-gradient-to-br from-orange-50 to-yellow-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Populyar Kurslarımız</h2>
@@ -533,7 +538,7 @@ export default function Landing() {
           
           <div className="text-center">
             <Link href="/courses">
-              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg">
+              <Button size="lg" className="bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white px-8 py-3 text-lg">
                 Bütün Kursları Gör
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -543,7 +548,7 @@ export default function Landing() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+      <section className="py-20 bg-gradient-to-r from-orange-600 to-yellow-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold mb-6">
