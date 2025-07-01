@@ -3,27 +3,18 @@ import { Link, useLocation } from "wouter";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/hooks/useAuth";
 
-interface StaticSidebarProps {
-  user?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-  };
-  onLogout?: () => void;
-}
-
-export function StaticSidebar({ user, onLogout }: StaticSidebarProps) {
+export function StaticSidebar() {
   const [location] = useLocation();
+  const { user, logout } = useAuth();
 
   const menuItems = [
-    { icon: Home, label: "Ana Səhifə", href: "/dashboard" },
+    { icon: Home, label: "Ana Səhifə", href: "/student" },
     { icon: BookOpen, label: "Kurslarım", href: "/student/courses" },
     { icon: ClipboardCheck, label: "Davamiyyət", href: "/student/attendance" },
     { icon: Users, label: "Qiymətləndirmə", href: "/student/grades" },
-    { icon: User, label: "Profil", href: "/profile" },
+    { icon: User, label: "Profil", href: "/student/profile" },
   ];
 
   return (
@@ -84,16 +75,14 @@ export function StaticSidebar({ user, onLogout }: StaticSidebarProps) {
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-200">
-        {onLogout && (
-          <Button
-            variant="ghost"
-            onClick={onLogout}
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <LogOut className="w-4 h-4 mr-3" />
-            Çıxış
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          onClick={logout}
+          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          <LogOut className="w-4 h-4 mr-3" />
+          Çıxış
+        </Button>
       </div>
     </aside>
   );

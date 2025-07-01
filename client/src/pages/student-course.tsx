@@ -257,7 +257,7 @@ export default function StudentCourse() {
   if (!course) {
     return (
       <div className="flex h-screen">
-        <StaticSidebar user={user} onLogout={logout} />
+        <StaticSidebar />
         <div className="flex-1 ml-64 p-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
@@ -270,7 +270,7 @@ export default function StudentCourse() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <StaticSidebar user={user} onLogout={logout} />
+      <StaticSidebar />
       
       <div className="flex-1 ml-64 flex flex-col overflow-hidden">
         {/* Header */}
