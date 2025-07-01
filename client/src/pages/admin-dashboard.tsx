@@ -29,7 +29,8 @@ import {
   CheckCircle,
   Clock,
   Eye,
-  School
+  School,
+  Menu
 } from "lucide-react";
 import { format } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
@@ -96,6 +97,7 @@ export default function AdminDashboard() {
     role: 'student' as 'student' | 'teacher' | 'admin'
   });
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch system statistics
   const { data: stats, isLoading: statsLoading } = useQuery<Stats>({
@@ -231,15 +233,27 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar userRole="admin" />
+      <Sidebar 
+        userRole="admin" 
+        isMobileOpen={isMobileMenuOpen} 
+        setIsMobileOpen={setIsMobileMenuOpen} 
+      />
 
       {/* Main Content */}
-      <div className="flex-1 p-8 ml-64">
+      <div className="flex-1 p-4 lg:p-8 lg:ml-64">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">İdarəetmə Paneli</h1>
-            <p className="text-gray-600">İstifadəçiləri, kursları və sistem ayarlarını idarə edin</p>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">İdarəetmə Paneli</h1>
+              <p className="text-gray-600 text-sm lg:text-base">İstifadəçiləri, kursları və sistem ayarlarını idarə edin</p>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm">
@@ -254,7 +268,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Ümumi İstifadəçilər</CardTitle>
@@ -312,12 +326,12 @@ export default function AdminDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="users" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="users">İstifadəçilər</TabsTrigger>
-            <TabsTrigger value="courses">Kurslar</TabsTrigger>
-            <TabsTrigger value="enrollments">Qeydiyyatlar</TabsTrigger>
-            <TabsTrigger value="sessions">Dərs Sessiyaları</TabsTrigger>
-            <TabsTrigger value="analytics">Analitika</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+            <TabsTrigger value="users" className="text-xs sm:text-sm">İstifadəçilər</TabsTrigger>
+            <TabsTrigger value="courses" className="text-xs sm:text-sm">Kurslar</TabsTrigger>
+            <TabsTrigger value="enrollments" className="text-xs sm:text-sm lg:block hidden">Qeydiyyatlar</TabsTrigger>
+            <TabsTrigger value="sessions" className="text-xs sm:text-sm lg:block hidden">Sessiyalar</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analitika</TabsTrigger>
           </TabsList>
 
 
