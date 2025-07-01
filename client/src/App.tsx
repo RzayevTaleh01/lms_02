@@ -1,3 +1,4 @@
+import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -34,6 +35,29 @@ import StudentAssignments from "@/pages/student-assignments";
 
 import NotFound from "@/pages/not-found";
 
+// Protected Route Component
+function ProtectedRoute({ 
+  children, 
+  allowedRoles, 
+  isAuthenticated, 
+  userRole 
+}: { 
+  children: React.ReactNode; 
+  allowedRoles?: string[]; 
+  isAuthenticated: boolean; 
+  userRole?: string;
+}) {
+  if (!isAuthenticated) {
+    return <Landing />;
+  }
+  
+  if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
+    return <NotFound />;
+  }
+  
+  return <>{children}</>;
+}
+
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
@@ -47,6 +71,7 @@ function Router() {
 
   return (
     <Switch>
+      {/* Public Routes */}
       <Route path="/">
         {isAuthenticated ? <Home /> : <Landing />}
       </Route>
@@ -57,25 +82,93 @@ function Router() {
       <Route path="/verify" component={VerifyCertificate} />
       <Route path="/contact" component={Contact} />
 
-      {/* Role-based dashboards - only for authenticated users */}
-      {isAuthenticated && user?.role === 'admin' && <Route path="/admin" component={AdminDashboard} />}
-      {isAuthenticated && user?.role === 'admin' && <Route path="/admin-dashboard" component={AdminDashboard} />}
-      {isAuthenticated && user?.role === 'admin' && <Route path="/admin/teachers" component={AdminTeachers} />}
-      {isAuthenticated && user?.role === 'admin' && <Route path="/admin/courses" component={AdminCourses} />}
-      {isAuthenticated && user?.role === 'admin' && <Route path="/admin/students" component={AdminStudents} />}
-      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher" component={TeacherDashboard} />}
-      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses" component={TeacherCourses} />}
-      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/courses/:id" component={CourseManagementPage} />}
-      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students" component={TeacherStudents} />}
-      {isAuthenticated && user?.role === 'teacher' && <Route path="/teacher/students/:studentId" component={TeacherStudentDetail} />}
-      {isAuthenticated && user?.role === 'student' && <Route path="/student" component={StudentDashboard} />}
-      <Route path="/student/courses" component={StudentCourses} />
-      <Route path="/student/course/:id" component={StudentCourse} />
-      {isAuthenticated && user?.role === 'student' && <Route path="/student/assignments" component={StudentAssignments} />}
-      {isAuthenticated && user?.role === 'student' && <Route path="/student/attendance" component={StudentAttendance} />}
-      {isAuthenticated && user?.role === 'student' && <Route path="/student/grades" component={StudentGrades} />}
-      {isAuthenticated && user?.role === 'student' && <Route path="/student/profile" component={StudentProfile} />}
+      {/* Admin Routes */}
+      <Route path="/admin">
+        <ProtectedRoute allowedRoles={['admin']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <AdminDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/teachers">
+        <ProtectedRoute allowedRoles={['admin']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <AdminTeachers />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/courses">
+        <ProtectedRoute allowedRoles={['admin']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <AdminCourses />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/students">
+        <ProtectedRoute allowedRoles={['admin']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <AdminStudents />
+        </ProtectedRoute>
+      </Route>
 
+      {/* Teacher Routes */}
+      <Route path="/teacher">
+        <ProtectedRoute allowedRoles={['teacher']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <TeacherDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/teacher/courses">
+        <ProtectedRoute allowedRoles={['teacher']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <TeacherCourses />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/teacher/courses/:id">
+        <ProtectedRoute allowedRoles={['teacher']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <CourseManagementPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/teacher/students">
+        <ProtectedRoute allowedRoles={['teacher']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <TeacherStudents />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/teacher/students/:studentId">
+        <ProtectedRoute allowedRoles={['teacher']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <TeacherStudentDetail />
+        </ProtectedRoute>
+      </Route>
+
+      {/* Student Routes */}
+      <Route path="/student">
+        <ProtectedRoute allowedRoles={['student']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <StudentDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/student/courses">
+        <ProtectedRoute allowedRoles={['student']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <StudentCourses />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/student/course/:id">
+        <ProtectedRoute allowedRoles={['student']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <StudentCourse />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/student/assignments">
+        <ProtectedRoute allowedRoles={['student']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <StudentAssignments />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/student/attendance">
+        <ProtectedRoute allowedRoles={['student']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <StudentAttendance />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/student/grades">
+        <ProtectedRoute allowedRoles={['student']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <StudentGrades />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/student/profile">
+        <ProtectedRoute allowedRoles={['student']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <StudentProfile />
+        </ProtectedRoute>
+      </Route>
+
+      {/* Fallback */}
       <Route component={NotFound} />
     </Switch>
   );
