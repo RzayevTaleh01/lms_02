@@ -96,15 +96,36 @@ export default function Blog() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge className="mb-6 bg-blue-100 text-blue-900 hover:bg-blue-200">
-            📝 Texnoloji Bloq
-          </Badge>
-          <h1 className="text-5xl font-bold mb-6">DevCode Bloq</h1>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Proqramlaşdırma trendləri, tutorial-lar və sənaye təcrübələri haqqında 
-            ən son məqalələri oxuyun və özünüzü inkişaf etdirin.
+      <section className="bg-gradient-to-br from-gray-900 via-orange-900 to-blue-900 text-white py-20 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-64 h-64 bg-orange-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-500 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <img 
+              src="/assets/devcode_1751389375943.png" 
+              alt="DevCode Academy" 
+              className="w-12 h-12"
+            />
+            <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2">
+              📝 Texnoloji Bloq
+            </Badge>
+          </div>
+          <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-white via-orange-200 to-orange-400 bg-clip-text text-transparent">
+              DevCode
+            </span>
+            <br />
+            <span className="text-3xl lg:text-4xl text-blue-200">
+              Texnoloji Bloq
+            </span>
+          </h1>
+          <p className="text-xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
+            Proqramlaşdırma trendləri, <strong className="text-orange-300">hibrid təhsil metodları</strong> və 
+            <strong className="text-blue-300">rəqəmsal texnologiyalar</strong> haqqında ekspert təhlilləri və tutorial-lar.
           </p>
         </div>
       </section>

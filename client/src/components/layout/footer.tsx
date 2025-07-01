@@ -7,9 +7,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-8 h-8 bg-devcode-orange rounded transform rotate-45 relative">
-                <div className="absolute inset-1 bg-white rounded transform -rotate-45"></div>
-              </div>
+              <img 
+                src="/assets/devcode_1751389375943.png" 
+                alt="DevCode Academy" 
+                className="w-8 h-8"
+              />
               <span className="text-xl font-bold">DevCode Academy</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">

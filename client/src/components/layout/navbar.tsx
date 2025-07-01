@@ -57,9 +57,11 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/">
               <div className="flex items-center space-x-3 cursor-pointer">
-                <div className="w-8 h-8 bg-devcode-orange rounded transform rotate-45 relative">
-                  <div className="absolute inset-1 bg-white rounded transform -rotate-45"></div>
-                </div>
+                <img 
+                  src="/assets/devcode_1751389375943.png" 
+                  alt="DevCode Academy" 
+                  className="w-8 h-8"
+                />
                 <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
               </div>
             </Link>
