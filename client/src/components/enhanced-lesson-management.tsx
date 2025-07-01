@@ -25,7 +25,9 @@ import {
   Calendar, 
   Target, 
   Users,
-  ArrowLeft
+  ArrowLeft,
+  Eye,
+  User
 } from "lucide-react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -254,7 +256,10 @@ export default function EnhancedLessonManagement({
   // Dialog states
   const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false);
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
+  const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("materials");
+  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
+  const [isSubmissionsDialogOpen, setIsSubmissionsDialogOpen] = useState(false);
   
   // Edit states
   const [editingMaterial, setEditingMaterial] = useState<any>(null);
@@ -274,6 +279,12 @@ export default function EnhancedLessonManagement({
   const { data: assignments = [] } = useQuery({
     queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`],
     enabled: !!selectedLesson?.id
+  });
+
+  // Assignment submissions query
+  const { data: submissions = [] } = useQuery({
+    queryKey: [`/api/lesson-assignments/${selectedAssignment?.id}/submissions`],
+    enabled: !!selectedAssignment?.id
   });
 
   // Create material mutation
@@ -422,6 +433,46 @@ export default function EnhancedLessonManagement({
     },
     onError: () => {
       toast({ title: "Xəta", description: "Dərs yaradılarkən xəta baş verdi", variant: "destructive" });
+    }
+  });
+
+  // Return submission for revision mutation
+  const returnSubmissionMutation = useMutation({
+    mutationFn: async ({ submissionId, feedback }: { submissionId: number; feedback: string }) => {
+      const response = await fetch(`/api/submissions/${submissionId}/return`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ feedback, teacherId: user?.id })
+      });
+      if (!response.ok) throw new Error('Failed to return submission');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lesson-assignments/${selectedAssignment?.id}/submissions`] });
+      toast({ title: "Tapşırıq düzəliş üçün qaytarıldı" });
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Tapşırıq qaytarılarkən xəta baş verdi", variant: "destructive" });
+    }
+  });
+
+  // Grade submission mutation
+  const gradeSubmissionMutation = useMutation({
+    mutationFn: async ({ submissionId, grade, feedback }: { submissionId: number; grade: number; feedback: string }) => {
+      const response = await fetch(`/api/submissions/${submissionId}/grade`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ grade, feedback, gradedBy: user?.id })
+      });
+      if (!response.ok) throw new Error('Failed to grade submission');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/lesson-assignments/${selectedAssignment?.id}/submissions`] });
+      toast({ title: "Tapşırıq qiymətləndirildi" });
+    },
+    onError: () => {
+      toast({ title: "Xəta", description: "Qiymətləndirmə zamanı xəta baş verdi", variant: "destructive" });
     }
   });
 
@@ -608,10 +659,107 @@ export default function EnhancedLessonManagement({
     // Show lesson selection interface if lessons exist
     return (
       <div className="space-y-6">
-        <div className="text-center">
-          <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
-          <p className="text-muted-foreground">Material və tapşırıqları idarə etmək üçün dərs seçin</p>
+        <div className="flex items-center justify-between">
+          <div className="text-center flex-1">
+            <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
+            <p className="text-muted-foreground">Material və tapşırıqları idarə etmək üçün dərs seçin</p>
+          </div>
+          {user?.role === "teacher" && (
+            <Dialog open={isLessonDialogOpen} onOpenChange={setIsLessonDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="bg-devcode-orange hover:bg-orange-600"
+                  onClick={() => {
+                    setLessonForm({ title: "", description: "", content: "", videoUrl: "", duration: "" });
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Dərs Əlavə Et
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Yeni Dərs Əlavə Et</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="newLessonTitle">Dərs Başlığı *</Label>
+                      <Input
+                        id="newLessonTitle"
+                        value={lessonForm.title}
+                        onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                        placeholder="Məsələn: JavaScript əsasları"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="newLessonDuration">Müddət (dəqiqə)</Label>
+                      <Input
+                        id="newLessonDuration"
+                        type="number"
+                        value={lessonForm.duration}
+                        onChange={(e) => setLessonForm({ ...lessonForm, duration: e.target.value })}
+                        placeholder="45"
+                        min="1"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="newLessonDescription">Qısa Təsvir</Label>
+                    <Textarea
+                      id="newLessonDescription"
+                      value={lessonForm.description}
+                      onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                      placeholder="Bu dərsdə nə öyrənəcəksiniz?"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="newLessonVideoUrl">Video URL (məcburi deyil)</Label>
+                    <Input
+                      id="newLessonVideoUrl"
+                      value={lessonForm.videoUrl}
+                      onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+                      placeholder="YouTube və ya digər video linki"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Dərs Məzmunu</Label>
+                    <div className="mt-2">
+                      <ReactQuill
+                        theme="snow"
+                        value={lessonForm.content}
+                        onChange={(content) => setLessonForm({ ...lessonForm, content })}
+                        modules={{
+                          toolbar: [
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link', 'blockquote', 'code'],
+                            ['clean']
+                          ]
+                        }}
+                        style={{ height: '200px', marginBottom: '50px' }}
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={handleCreateLesson} 
+                    disabled={createLessonMutation.isPending}
+                    className="bg-devcode-orange hover:bg-orange-600 w-full"
+                    size="lg"
+                  >
+                    {createLessonMutation.isPending ? "Yaradılır..." : "Dərs Yarat"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         <div className="grid gap-4">
@@ -1031,6 +1179,18 @@ export default function EnhancedLessonManagement({
                           <Button 
                             variant="outline" 
                             size="sm"
+                            onClick={() => {
+                              setSelectedAssignment(assignment);
+                              setIsSubmissionsDialogOpen(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            Cavabları Gör
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
                             onClick={() => handleEditAssignment(assignment)}
                           >
                             <Edit className="w-4 h-4" />
@@ -1053,6 +1213,177 @@ export default function EnhancedLessonManagement({
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Submissions Dialog */}
+      <Dialog open={isSubmissionsDialogOpen} onOpenChange={setIsSubmissionsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <ArrowLeft 
+                className="w-5 h-5 cursor-pointer" 
+                onClick={() => setIsSubmissionsDialogOpen(false)} 
+              />
+              <span>{selectedAssignment?.title} - Tələbə Cavabları</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {submissions.length === 0 ? (
+              <div className="text-center py-10">
+                <User className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Bu tapşırığa hələ cavab göndərilməyib</p>
+              </div>
+            ) : (
+              submissions.map((submission: any) => (
+                <Card key={submission.id} className="border-l-4 border-l-blue-500">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-semibold flex items-center space-x-2">
+                          <User className="w-4 h-4" />
+                          <span>{submission.student?.firstName} {submission.student?.lastName}</span>
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          Göndərilmə tarixi: {new Date(submission.submittedAt).toLocaleString('az-AZ')}
+                        </p>
+                        {submission.status && (
+                          <Badge 
+                            variant={
+                              submission.status === 'graded' ? 'default' : 
+                              submission.status === 'returned' ? 'destructive' : 'secondary'
+                            }
+                            className="mt-1"
+                          >
+                            {submission.status === 'graded' ? 'Qiymətləndirilib' : 
+                             submission.status === 'returned' ? 'Düzəliş üçün qaytarılıb' : 'Gözləyir'}
+                          </Badge>
+                        )}
+                      </div>
+                      {submission.grade && (
+                        <Badge variant="outline" className="text-lg">
+                          {submission.grade}/{selectedAssignment?.maxPoints} bal
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      {submission.content && (
+                        <div>
+                          <Label className="text-sm font-medium">Cavab məzmunu:</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md">
+                            <p className="text-sm">{submission.content}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {submission.githubUrl && (
+                        <div>
+                          <Label className="text-sm font-medium">GitHub Linki:</Label>
+                          <div className="mt-1">
+                            <a 
+                              href={submission.githubUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 underline text-sm"
+                            >
+                              {submission.githubUrl}
+                            </a>
+                          </div>
+                        </div>
+                      )}
+
+                      {submission.fileUrl && (
+                        <div>
+                          <Label className="text-sm font-medium">Fayl:</Label>
+                          <div className="mt-1">
+                            <a 
+                              href={submission.fileUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 underline text-sm"
+                            >
+                              Faylı yüklə
+                            </a>
+                          </div>
+                        </div>
+                      )}
+
+                      {submission.feedback && (
+                        <div>
+                          <Label className="text-sm font-medium">Müəllim rəyi:</Label>
+                          <div className="mt-1 p-3 bg-blue-50 rounded-md">
+                            <p className="text-sm">{submission.feedback}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {submission.status !== 'graded' && submission.status !== 'returned' && (
+                      <div className="flex space-x-2 mt-4 pt-4 border-t">
+                        <div className="flex-1">
+                          <div className="flex space-x-2">
+                            <Input
+                              type="number"
+                              placeholder="Bal (0-100)"
+                              min="0"
+                              max={selectedAssignment?.maxPoints || 100}
+                              className="w-24"
+                              id={`grade-${submission.id}`}
+                            />
+                            <Input
+                              placeholder="Rəy və ya şərh"
+                              className="flex-1"
+                              id={`feedback-${submission.id}`}
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                const gradeInput = document.getElementById(`grade-${submission.id}`) as HTMLInputElement;
+                                const feedbackInput = document.getElementById(`feedback-${submission.id}`) as HTMLInputElement;
+                                const grade = parseInt(gradeInput.value);
+                                const feedback = feedbackInput.value;
+                                
+                                if (grade >= 0 && feedback.trim()) {
+                                  gradeSubmissionMutation.mutate({
+                                    submissionId: submission.id,
+                                    grade,
+                                    feedback
+                                  });
+                                }
+                              }}
+                              disabled={gradeSubmissionMutation.isPending}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Qiymətləndir
+                            </Button>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const feedbackInput = document.getElementById(`feedback-${submission.id}`) as HTMLInputElement;
+                            const feedback = feedbackInput.value || "Düzəliş tələb olunur";
+                            
+                            returnSubmissionMutation.mutate({
+                              submissionId: submission.id,
+                              feedback
+                            });
+                          }}
+                          disabled={returnSubmissionMutation.isPending}
+                          className="text-orange-600 hover:text-orange-700"
+                        >
+                          Düzəliş üçün qaytár
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
