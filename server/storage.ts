@@ -1043,6 +1043,34 @@ export class DatabaseStorage implements IStorage {
       .where(eq(submissions.id, submissionId));
   }
 
+  async getSubmissionHistory(assignmentId: number, studentId: string) {
+    // Get all submissions for this assignment and student ordered by submission date
+    const submissionHistory = await db
+      .select({
+        id: submissions.id,
+        content: submissions.content,
+        githubUrl: submissions.githubUrl,
+        fileUrl: submissions.fileUrl,
+        submittedAt: submissions.submittedAt,
+        grade: submissions.grade,
+        feedback: submissions.feedback,
+        gradedAt: submissions.gradedAt,
+        status: submissions.status,
+        teacherName: sql<string>`CONCAT(${users.firstName}, ' ', ${users.lastName})`.as('teacherName')
+      })
+      .from(submissions)
+      .leftJoin(users, eq(submissions.gradedBy, users.id))
+      .where(
+        and(
+          eq(submissions.assignmentId, assignmentId),
+          eq(submissions.studentId, studentId)
+        )
+      )
+      .orderBy(desc(submissions.submittedAt));
+
+    return submissionHistory;
+  }
+
   // Get student attendance statistics
   async getStudentAttendanceStats(studentId: string): Promise<{ attendanceRate: number; totalSessions: number; attendedSessions: number }> {
     // Get all enrollments for the student

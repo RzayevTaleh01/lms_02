@@ -576,7 +576,7 @@ export default function StudentCoursePage() {
                               );
 
                               const isSubmitted = !!studentSubmission;
-                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.grade !== undefined;
+                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.status === 'graded';
                               const isReturned = isSubmitted && studentSubmission?.status === 'returned';
 
                               return (

@@ -27,7 +27,8 @@ import {
   Users,
   ArrowLeft,
   Eye,
-  User
+  User,
+  History
 } from "lucide-react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -245,6 +246,10 @@ export default function EnhancedLessonManagement({
     maxPoints: 100
   });
 
+  // Submission history states
+  const [selectedSubmissionForHistory, setSelectedSubmissionForHistory] = useState<any>(null);
+  const [historyDialog, setHistoryDialog] = useState(false);
+
   const [lessonForm, setLessonForm] = useState({
     title: "",
     description: "",
@@ -285,6 +290,13 @@ export default function EnhancedLessonManagement({
   const { data: submissions = [] } = useQuery({
     queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`],
     enabled: !!selectedAssignment?.id
+  });
+
+  // Get submission history query
+  const { data: submissionHistory = [], isLoading: historyLoading } = useQuery({
+    queryKey: [`/api/assignments/${selectedAssignment?.id}/submission-history/${selectedSubmissionForHistory?.student?.id}`],
+    enabled: !!selectedAssignment?.id && !!selectedSubmissionForHistory?.student?.id,
+    queryFn: () => fetch(`/api/assignments/${selectedAssignment.id}/submission-history/${selectedSubmissionForHistory.student.id}`).then(res => res.json())
   });
 
   // Create material mutation
@@ -1239,7 +1251,7 @@ export default function EnhancedLessonManagement({
                 <Card key={submission.id} className="border-l-4 border-l-blue-500">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-3">
-                      <div>
+                      <div className="flex-1">
                         <h4 className="font-semibold flex items-center space-x-2">
                           <User className="w-4 h-4" />
                           <span>{submission.student?.firstName} {submission.student?.lastName}</span>
@@ -1260,11 +1272,25 @@ export default function EnhancedLessonManagement({
                           </Badge>
                         )}
                       </div>
-                      {submission.grade && (
-                        <Badge variant="outline" className="text-lg">
-                          {submission.grade}/{selectedAssignment?.maxPoints} bal
-                        </Badge>
-                      )}
+                      <div className="flex items-center space-x-2">
+                        {submission.grade && (
+                          <Badge variant="outline" className="text-lg">
+                            {submission.grade}/{selectedAssignment?.maxPoints} bal
+                          </Badge>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedSubmissionForHistory(submission);
+                            setHistoryDialog(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <History className="w-4 h-4 mr-1" />
+                          Tarixçə
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="space-y-3">
@@ -1390,6 +1416,124 @@ export default function EnhancedLessonManagement({
                         </p>
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Submission History Dialog */}
+      <Dialog open={historyDialog} onOpenChange={setHistoryDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Göndərmə Tarixçəsi - {selectedSubmissionForHistory?.student?.firstName} {selectedSubmissionForHistory?.student?.lastName}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {historyLoading ? (
+              <div className="text-center py-8">Yüklənir...</div>
+            ) : submissionHistory.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                Tarixçə tapılmadı
+              </div>
+            ) : (
+              submissionHistory.map((historyItem: any, index: number) => (
+                <Card key={historyItem.id} className="border-l-4 border-l-blue-500">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Badge variant={
+                            historyItem.status === 'graded' ? 'default' : 
+                            historyItem.status === 'returned' ? 'destructive' : 'secondary'
+                          }>
+                            {historyItem.status === 'graded' ? 'Qiymətləndirilib' : 
+                             historyItem.status === 'returned' ? 'Düzəliş üçün qaytarılıb' : 'Göndərilib'}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {index === 0 ? 'Ən son' : `${index + 1}. Göndərmə`}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Tarix: {new Date(historyItem.submittedAt).toLocaleString('az-AZ')}
+                        </p>
+                      </div>
+                      {historyItem.grade && (
+                        <Badge variant="outline" className="text-lg">
+                          {historyItem.grade}/{selectedAssignment?.maxPoints} bal
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold mb-2">Tələbə cavabı:</h4>
+                        <div 
+                          className="prose prose-sm max-w-none bg-gray-50 p-3 rounded"
+                          dangerouslySetInnerHTML={{ __html: historyItem.content }}
+                        />
+                      </div>
+
+                      {historyItem.githubUrl && (
+                        <div>
+                          <h4 className="font-semibold mb-1">GitHub linki:</h4>
+                          <a 
+                            href={historyItem.githubUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-blue-600 hover:underline"
+                          >
+                            {historyItem.githubUrl}
+                          </a>
+                        </div>
+                      )}
+
+                      {historyItem.fileUrl && (
+                        <div>
+                          <h4 className="font-semibold mb-1">Fayl:</h4>
+                          <a 
+                            href={historyItem.fileUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-blue-600 hover:underline"
+                          >
+                            {historyItem.fileUrl}
+                          </a>
+                        </div>
+                      )}
+
+                      {historyItem.feedback && (
+                        <div className={`p-3 rounded ${
+                          historyItem.status === 'graded' 
+                            ? 'bg-green-50 border border-green-200' 
+                            : 'bg-orange-50 border border-orange-200'
+                        }`}>
+                          <h4 className={`font-semibold mb-1 ${
+                            historyItem.status === 'graded' ? 'text-green-800' : 'text-orange-800'
+                          }`}>
+                            {historyItem.status === 'graded' ? 'Müəllim rəyi:' : 'Düzəliş tələbi:'}
+                          </h4>
+                          <p className={`text-sm ${
+                            historyItem.status === 'graded' ? 'text-green-700' : 'text-orange-700'
+                          }`}>
+                            {historyItem.feedback}
+                          </p>
+                          {historyItem.teacherName && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Müəllim: {historyItem.teacherName}
+                            </p>
+                          )}
+                          {historyItem.gradedAt && (
+                            <p className="text-xs text-gray-500">
+                              Tarix: {new Date(historyItem.gradedAt).toLocaleString('az-AZ')}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               ))

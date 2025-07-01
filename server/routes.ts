@@ -1128,6 +1128,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get submission history for an assignment
+  app.get('/api/assignments/:assignmentId/submission-history/:studentId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers can view submission history" });
+      }
+
+      const assignmentId = parseInt(req.params.assignmentId);
+      const studentId = req.params.studentId;
+      
+      const history = await storage.getSubmissionHistory(assignmentId, studentId);
+      res.json(history);
+    } catch (error) {
+      console.error("Error fetching submission history:", error);
+      res.status(500).json({ message: "Failed to fetch submission history" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
