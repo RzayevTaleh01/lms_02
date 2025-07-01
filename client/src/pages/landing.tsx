@@ -20,7 +20,10 @@ import {
   Star,
   Globe,
   Zap,
-  Shield
+  Shield,
+  MapPin,
+  Clock,
+  Briefcase
 } from "lucide-react";
 
 export default function Landing() {
@@ -33,69 +36,78 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
       
-      {/* Hero Section - Code Star Style */}
-      <section className="relative bg-white py-20 lg:py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
-              <div className="flex items-center gap-3 mb-6 justify-center lg:justify-start">
-                <img 
-                  src="/assets/devcode_1751389375943.png" 
-                  alt="DevCode Academy" 
-                  className="w-10 h-10"
-                />
-                <span className="text-2xl font-bold text-gray-900">DevCode Academy</span>
-              </div>
-              
-              <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6">
-                <span className="text-red-600">Rəqəmsal Karyerana</span><br />
-                <span className="text-gray-900">təsdiqənmiş metodlarla</span><br />
-                <span className="text-gray-900">və peşəkar komanda ilə</span><br />
-                <span className="text-red-600">başla</span>
-              </h1>
-              
-              <p className="text-lg text-gray-600 mb-8 max-w-xl">
-                DevCode Academy komandası olaraq 500+ mezun, ekspertlərdən ibarət heyət 
-                və real layihə təcrübəsi ilə sənim bu yoldaki başlanğıcın olacaq.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/courses">
-                  <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-3 rounded-lg text-lg">
-                    Öyrənməyə başla
-                  </Button>
-                </Link>
+      {/* Hero Section - DevCode Style */}
+      <section className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white py-24 lg:py-32 overflow-hidden">
+        {/* Background Animation */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            {/* Logo and Title */}
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <img 
+                src="/assets/devcode_1751389375943.png" 
+                alt="DevCode Academy" 
+                className="w-16 h-16"
+              />
+              <div className="text-left">
+                <h1 className="text-4xl lg:text-5xl font-bold">DevCode Academy</h1>
+                <p className="text-blue-200 text-lg">Rəqəmsal Gələcəyin Qapısı</p>
               </div>
             </div>
             
-            <div className="relative flex justify-center lg:justify-end">
-              {/* YouTube Video Embed Style */}
-              <div className="relative w-full max-w-md bg-black rounded-xl overflow-hidden shadow-2xl">
-                <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Play className="w-8 h-8 text-white ml-1" />
-                    </div>
-                    <h3 className="text-lg font-bold mb-2">DevCode Academy - Rəqəmsal Təhsil</h3>
-                    <p className="text-sm text-gray-300">Proqramlaşdırma, Data Science və AI sahələrində müasir təhsil</p>
-                  </div>
-                </div>
-                
-                {/* Video Controls */}
-                <div className="bg-black p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="flex-1 bg-gray-700 rounded-full h-1">
-                      <div className="bg-red-500 h-1 rounded-full w-1/3"></div>
-                    </div>
-                    <span className="text-white text-sm">2:45 / 8:30</span>
-                  </div>
-                </div>
+            {/* Main Heading */}
+            <h2 className="text-3xl lg:text-6xl font-bold leading-tight mb-8 max-w-5xl mx-auto">
+              <span className="text-orange-400">Azərbaycanda</span> ən müasir 
+              <br className="hidden lg:block" />
+              <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                Proqramlaşdırma Təhsili
+              </span>
+            </h2>
+            
+            {/* Description */}
+            <p className="text-xl lg:text-2xl text-blue-100 mb-12 max-w-4xl mx-auto leading-relaxed">
+              Həm <strong className="text-orange-300">online</strong> həm <strong className="text-blue-300">offline</strong> formatda, 
+              AI dəstəkli rəqəmsal idarəetmə sistemi ilə proqramlaşdırma öyrənin və 
+              <strong className="text-yellow-300"> məzun olduqdan sonra iş təminatı</strong> alın.
+            </p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+              <Link href="/courses">
+                <Button size="lg" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 text-xl font-bold rounded-xl shadow-2xl shadow-orange-500/25 transform hover:scale-105 transition-all">
+                  <BookOpen className="w-6 h-6 mr-3" />
+                  Kurslara Başla
+                </Button>
+              </Link>
+              <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white hover:text-blue-900 px-10 py-4 text-xl backdrop-blur-sm rounded-xl">
+                <Play className="w-6 h-6 mr-3" />
+                Demo İzlə
+              </Button>
+            </div>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-orange-400 mb-2">500+</div>
+                <div className="text-blue-200">Məzun Tələbə</div>
               </div>
-              
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 w-12 h-12 bg-yellow-400 rounded-lg rotate-12 opacity-80"></div>
-              <div className="absolute -bottom-4 -left-4 w-8 h-8 bg-red-500 rounded-full opacity-60"></div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-green-400 mb-2">95%</div>
+                <div className="text-blue-200">İş Təminatı</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-yellow-400 mb-2">25+</div>
+                <div className="text-blue-200">Ekspert Müəllim</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-purple-400 mb-2">300+</div>
+                <div className="text-blue-200">Aktiv Tələbə</div>
+              </div>
             </div>
           </div>
         </div>
@@ -161,7 +173,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Learning Management System Features */}
+      {/* DevCode LMS Features */}
       <section className="py-20 bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -171,369 +183,132 @@ export default function Landing() {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <img 
-                src="/assets/devcode_1751389375943.png" 
-                alt="DevCode Academy" 
-                className="w-8 h-8"
-              />
-              <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2">
-                🚀 Rəqəmsal İdarəetmə Sistemi
-              </Badge>
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-orange-600 to-blue-600 bg-clip-text text-transparent mb-6">
-              DevCode Hibrid LMS Platforması
-            </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Həm <strong className="text-orange-600">online</strong> həm <strong className="text-blue-600">offline</strong> təhsil üçün 
-              AI dəstəkli, tam avtomatlaşdırılmış rəqəmsal idarəetmə sistemi. 
-              Tələbə, müəllim və administratorlar üçün vahid platform.
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">DevCode Learning Management System</h2>
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+              AI dəstəkli rəqəmsal təhsil platforması ilə həm online həm offline öyrənmə təcrübəsi
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
-            <div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                Müəllimlər üçün Güçlü Alətlər
-              </h3>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Kurs Yaratma və İdarəetmə</h4>
-                    <p className="text-gray-600">
-                      Interaktiv video dərslər, tapşırıqlar və materiallarla tam kurs strukturu yaradın.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <BarChart3 className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Tələbə Proqresi İzləmə</h4>
-                    <p className="text-gray-600">
-                      Hər tələbənin fərdi proqresini və performansını real vaxtda izləyin.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Avtomatik Qiymətləndirmə</h4>
-                    <p className="text-gray-600">
-                      Tapşırıqları qiymətləndirin, feedback verin və nəticələri avtomatik hesablayın.
-                    </p>
-                  </div>
-                </div>
+          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+            {/* Online Learning */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                <Monitor className="w-8 h-8 text-blue-600" />
               </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Online Təhsil Sistemi</h3>
+              <ul className="space-y-3 text-gray-600">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Canlı video dərslər və interaktiv məzmun</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>AI dəstəkli şəxsi öyrənmə planları</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Real vaxt performans təhlili</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>24/7 mentor dəstəyi</span>
+                </li>
+              </ul>
             </div>
-            
-            <div className="relative">
-              <Card className="border-0 shadow-2xl overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-orange-500 to-orange-600 text-white relative">
-                  <div className="absolute inset-0 bg-black/10"></div>
-                  <div className="relative flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <span className="font-bold text-lg">Müəllim Paneli</span>
-                      <div className="text-orange-100 text-sm">Hibrid İdarəetmə</div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6 bg-gradient-to-br from-white to-orange-50">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border-l-4 border-green-500">
-                      <div>
-                        <span className="text-sm font-medium text-gray-600">Online + Offline Tələbələr</span>
-                        <div className="text-xs text-green-600 mt-1">🟢 Aktiv</div>
-                      </div>
-                      <span className="text-3xl font-bold text-green-600">42</span>
-                    </div>
-                    <div className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border-l-4 border-blue-500">
-                      <div>
-                        <span className="text-sm font-medium text-gray-600">Rəqəmsal Tapşırıqlar</span>
-                        <div className="text-xs text-blue-600 mt-1">📋 Yeni</div>
-                      </div>
-                      <span className="text-3xl font-bold text-blue-600">8</span>
-                    </div>
-                    <div className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border-l-4 border-orange-500">
-                      <div>
-                        <span className="text-sm font-medium text-gray-600">Hibrid Proqres</span>
-                        <div className="text-xs text-orange-600 mt-1">📊 AI Analiz</div>
-                      </div>
-                      <span className="text-3xl font-bold text-orange-600">87%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-          
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="order-2 lg:order-1">
-              <Card className="border-0 shadow-2xl overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white relative">
-                  <div className="absolute inset-0 bg-black/10"></div>
-                  <div className="relative flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <span className="font-bold text-lg">Tələbə Paneli</span>
-                      <div className="text-blue-100 text-sm">Hibrid Öyrənmə</div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6 bg-gradient-to-br from-white to-blue-50">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm border-l-4 border-green-500">
-                      <CheckCircle className="w-6 h-6 text-green-500" />
-                      <div className="flex-1">
-                        <span className="text-sm font-medium">JavaScript + Offline Labs</span>
-                        <div className="text-xs text-green-600 mt-1">Online + Offline tamamlandı</div>
-                      </div>
-                      <span className="text-lg font-bold text-green-600">100%</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm border-l-4 border-orange-500">
-                      <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-white rounded-full"></div>
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-sm font-medium">React + Hibrid Praktika</span>
-                        <div className="text-xs text-orange-600 mt-1">Canlı sinif + Online modullar</div>
-                      </div>
-                      <span className="text-lg font-bold text-orange-600">73%</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm border-l-4 border-gray-300">
-                      <div className="w-6 h-6 rounded-full bg-gray-300 border-2 border-gray-400"></div>
-                      <div className="flex-1">
-                        <span className="text-sm font-medium">FullStack + Final Layihə</span>
-                        <div className="text-xs text-gray-500 mt-1">Rəqəmsal takip sistemi ilə</div>
-                      </div>
-                      <span className="text-lg font-bold text-gray-500">0%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="order-1 lg:order-2">
-              <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                Tələbələr üçün Optimal Təcrübə
-              </h3>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Play className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">İnteraktiv Video Dərslər</h4>
-                    <p className="text-gray-600">
-                      HD keyfiyyətdə video dərslər, kod nümunələri və praktik tapşırıqlar.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="w-6 h-6 text-red-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Proqres İzləmə</h4>
-                    <p className="text-gray-600">
-                      Şəxsi proqresinizi izləyin və hədəflərinizə çatmaq üçün planlaşdırın.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Calendar className="w-6 h-6 text-indigo-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Elastik Cədvəl</h4>
-                    <p className="text-gray-600">
-                      İstədiyiniz vaxt və tempodə öyrənin, həftənin 7 günü əlçatan.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Statistics */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Rəqəmlərlə DevCode</h2>
-            <p className="text-xl text-gray-600">
-              Uğur hekayələrimiz rəqəmlərdə əks olunur
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Users className="w-10 h-10 text-white" />
+            {/* Offline Learning */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mb-6">
+                <MapPin className="w-8 h-8 text-orange-600" />
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">1,500+</div>
-              <div className="text-gray-600 font-medium">Məzun Tələbə</div>
-              <div className="text-sm text-gray-500 mt-1">Son 3 ildə</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Offline Sinif Təhsili</h3>
+              <ul className="space-y-3 text-gray-600">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Müasir kompüter laboratoriyaları</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Kiçik qruplar (maksimum 15 nəfər)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Üz-üzə mentorluq və dəstək</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Praktiki layihə inkişafı</span>
+                </li>
+              </ul>
             </div>
-            
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <BookOpen className="w-10 h-10 text-white" />
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">30+</div>
-              <div className="text-gray-600 font-medium">Proqramlaşdırma Kursu</div>
-              <div className="text-sm text-gray-500 mt-1">Müxtəlif səviyyələrdə</div>
-            </div>
-            
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Star className="w-10 h-10 text-white" />
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">4.9/5</div>
-              <div className="text-gray-600 font-medium">Tələbə Qiymətləndirməsi</div>
-              <div className="text-sm text-gray-500 mt-1">5000+ rəy əsasında</div>
-            </div>
-            
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-10 h-10 text-white" />
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">95%</div>
-              <div className="text-gray-600 font-medium">İş Tapma Nisbəti</div>
-              <div className="text-sm text-gray-500 mt-1">Məzuniyyətdən sonra 6 ay</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Featured Courses */}
-      <section className="py-20 bg-gradient-to-r from-gray-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-orange-100 text-orange-900">
-              🎓 Populyar Kurslar
-            </Badge>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Ən Sevilən Kurslarımız
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Sənaye ekspertləri tərəfindən hazırlanmış, real layihələrlə dolu kurslarımızla 
-              proqramlaşdırma səyahətinizə başlayın.
-            </p>
+            {/* Hybrid System */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                <Zap className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Hibrid Təhsil Modeli</h3>
+              <ul className="space-y-3 text-gray-600">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Online + Offline kombinasiyası</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Çevik cədvəl və fərdi yanaşma</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Rəqəmsal portfolyo yaradılması</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>İndustry sertifikatları</span>
+                </li>
+              </ul>
+            </div>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {courses.length > 0 ? (
-              courses.map((course: any) => (
-                <Card key={course.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-900">
-                        {course.level || 'Başlanğıc'}
-                      </Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                        <span className="text-sm text-gray-600">4.8</span>
-                      </div>
-                    </div>
-                    <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
-                      {course.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
-                      {course.description}
-                    </p>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Users className="w-4 h-4" />
-                        <span>120+ tələbə</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <BookOpen className="w-4 h-4" />
-                        <span>8 həftə</span>
-                      </div>
-                    </div>
-                    <Link href={`/course/${course.id}`}>
-                      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-                        Kursa Bax
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              // Placeholder courses when no data
-              Array.from({ length: 3 }).map((_, index) => (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-900">
-                        Başlanğıc
-                      </Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                        <span className="text-sm text-gray-600">4.8</span>
-                      </div>
-                    </div>
-                    <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
-                      {index === 0 && "JavaScript Fundamentals"}
-                      {index === 1 && "React Development"}
-                      {index === 2 && "Full-Stack Web Development"}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">
-                      {index === 0 && "JavaScript proqramlaşdırma dilinin əsaslarını öyrənin və müasir web development-ə giriş edin."}
-                      {index === 1 && "React kitabxanası ilə interaktiv web tətbiqləri hazırlamağı öyrənin."}
-                      {index === 2 && "Frontend və backend texnologiyaları ilə tam funksional web tətbiqləri yaradın."}
-                    </p>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Users className="w-4 h-4" />
-                        <span>120+ tələbə</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <BookOpen className="w-4 h-4" />
-                        <span>8 həftə</span>
-                      </div>
-                    </div>
-                    <Link href="/courses">
-                      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-                        Kursa Bax
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-          
-          <div className="text-center">
-            <Link href="/courses">
-              <Button size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-3">
-                Bütün Kurslara Bax
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
+
+          {/* LMS Admin Panel Features */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-white">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold mb-4">Güclü Admin Panel Sistemi</h3>
+              <p className="text-xl text-blue-100">Müəllimlər və adminlər üçün tam idarəetmə sistemi</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-semibold mb-2">Tələbə İdarəetməsi</h4>
+                <p className="text-sm text-blue-100">Qeydiyyat, progress izləmə, qiymətləndirmə</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-semibold mb-2">Kurs İdarəetməsi</h4>
+                <p className="text-sm text-blue-100">Online və offline kursların yaradılması</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Clock className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-semibold mb-2">Davamiyyət Sistemi</h4>
+                <p className="text-sm text-blue-100">Offline dərslər üçün davamiyyət izləmə</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-semibold mb-2">Analytics & Reports</h4>
+                <p className="text-sm text-blue-100">Detallı hesabatlar və statistikalar</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -542,60 +317,256 @@ export default function Landing() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Nəyə görə DevCode Academy?
-            </h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">Nə üçün DevCode Academy?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Müasir təhsil metodları və innovativ yanaşma ilə fərqlənən 
-              üstünlüklərimizi kəşf edin.
+              Azərbaycanda ən müasir texnologiyalar və innovativ təlim metodları ilə rəqəmsal təhsilin lideri
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center">
-              <CardHeader>
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-xl">Praktik Yanaşma</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  70% praktik, 30% nəzəri. Real layihələr üzərində işləyərək 
-                  öyrənin və portfolio yaradın.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid lg:grid-cols-3 gap-12">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Award className="w-10 h-10 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Sertifikatlaşdırma</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Beynəlxalq standartlara uyğun sertifikatlar və məzuniyyət diplomları. 
+                Həqiqi iş bazarında keçərli olan bilik və bacarıqlar.
+              </p>
+            </div>
             
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center">
-              <CardHeader>
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-green-600" />
-                </div>
-                <CardTitle className="text-xl">Kiçik Qruplar</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Maksimum 15 nəfərlik qruplarla hər tələbəyə fərdi diqqət 
-                  və optimal öyrənmə mühiti.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Users className="w-10 h-10 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Peşəkar Komanda</h3>
+              <p className="text-gray-600 leading-relaxed">
+                15+ il təcrübəli müəllimlər, industry ekspertləri və real layihə təcrübəsi olan 
+                proqramçılar tərəfindən hazırlanmış kurrikulum.
+              </p>
+            </div>
             
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center">
-              <CardHeader>
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-purple-600" />
-                </div>
-                <CardTitle className="text-xl">Karyera Dəstəyi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  CV hazırlama, müsahibə hazırlığı və iş yerləri ilə əlaqə 
-                  qurma dəstəyi.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Briefcase className="w-10 h-10 text-purple-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">İş Təminatı</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Kursları uğurla bitirən tələbələr üçün iş təminatı və karyera inkişafı dəstəyi. 
+                300+ əməkdaşlıq müqaviləsi olan şirkətlər.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Courses */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Populyar Kurslarımız</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              İndustry standartlarına uyğun, praktiki və real layihə əsaslı kurslar
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {courses.length > 0 ? (
+              courses.map((course: any) => (
+                <Card key={course.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-4">
+                      <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200">
+                        Aktiv
+                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="text-sm text-gray-600">4.8</span>
+                      </div>
+                    </div>
+                    <CardTitle className="text-xl leading-tight">{course.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-6 line-clamp-3">
+                      {course.description || "Bu kurs proqramlaşdırma sahəsində bilik və bacarıqlarınızı inkişaf etdirmək üçün nəzərdə tutulub."}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          <span>25 tələbə</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>12 həftə</span>
+                        </div>
+                      </div>
+                      <Link href={`/course-detail/${course.id}`}>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          Ətraflı
+                          <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <>
+                {/* Placeholder courses for demo */}
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-4">
+                      <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200">
+                        Aktiv
+                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="text-sm text-gray-600">4.9</span>
+                      </div>
+                    </div>
+                    <CardTitle className="text-xl leading-tight">Full-Stack JavaScript</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-6">
+                      React, Node.js və MongoDB istifadə edərək müasir web aplikasiyaları yaratmağı öyrənin.
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          <span>32 tələbə</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>16 həftə</span>
+                        </div>
+                      </div>
+                      <Link href="/courses">
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          Ətraflı
+                          <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-4">
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+                        Populyar
+                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="text-sm text-gray-600">4.8</span>
+                      </div>
+                    </div>
+                    <CardTitle className="text-xl leading-tight">Python & Data Science</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-6">
+                      Python ilə data analysis, machine learning və AI üzrə hərtərəfli təhsil.
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          <span>28 tələbə</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>14 həftə</span>
+                        </div>
+                      </div>
+                      <Link href="/courses">
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          Ətraflı
+                          <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-4">
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
+                        Yeni
+                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="text-sm text-gray-600">4.7</span>
+                      </div>
+                    </div>
+                    <CardTitle className="text-xl leading-tight">Mobile App Development</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-6">
+                      React Native ilə iOS və Android üçün native mobile aplikasiyalar yaradın.
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          <span>18 tələbə</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>12 həftə</span>
+                        </div>
+                      </div>
+                      <Link href="/courses">
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          Ətraflı
+                          <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+          </div>
+          
+          <div className="text-center">
+            <Link href="/courses">
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg">
+                Bütün Kursları Gör
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6">
+              Rəqəmsal Karyeranıza Bugündən Başlayın
+            </h2>
+            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+              DevCode Academy ailəsinə qoşulun və proqramlaşdırma sahəsində uğurlu karyera qurun. 
+              Ekspert müəllimlərlə bilikli, praktiki və real iş təcrübəsi əldə edin.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/courses">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Kursa Qeydiyyat
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg">
+                  <Users className="w-5 h-5 mr-2" />
+                  Əlaqə
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
