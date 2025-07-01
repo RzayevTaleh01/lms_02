@@ -460,7 +460,10 @@ export default function EnhancedLessonManagement({
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate multiple queries to ensure all views are updated
       queryClient.invalidateQueries({ queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/submissions'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/detailed-progress`] });
       toast({ title: "Tapşırıq düzəliş üçün qaytarıldı" });
     },
     onError: () => {
@@ -480,7 +483,10 @@ export default function EnhancedLessonManagement({
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate multiple queries to ensure all views are updated
       queryClient.invalidateQueries({ queryKey: [`/api/assignments/${selectedAssignment?.id}/submissions`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/submissions'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/detailed-progress`] });
       toast({ title: "Tapşırıq qiymətləndirildi" });
     },
     onError: () => {

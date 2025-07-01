@@ -82,13 +82,17 @@ export default function StudentCoursePage() {
   const { data: courseProgress } = useQuery({
     queryKey: ['/api/courses', id, 'detailed-progress'],
     queryFn: () => fetch(`/api/courses/${id}/detailed-progress`).then(r => r.json()),
-    enabled: !!id && !!user
+    enabled: !!id && !!user,
+    refetchInterval: 10000, // Poll every 10 seconds for progress updates
+    refetchIntervalInBackground: true
   });
 
-  // Fetch submissions
+  // Fetch submissions (with polling for real-time updates)
   const { data: submissions = [] } = useQuery({
     queryKey: ['/api/submissions'],
-    enabled: !!user
+    enabled: !!user,
+    refetchInterval: 5000, // Poll every 5 seconds for real-time updates
+    refetchIntervalInBackground: true
   });
 
   // Use detailed progress data for lesson progress  
