@@ -31,10 +31,6 @@ export default function StudentDashboard() {
     );
   }
 
-  // Debug enrollments data
-  console.log("Enrollments data:", enrollments);
-  console.log("First enrollment:", enrollments[0]);
-  
   const activeEnrollments = enrollments.filter((e: any) => (e.progress || 0) < 100);
   const completedCourses = enrollments.filter((e: any) => (e.progress || 0) === 100);
   const totalSubmissions = submissions.length;
@@ -43,11 +39,9 @@ export default function StudentDashboard() {
     ? gradedSubmissions.reduce((sum: number, s: any) => sum + (s.grade || 0), 0) / gradedSubmissions.length 
     : 0;
 
-  console.log("Active enrollments:", activeEnrollments);
-  console.log("Completed courses:", completedCourses);
-  
-  // Force show enrollments with course data  
-  const enrollmentsWithCourse = enrollments.filter((e: any) => e.course);
+  // Calculate attendance statistics
+  const totalCourses = enrollments.length;
+  const attendanceRate = totalCourses > 0 ? 85 : 0; // Mock attendance rate for now
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -89,21 +83,19 @@ export default function StudentDashboard() {
                 <p className="text-xs text-muted-foreground">
                   Hal-hazırda öyrəndiyiniz kurslar
                 </p>
-                <p className="text-xs text-red-500">
-                  Debug: Total enrollments: {enrollments.length}
-                </p>
+
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Tamamlanmış Kurslar</CardTitle>
-                <Trophy className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Davamiyyət</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{completedCourses.length}</div>
+                <div className="text-2xl font-bold">{attendanceRate}%</div>
                 <p className="text-xs text-muted-foreground">
-                  Uğurla bitirdiyiniz kurslar
+                  Dərslərə davamiyyət nisbəti
                 </p>
               </CardContent>
             </Card>
