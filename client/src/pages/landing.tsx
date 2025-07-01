@@ -7,9 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { 
   BookOpen, 
-  Users, 
+  Users,
+  Phone, 
   Award, 
-  TrendingUp, 
+  TrendingUp,
+  Target, 
   Monitor, 
   Calendar, 
   FileText, 
@@ -38,11 +40,21 @@ export default function Landing() {
       
       {/* Hero Section - Modern DevCode Style */}
       <section className="relative bg-gradient-to-br from-gray-900 via-orange-900 to-yellow-900 text-white py-24 lg:py-32 overflow-hidden">
-        {/* Background Animation */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-yellow-400/15 rounded-full blur-3xl animate-pulse delay-700"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-orange-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        {/* Enhanced Background Animation */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-20 w-96 h-96 bg-orange-500/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-yellow-400/25 rounded-full blur-3xl animate-pulse delay-700"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-orange-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          
+          {/* Floating Code Elements */}
+          <div className="absolute top-32 right-32 text-orange-300/30 text-6xl font-mono animate-bounce delay-500">{'{'}</div>
+          <div className="absolute bottom-32 left-32 text-yellow-300/30 text-6xl font-mono animate-bounce delay-1000">{'}'}</div>
+          <div className="absolute top-1/3 left-1/4 text-orange-200/40 text-4xl font-mono animate-pulse delay-300">&lt;/&gt;</div>
+          <div className="absolute bottom-1/3 right-1/4 text-yellow-200/40 text-4xl font-mono animate-pulse delay-800">( )</div>
+          
+          {/* Moving Geometric Shapes */}
+          <div className="absolute top-16 left-1/3 w-8 h-8 bg-orange-400/40 rotate-45 animate-spin"></div>
+          <div className="absolute bottom-16 right-1/3 w-6 h-6 bg-yellow-400/40 rounded-full animate-ping delay-500"></div>
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,33 +73,35 @@ export default function Landing() {
             </div>
             
             {/* Main Heading */}
-            <h2 className="text-3xl lg:text-6xl font-bold leading-tight mb-8 max-w-5xl mx-auto">
-              <span className="text-yellow-300">Rəqəmsal Karyeranıza</span>
+            <h2 className="text-3xl lg:text-6xl font-bold leading-tight mb-8 max-w-5xl mx-auto animate-fade-in">
+              <span className="text-white drop-shadow-lg">Proqramlaşdırma</span>
               <br className="hidden lg:block" />
-              <span className="bg-gradient-to-r from-orange-300 to-yellow-200 bg-clip-text text-transparent">
-                Bugündən Başlayın
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent drop-shadow-lg">
+                Dünyasında Liderik
               </span>
             </h2>
             
             {/* Description */}
-            <p className="text-xl lg:text-2xl text-orange-100 mb-12 max-w-4xl mx-auto leading-relaxed">
-              DevCode Academy ilə proqramlaşdırma dünyasına addım atın. 
-              <strong className="text-yellow-200">0-dan Profesional səviyyəyə</strong> qədər yolculuğunuzu bizimlə keçin və 
-              <strong className="text-orange-200">iş təminatı ilə karyeranıza başlayın</strong>.
+            <p className="text-xl lg:text-2xl text-gray-100 mb-12 max-w-4xl mx-auto leading-relaxed animate-slide-up">
+              DevCode Academy ilə texnologiya sektorunda karyeranızı qurun. 
+              <strong className="text-yellow-300">Sıfırdan mütəxəssis səviyyəyə</strong> qədər tam təhsil proqramı və 
+              <strong className="text-orange-300">100% iş təminatı</strong> ilə gələcəyinizi təmin edin.
             </p>
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Link href="/courses">
-                <Button size="lg" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 text-xl font-bold rounded-xl shadow-2xl shadow-orange-500/25 transform hover:scale-105 transition-all">
-                  <BookOpen className="w-6 h-6 mr-3" />
-                  Kurslara Başla
+              <Link href="/contact">
+                <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-12 py-4 text-xl font-bold rounded-xl shadow-2xl shadow-yellow-500/25 transform hover:scale-105 transition-all animate-pulse">
+                  <Phone className="w-6 h-6 mr-3" />
+                  Əlaqə
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white hover:text-blue-900 px-10 py-4 text-xl backdrop-blur-sm rounded-xl">
-                <Play className="w-6 h-6 mr-3" />
-                Demo İzlə
-              </Button>
+              <Link href="/courses">
+                <Button variant="outline" size="lg" className="border-2 border-yellow-300 text-yellow-100 hover:bg-yellow-500/20 px-10 py-4 text-xl font-bold rounded-xl backdrop-blur-sm transition-all hover:border-yellow-200">
+                  <BookOpen className="w-6 h-6 mr-3" />
+                  Kurslar
+                </Button>
+              </Link>
             </div>
             
             {/* Stats */}
@@ -247,30 +261,78 @@ export default function Landing() {
               </ul>
             </div>
 
-            {/* Admin Control Panel */}
+            {/* Visual Analytics & Progress */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-t-4 border-green-500">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center mb-6">
                 <Award className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Admin Paneli</h3>
-              <ul className="space-y-3 text-gray-600">
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Sistem İdarəetməsi</strong> - Bütün platformanın tam nəzarəti və idarəedilməsi</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>İstifadəçi Rolu</strong> - Admin, müəllim və tələbə rollarının təyin edilməsi</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Analytics Dashboard</strong> - Real-time statistikalar və performans analizi</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Sertifikat Sistemi</strong> - Avtomatik sertifikat yaratma və doğrulama</span>
-                </li>
-              </ul>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Vizual İrəliləyiş</h3>
+              
+              {/* Interactive Charts Simulation */}
+              <div className="space-y-6">
+                {/* Progress Bars */}
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        React & JavaScript
+                      </span>
+                      <span className="text-sm text-green-600 font-bold">85%</span>
+                    </div>
+                    <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full animate-float" style={{width: '85%'}}></div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                        Node.js Backend
+                      </span>
+                      <span className="text-sm text-blue-600 font-bold">72%</span>
+                    </div>
+                    <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full animate-float" style={{width: '72%', animationDelay: '0.5s'}}></div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                        Database Design
+                      </span>
+                      <span className="text-sm text-purple-600 font-bold">90%</span>
+                    </div>
+                    <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full animate-float" style={{width: '90%', animationDelay: '1s'}}></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Simple Chart Visualization */}
+                <div className="mt-6 bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-end justify-between h-20 gap-2">
+                    <div className="bg-orange-400 rounded animate-bounce" style={{height: '60%', width: '15px', animationDelay: '0s'}}></div>
+                    <div className="bg-blue-400 rounded animate-bounce" style={{height: '80%', width: '15px', animationDelay: '0.2s'}}></div>
+                    <div className="bg-green-400 rounded animate-bounce" style={{height: '45%', width: '15px', animationDelay: '0.4s'}}></div>
+                    <div className="bg-purple-400 rounded animate-bounce" style={{height: '70%', width: '15px', animationDelay: '0.6s'}}></div>
+                    <div className="bg-yellow-400 rounded animate-bounce" style={{height: '90%', width: '15px', animationDelay: '0.8s'}}></div>
+                  </div>
+                  <div className="flex justify-center mt-2">
+                    <span className="text-xs text-gray-500 font-medium">Real-time Statistikalar</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex items-center justify-center">
+                <div className="flex items-center gap-2 text-green-600">
+                  <Award className="w-5 h-5" />
+                  <span className="font-semibold">Ümumi irəliləyiş: 82%</span>
+                </div>
+              </div>
             </div>
           </div>
 
