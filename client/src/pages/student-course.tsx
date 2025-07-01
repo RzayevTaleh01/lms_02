@@ -1,4 +1,3 @@
-
 import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -226,7 +225,7 @@ export default function StudentCoursePage() {
 
   const getMaterialIcon = (material: any) => {
     const type = material.materialType?.toLowerCase() || material.type?.toLowerCase() || 'document';
-    
+
     switch (type) {
       case 'video':
         return <Video className="w-5 h-5 text-red-500" />;
@@ -269,7 +268,7 @@ export default function StudentCoursePage() {
 
   const handleSubmitAssignment = (assignment: any) => {
     const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
-    
+
     if (existingSubmission && existingSubmission.status === 'returned') {
       // Resubmit case
       setSubmissionForm({
@@ -281,7 +280,7 @@ export default function StudentCoursePage() {
       // New submission
       setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
     }
-    
+
     setSelectedAssignment(assignment);
     setSubmissionDialog(true);
   };
@@ -293,7 +292,7 @@ export default function StudentCoursePage() {
     }
 
     const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
-    
+
     if (existingSubmission && existingSubmission.feedback && existingSubmission.grade === null) {
       // Resubmit - əgər feedback var və qiymət yoxdursa
       resubmitAssignmentMutation.mutate({
@@ -330,7 +329,7 @@ export default function StudentCoursePage() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      
+
       <div className="flex-1 lg:ml-64 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6">
@@ -365,14 +364,14 @@ export default function StudentCoursePage() {
               <h2 className="font-semibold text-gray-900">Dərslər</h2>
               <p className="text-sm text-gray-500">{lessons.length} məzmun</p>
             </div>
-            
+
             <ScrollArea className="flex-1">
               <div className="p-2">
                 {lessons.map((lesson: any, index: number) => {
                   const isActive = selectedLesson?.id === lesson.id;
                   const lessonProgress = calculateLessonProgress(lesson.id);
                   const completed = isLessonCompleted(lesson.id);
-                  
+
                   return (
                     <div
                       key={lesson.id}
@@ -571,11 +570,14 @@ export default function StudentCoursePage() {
                           </div>
                         ) : (
                           <div className="space-y-4">
-                            {assignments.map((assignment: any) => {
-                              const studentSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
+                            {assignments.map((assignment) => {
+                              const studentSubmission = submissions?.find(
+                                (s: any) => s.assignmentId === assignment.id
+                              );
+
                               const isSubmitted = !!studentSubmission;
-                              const isGraded = studentSubmission?.grade !== null;
-                              const isReturned = studentSubmission?.feedback && studentSubmission?.grade === null;
+                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.grade !== undefined;
+                              const isReturned = isSubmitted && studentSubmission?.feedback && studentSubmission?.grade === null;
 
                               return (
                                 <Card key={assignment.id}>
@@ -634,7 +636,7 @@ export default function StudentCoursePage() {
                                             </Badge>
                                           )}
                                         </div>
-                                        
+
                                         <div className="space-y-2 text-sm">
                                           <div>
                                             <strong>Cavab:</strong>
@@ -662,7 +664,7 @@ export default function StudentCoursePage() {
                                           <div className="text-xs text-gray-500">
                                             Göndərilmə tarixi: {new Date(studentSubmission.submittedAt).toLocaleDateString('az-AZ')}
                                           </div>
-                                          
+
                                           {isGraded && studentSubmission.feedback && (
                                             <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
                                               <div className="text-sm font-medium text-blue-800 mb-1">Müəllim rəyi:</div>
@@ -748,7 +750,7 @@ export default function StudentCoursePage() {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="assignment-content">Tapşırıq Cavabı *</Label>
                 <div className="mt-2">
