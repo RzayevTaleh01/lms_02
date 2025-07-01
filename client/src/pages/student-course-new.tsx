@@ -1,4 +1,4 @@
-import { useParams } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -10,19 +10,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { 
   BookOpen, 
   Video, 
   FileText, 
+  Download, 
+  Upload, 
   Calendar, 
+  Clock,
   CheckCircle,
+  PlayCircle,
+  ChevronRight,
+  Award,
   Link2,
   Menu,
+  Home,
+  GraduationCap,
   ClipboardList,
+  User,
+  LogOut,
+  AlertCircle,
   ExternalLink,
   Send,
-  Edit,
-  File
+  Eye,
+  File,
+  Image,
+  Music,
+  Archive,
+  Edit
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
@@ -110,7 +128,9 @@ export default function StudentCourse() {
   const [activeTab, setActiveTab] = useState("content");
   const [assignmentContent, setAssignmentContent] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editingSubmissionId, setEditingSubmissionId] = useState<number | null>(null);
+  const [, navigate] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // API Queries
@@ -179,14 +199,15 @@ export default function StudentCourse() {
 
   // Submit assignment mutation
   const submitAssignmentMutation = useMutation({
-    mutationFn: async ({ assignmentId, content, githubUrl }: {
+    mutationFn: async ({ assignmentId, content, githubUrl, fileUrl }: {
       assignmentId: number;
       content: string;
       githubUrl?: string;
+      fileUrl?: string;
     }) => {
       return apiRequest(`/api/lesson-assignments/${assignmentId}/submissions`, {
         method: 'POST',
-        body: { content, githubUrl }
+        body: { content, githubUrl, fileUrl }
       });
     },
     onSuccess: () => {
@@ -194,6 +215,7 @@ export default function StudentCourse() {
       queryClient.invalidateQueries({ queryKey: ['/api/courses', courseId, 'detailed-progress'] });
       setAssignmentContent("");
       setGithubUrl("");
+      setSelectedFile(null);
       setEditingSubmissionId(null);
       toast({
         title: "Uğur!",
@@ -211,14 +233,15 @@ export default function StudentCourse() {
 
   // Resubmit assignment mutation
   const resubmitAssignmentMutation = useMutation({
-    mutationFn: async ({ submissionId, content, githubUrl }: {
+    mutationFn: async ({ submissionId, content, githubUrl, fileUrl }: {
       submissionId: number;
       content: string;
       githubUrl?: string;
+      fileUrl?: string;
     }) => {
       return apiRequest(`/api/submissions/${submissionId}/resubmit`, {
         method: 'PATCH',
-        body: { content, githubUrl }
+        body: { content, githubUrl, fileUrl }
       });
     },
     onSuccess: () => {
@@ -226,6 +249,7 @@ export default function StudentCourse() {
       queryClient.invalidateQueries({ queryKey: ['/api/courses', courseId, 'detailed-progress'] });
       setAssignmentContent("");
       setGithubUrl("");
+      setSelectedFile(null);
       setEditingSubmissionId(null);
       toast({
         title: "Uğur!",
@@ -253,6 +277,13 @@ export default function StudentCourse() {
     };
   };
 
+  // File upload handler
+  const handleFileUpload = async (file: File) => {
+    // For now, just set the file
+    setSelectedFile(file);
+    // TODO: Implement actual file upload to server
+  };
+
   // Submit assignment handler
   const handleSubmitAssignment = async (assignmentId: number) => {
     if (!assignmentContent.trim()) {
@@ -268,13 +299,15 @@ export default function StudentCourse() {
       await resubmitAssignmentMutation.mutateAsync({
         submissionId: editingSubmissionId,
         content: assignmentContent,
-        githubUrl: githubUrl || undefined
+        githubUrl: githubUrl || undefined,
+        fileUrl: selectedFile?.name || undefined
       });
     } else {
       await submitAssignmentMutation.mutateAsync({
         assignmentId,
         content: assignmentContent,
-        githubUrl: githubUrl || undefined
+        githubUrl: githubUrl || undefined,
+        fileUrl: selectedFile?.name || undefined
       });
     }
   };
@@ -295,6 +328,10 @@ export default function StudentCourse() {
   };
 
   // Navigation handlers
+  const handleLogout = () => {
+    window.location.href = '/api/auth/logout';
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
