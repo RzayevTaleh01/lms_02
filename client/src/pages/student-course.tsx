@@ -9,8 +9,6 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -35,20 +33,116 @@ import {
   AlertCircle,
   ExternalLink,
   Send,
-  Eye,
-  File,
-  Image,
-  Music,
-  Archive,
-  Edit
+  Eye
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { StudentSidebar } from "@/components/student-sidebar";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { Label } from "@/components/ui/label";
+
+const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const [location] = useLocation();
+  const { user, logout } = useAuth();
+
+  const menuItems = [
+    { icon: Home, label: "Ana Səhifə", href: "/student", exact: true },
+    { icon: GraduationCap, label: "Kurslarım", href: "/student/courses" },
+    { icon: ClipboardList, label: "Davamiyyət", href: "/student/attendance" },
+    { icon: ClipboardList, label: "Qiymətləndirmə", href: "/student/submissions" },
+    { icon: User, label: "Profil", href: "/student/profile" }
+  ];
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={cn(
+        "fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <Link href="/student" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">DA</span>
+              </div>
+              <span className="font-semibold text-gray-800">DevCode Academy</span>
+            </Link>
+          </div>
+
+          {/* User info */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-medium text-sm">
+                  {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                <Badge variant="secondary" className="text-xs mt-1">Tələbə Paneli</Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+            {menuItems.map((item) => {
+              const isActive = item.exact 
+                ? location === item.href
+                : location.startsWith(item.href);
+              
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-orange-100 text-orange-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  )}
+                  onClick={onClose}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-gray-200">
+            <Button
+              onClick={logout}
+              variant="ghost"
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Çıxış
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default function StudentCoursePage() {
   const { id } = useParams<{ id: string }>();
@@ -57,13 +151,6 @@ export default function StudentCoursePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("content");
-  const [submissionDialog, setSubmissionDialog] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
-  const [submissionForm, setSubmissionForm] = useState({
-    content: "",
-    githubUrl: "",
-    fileUrl: ""
-  });
 
   // Fetch course details
   const { data: course } = useQuery({
@@ -78,23 +165,34 @@ export default function StudentCoursePage() {
     enabled: !!id
   });
 
-  // Fetch course progress
-  const { data: courseProgress } = useQuery({
-    queryKey: ['/api/courses', id, 'detailed-progress'],
-    queryFn: () => fetch(`/api/courses/${id}/detailed-progress`).then(r => r.json()),
-    enabled: !!id && !!user
-  });
-
   // Fetch submissions
   const { data: submissions = [] } = useQuery({
     queryKey: ['/api/submissions'],
     enabled: !!user
   });
 
-  // Use detailed progress data for lesson progress  
-  const lessonProgress = courseProgress?.lessonDetails || [];
-
-
+  // Fetch lesson submissions for current lesson
+  const { data: lessonSubmissions = [] } = useQuery({
+    queryKey: ['/api/lessons', selectedLesson?.id, 'submissions'],
+    queryFn: async () => {
+      if (!selectedLesson?.id) return [];
+      
+      // Get all lesson assignments first
+      const assignmentsResponse = await fetch(`/api/lessons/${selectedLesson.id}/assignments`);
+      const assignments = await assignmentsResponse.json();
+      
+      // For each assignment, get submissions for current user
+      const submissionPromises = assignments.map(async (assignment: any) => {
+        const response = await fetch(`/api/assignments/${assignment.id}/submissions`);
+        const allSubmissions = await response.json();
+        return allSubmissions.filter((s: any) => s.studentId === user?.id);
+      });
+      
+      const submissionArrays = await Promise.all(submissionPromises);
+      return submissionArrays.flat();
+    },
+    enabled: !!selectedLesson?.id && !!user?.id
+  });
 
   // Fetch lesson materials when lesson is selected
   const { data: materials = [] } = useQuery({
@@ -110,91 +208,6 @@ export default function StudentCoursePage() {
     enabled: !!selectedLesson
   });
 
-  // Get material and assignment counts for current lesson
-  const getCurrentLessonMaterialCount = (lessonId: number) => {
-    if (selectedLesson?.id === lessonId) {
-      return materials.length;
-    }
-    return 0; // Default olaraq 0 göstər, real data yüklənəndə yenilənəcək
-  };
-
-  const getCurrentLessonAssignmentCount = (lessonId: number) => {
-    if (selectedLesson?.id === lessonId) {
-      return assignments.length;
-    }
-    return 0; // Default olaraq 0 göstər, real data yüklənəndə yenilənəcək
-  };
-
-  // Submit assignment mutation
-  const submitAssignmentMutation = useMutation({
-    mutationFn: async ({ assignmentId, content, githubUrl, fileUrl }: {
-      assignmentId: number;
-      content: string;
-      githubUrl?: string;
-      fileUrl?: string;
-    }) => {
-      return apiRequest("POST", `/api/lesson-assignments/${assignmentId}/submissions`, {
-        content,
-        githubUrl,
-        fileUrl,
-        studentId: user?.id
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
-      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
-      setSubmissionDialog(false);
-      setSelectedAssignment(null);
-      toast({ title: "Tapşırıq uğurla göndərildi!" });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.message || "Tapşırıq göndərilərkən xəta baş verdi";
-      toast({ title: errorMessage, variant: "destructive" });
-    }
-  });
-
-  // Resubmit assignment mutation
-  const resubmitAssignmentMutation = useMutation({
-    mutationFn: async ({ submissionId, content, githubUrl, fileUrl }: {
-      submissionId: number;
-      content: string;
-      githubUrl?: string;
-      fileUrl?: string;
-    }) => {
-      return apiRequest("PATCH", `/api/submissions/${submissionId}/resubmit`, {
-        content,
-        githubUrl,
-        fileUrl,
-        studentId: user?.id
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
-      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
-      setSubmissionDialog(false);
-      setSelectedAssignment(null);
-      toast({ title: "Tapşırıq yenidən göndərildi!" });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.message || "Tapşırıq yenidən göndərilərkən xəta baş verdi";
-      toast({ title: errorMessage, variant: "destructive" });
-    }
-  });
-
-  // Mark lesson as completed mutation
-  const markLessonCompleteMutation = useMutation({
-    mutationFn: async (lessonId: number) => {
-      return apiRequest("POST", `/api/lessons/${lessonId}/complete`, {
-        courseId: parseInt(id!)
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/courses', id, 'detailed-progress'] });
-      queryClient.invalidateQueries({ queryKey: ["/api/enrollments"] });
-      toast({ title: "Dərs tamamlandı!" });
-    }
-  });
-
   // Set first lesson as selected by default
   useEffect(() => {
     if (lessons.length > 0 && !selectedLesson) {
@@ -202,114 +215,14 @@ export default function StudentCoursePage() {
     }
   }, [lessons, selectedLesson]);
 
-  const isLessonCompleted = (lessonId: number) => {
-    if (!courseProgress?.lessonDetails) return false;
-    const lessonDetail = courseProgress.lessonDetails.find((detail: any) => detail.lessonId === lessonId);
-    return lessonDetail?.progressPercentage === 100 || false;
-  };
-
-  const calculateLessonProgress = (lessonId: number) => {
-    if (!courseProgress?.lessonDetails) return 0;
-    const lessonDetail = courseProgress.lessonDetails.find((detail: any) => detail.lessonId === lessonId);
-    return lessonDetail?.progressPercentage || 0;
-  };
-
   const calculateOverallProgress = () => {
-    return courseProgress?.overallProgress || 0;
+    if (lessons.length === 0) return 0;
+    return Math.round((lessons.filter((l: any) => l.completed).length / lessons.length) * 100);
   };
 
   const getVideoId = (url: string) => {
     const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
     return match ? match[1] : null;
-  };
-
-  const getMaterialIcon = (material: any) => {
-    const type = material.materialType?.toLowerCase() || material.type?.toLowerCase() || 'document';
-
-    switch (type) {
-      case 'video':
-        return <Video className="w-5 h-5 text-red-500" />;
-      case 'document':
-      case 'pdf':
-        return <FileText className="w-5 h-5 text-red-600" />;
-      case 'link':
-      case 'url':
-        return <Link2 className="w-5 h-5 text-blue-500" />;
-      case 'image':
-      case 'img':
-        return <Image className="w-5 h-5 text-green-500" />;
-      case 'audio':
-        return <Music className="w-5 h-5 text-purple-500" />;
-      case 'archive':
-      case 'zip':
-        return <Archive className="w-5 h-5 text-orange-500" />;
-      default:
-        return <File className="w-5 h-5 text-gray-500" />;
-    }
-  };
-
-  const handleMaterialClick = (material: any) => {
-    if (material.videoUrl) {
-      window.open(material.videoUrl, '_blank');
-    } else if (material.content) {
-      if (material.content.startsWith('http')) {
-        window.open(material.content, '_blank');
-      } else if (material.content.includes('.pdf') || material.content.includes('.doc')) {
-        window.open(material.content, '_blank');
-      }
-    }
-  };
-
-  const handleMarkLessonComplete = (lessonId: number) => {
-    if (!isLessonCompleted(lessonId)) {
-      markLessonCompleteMutation.mutate(lessonId);
-    }
-  };
-
-  const handleSubmitAssignment = (assignment: any) => {
-    const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
-
-    if (existingSubmission && existingSubmission.status === 'returned') {
-      // Resubmit case - populate form with existing data
-      setSubmissionForm({
-        content: existingSubmission.content || "",
-        githubUrl: existingSubmission.githubUrl || "",
-        fileUrl: existingSubmission.fileUrl || ""
-      });
-    } else {
-      // New submission
-      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
-    }
-
-    setSelectedAssignment(assignment);
-    setSubmissionDialog(true);
-  };
-
-  const submitAssignment = () => {
-    if (!submissionForm.content.trim()) {
-      toast({ title: "Tapşırıq məzmunu tələb olunur", variant: "destructive" });
-      return;
-    }
-
-    const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
-
-    if (existingSubmission && existingSubmission.status === 'returned') {
-      // Resubmit - əgər status 'returned' isə
-      resubmitAssignmentMutation.mutate({
-        submissionId: existingSubmission.id,
-        content: submissionForm.content,
-        githubUrl: submissionForm.githubUrl,
-        fileUrl: submissionForm.fileUrl
-      });
-    } else {
-      // New submission
-      submitAssignmentMutation.mutate({
-        assignmentId: selectedAssignment.id,
-        content: submissionForm.content,
-        githubUrl: submissionForm.githubUrl,
-        fileUrl: submissionForm.fileUrl
-      });
-    }
   };
 
   if (!course) {
@@ -327,9 +240,9 @@ export default function StudentCoursePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="flex h-screen bg-gray-50">
       <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-
+      
       <div className="flex-1 lg:ml-64 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6">
@@ -344,7 +257,7 @@ export default function StudentCoursePage() {
                 <Menu size={20} />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{course?.title || 'Kurs'}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
                 <p className="text-gray-600 mt-1">Kurs Məzmunu</p>
               </div>
             </div>
@@ -364,14 +277,12 @@ export default function StudentCoursePage() {
               <h2 className="font-semibold text-gray-900">Dərslər</h2>
               <p className="text-sm text-gray-500">{lessons.length} məzmun</p>
             </div>
-
+            
             <ScrollArea className="flex-1">
               <div className="p-2">
                 {lessons.map((lesson: any, index: number) => {
                   const isActive = selectedLesson?.id === lesson.id;
-                  const lessonProgress = calculateLessonProgress(lesson.id);
-                  const completed = isLessonCompleted(lesson.id);
-
+                  
                   return (
                     <div
                       key={lesson.id}
@@ -379,23 +290,19 @@ export default function StudentCoursePage() {
                         "p-4 rounded-lg cursor-pointer transition-colors mb-2",
                         isActive ? "bg-orange-50 border border-orange-200" : "hover:bg-gray-50"
                       )}
-                      onClick={() => {
-                        setSelectedLesson(lesson);
-                        // Dərs seçiləndə həmişə completed kimi işarələ
-                        handleMarkLessonComplete(lesson.id);
-                      }}
+                      onClick={() => setSelectedLesson(lesson)}
                     >
                       <div className="flex items-start space-x-3">
                         <div className="flex-shrink-0 mt-1">
                           <div className={cn(
                             "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium",
-                            lessonProgress === 100
+                            lesson.completed 
                               ? "bg-green-100 text-green-700"
                               : isActive 
                                 ? "bg-orange-100 text-orange-700"
                                 : "bg-gray-100 text-gray-600"
                           )}>
-                            {lessonProgress === 100 ? <CheckCircle className="w-4 h-4" /> : index + 1}
+                            {lesson.completed ? <CheckCircle className="w-4 h-4" /> : index + 1}
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -405,18 +312,8 @@ export default function StudentCoursePage() {
                           <div className="flex items-center space-x-2 mt-1">
                             <Clock className="w-3 h-3 text-gray-400" />
                             <span className="text-xs text-gray-500">
-                              {lesson.duration || 0} dəqiqə
+                              {lesson.duration || 0} həftə dəqiqə
                             </span>
-                          </div>
-                          <div className="mt-2">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs text-gray-500">Tərəqqi</span>
-                              <span className="text-xs font-medium text-gray-700">{lessonProgress}%</span>
-                            </div>
-                            <Progress 
-                              value={lessonProgress} 
-                              className="h-1.5" 
-                            />
                           </div>
                         </div>
                         {isActive && (
@@ -530,28 +427,24 @@ export default function StudentCoursePage() {
                         ) : (
                           <div className="space-y-4">
                             {materials.map((material: any) => (
-                              <Card key={material.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                                <CardContent className="p-4" onClick={() => handleMaterialClick(material)}>
+                              <Card key={material.id}>
+                                <CardContent className="p-4">
                                   <div className="flex items-start justify-between">
-                                    <div className="flex items-start space-x-3 flex-1">
-                                      {getMaterialIcon(material)}
-                                      <div className="flex-1">
-                                        <h4 className="font-medium">{material.title}</h4>
-                                        {material.description && (
-                                          <p className="text-sm text-gray-600 mt-1">{material.description}</p>
-                                        )}
-                                        <Badge variant="secondary" className="mt-2">
-                                          {material.materialType || material.type || 'Sənəd'}
-                                        </Badge>
-                                      </div>
+                                    <div className="flex-1">
+                                      <h4 className="font-medium">{material.title}</h4>
+                                      <p className="text-sm text-gray-600 mt-1">{material.description}</p>
+                                      <Badge variant="secondary" className="mt-2">
+                                        {material.type}
+                                      </Badge>
                                     </div>
-                                    <Button variant="outline" size="sm" onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleMaterialClick(material);
-                                    }}>
-                                      <ExternalLink className="w-4 h-4 mr-2" />
-                                      Aç
-                                    </Button>
+                                    {material.fileUrl && (
+                                      <Button variant="outline" size="sm" asChild>
+                                        <a href={material.fileUrl} target="_blank" rel="noopener noreferrer">
+                                          <ExternalLink className="w-4 h-4 mr-2" />
+                                          Aç
+                                        </a>
+                                      </Button>
+                                    )}
                                   </div>
                                 </CardContent>
                               </Card>
@@ -570,16 +463,11 @@ export default function StudentCoursePage() {
                           </div>
                         ) : (
                           <div className="space-y-4">
-                            {assignments.map((assignment) => {
-                              const studentSubmission = submissions?.find(
-                                (s: any) => s.assignmentId === assignment.id
-                              );
-
+                            {assignments.map((assignment: any) => {
+                              const studentSubmission = lessonSubmissions.find((s: any) => s.assignmentId === assignment.id);
                               const isSubmitted = !!studentSubmission;
-                              const isGraded = isSubmitted && studentSubmission?.grade !== null;
-                              const isReturned = isSubmitted && studentSubmission?.status === 'returned';
-                              const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
-                              const isPending = isSubmitted && !isGraded && !isReturned && !isResubmitted;</old_str>
+                              const isGraded = studentSubmission?.grade !== null;
+                              const isReturned = studentSubmission?.status === 'returned';
 
                               return (
                                 <Card key={assignment.id}>
@@ -593,70 +481,29 @@ export default function StudentCoursePage() {
                                         />
                                       </div>
                                       <div className="flex flex-col items-end space-y-2">
-                                        <Badge variant={
-                                          isReturned ? "destructive" : 
-                                          isGraded ? "default" : 
-                                          isResubmitted ? "secondary" : 
-                                          isPending ? "secondary" : 
-                                          "outline"
-                                        }>
-                                          {isReturned ? "Düzəliş Tələb Olunur" : 
-                                           isGraded ? "Qiymətləndirilib" : 
-                                           isResubmitted ? "Yenidən Göndərilib" :
-                                           isPending ? "Göndərilib" : "Gözləyir"}
-                                        </Badge></old_str>
+                                        <Badge variant={isSubmitted ? (isGraded ? "default" : "secondary") : "destructive"}>
+                                          {isReturned ? "Qaytarılıb" : isGraded ? "Qiymətləndirilib" : isSubmitted ? "Göndərilib" : "Gözləyir"}
+                                        </Badge>
                                         {assignment.dueDate && (
                                           <div className="text-xs text-gray-500 flex items-center">
                                             <Calendar className="w-3 h-3 mr-1" />
                                             {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
                                           </div>
                                         )}
-                                        <div className="text-xs text-gray-500 flex items-center">
-                                          <Award className="w-3 h-3 mr-1" />
-                                          Maksimum: {assignment.maxPoints} bal
-                                        </div>
                                       </div>
                                     </div>
                                   </CardHeader>
                                   <CardContent>
                                     {isSubmitted && studentSubmission ? (
-                                      <div className={cn(
-                                        "border rounded-lg p-4",
-                                        isReturned ? "bg-red-50 border-red-200" : 
-                                        isGraded ? "bg-green-50 border-green-200" : 
-                                        "bg-blue-50 border-blue-200"
-                                      )}></old_str>
+                                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                                         <div className="flex items-center space-x-2 mb-3">
-                                          {isReturned ? (
-                                            <AlertCircle className="w-4 h-4 text-red-600" />
-                                          ) : (
-                                            <CheckCircle className={cn(
-                                              "w-4 h-4",
-                                              isGraded ? "text-green-600" : "text-blue-600"
-                                            )} />
-                                          )}
-                                          <span className={cn(
-                                            "text-sm font-medium",
-                                            isReturned ? "text-red-800" : 
-                                            isGraded ? "text-green-800" : 
-                                            "text-blue-800"
-                                          )}>
-                                            {isReturned ? "Düzəliş üçün qaytarılıb" : isGraded ? "Qiymətləndirilib" : "Tapşırıq göndərilib"}
-                                          </span></old_str>
-                                          {isGraded && (
-                                            <Badge variant="outline" className="ml-auto text-lg px-3 py-1">
-                                              {studentSubmission.grade}/{assignment.maxPoints} bal
-                                            </Badge>
-                                          )}
+                                          <CheckCircle className="w-4 h-4 text-green-600" />
+                                          <span className="text-sm font-medium text-green-800">Tapşırıq göndərilib</span>
                                         </div>
-
+                                        
                                         <div className="space-y-2 text-sm">
                                           <div>
-                                            <strong>Cavab:</strong>
-                                            <div 
-                                              className="mt-1 prose prose-sm max-w-none"
-                                              dangerouslySetInnerHTML={{ __html: studentSubmission.content }}
-                                            />
+                                            <strong>Cavab:</strong> {studentSubmission.content}
                                           </div>
                                           {studentSubmission.githubUrl && (
                                             <div>
@@ -666,52 +513,26 @@ export default function StudentCoursePage() {
                                               </a>
                                             </div>
                                           )}
-                                          {studentSubmission.fileUrl && (
-                                            <div>
-                                              <strong>Fayl:</strong> 
-                                              <a href={studentSubmission.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
-                                                {studentSubmission.fileUrl}
-                                              </a>
-                                            </div>
-                                          )}
                                           <div className="text-xs text-gray-500">
                                             Göndərilmə tarixi: {new Date(studentSubmission.submittedAt).toLocaleDateString('az-AZ')}
                                           </div>
-
+                                          
                                           {isGraded && studentSubmission.feedback && (
                                             <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
                                               <div className="text-sm font-medium text-blue-800 mb-1">Müəllim rəyi:</div>
                                               <div className="text-sm text-blue-700">{studentSubmission.feedback}</div>
                                             </div>
                                           )}
-
-                                          {isReturned && studentSubmission.feedback && (
-                                            <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">
-                                              <div className="text-sm font-medium text-red-800 mb-1">Düzəliş tələbi:</div>
-                                              <div className="text-sm text-red-700">{studentSubmission.feedback}</div>
-                                            </div>
-                                          )}</old_str>
                                         </div>
-
-                                        {isReturned && (
-                                          <div className="mt-4">
-                                            <Button 
-                                              onClick={() => handleSubmitAssignment(assignment)}
-                                              className="bg-orange-500 hover:bg-orange-600"
-                                            >
-                                              <Edit className="w-4 h-4 mr-2" />
-                                              Düzəliş Et
-                                            </Button>
-                                          </div>
-                                        )}</old_str>
                                       </div>
                                     ) : (
                                       <div className="text-center py-8">
                                         <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                                         <p className="text-gray-500 mb-4">Tapşırığı hələ göndərməmisiniz</p>
-                                        <Button onClick={() => handleSubmitAssignment(assignment)}>
-                                          <Send className="w-4 h-4 mr-2" />
-                                          Tapşırığı Göndər
+                                        <Button asChild>
+                                          <Link href={`/student/assignments/${assignment.id}`}>
+                                            Tapşırığı Göndər
+                                          </Link>
                                         </Button>
                                       </div>
                                     )}
@@ -730,160 +551,6 @@ export default function StudentCoursePage() {
           </div>
         </div>
       </div>
-
-      {/* Assignment Submission Dialog */}
-      <Dialog open={submissionDialog} onOpenChange={setSubmissionDialog}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned') 
-                ? "Tapşırığı Düzəliş Et" 
-                : "Tapşırığı Göndər"
-              }
-            </DialogTitle>
-          </DialogHeader>
-          {selectedAssignment && (
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium">{selectedAssignment.title}</h4>
-                <div 
-                  className="text-sm text-gray-600 mt-1 prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: selectedAssignment.description }}
-                />
-                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                  {selectedAssignment.dueDate && (
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>Son tarix: {new Date(selectedAssignment.dueDate).toLocaleDateString('az-AZ')}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center space-x-1">
-                    <Award className="w-4 h-4" />
-                    <span>Maksimum: {selectedAssignment.maxPoints} bal</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Show previous submission and feedback if exists */}
-              {(() => {
-                const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
-                if (existingSubmission && existingSubmission.status === 'returned') {
-                  return (
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <AlertCircle className="w-4 h-4 text-orange-600" />
-                        <span className="text-sm font-medium text-orange-800">Əvvəlki cavabınız və müəllim rəyi</span>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <Label className="text-sm font-medium text-orange-800">Əvvəlki cavabınız:</Label>
-                          <div 
-                            className="mt-1 p-3 bg-white border border-orange-200 rounded prose prose-sm max-w-none"
-                            dangerouslySetInnerHTML={{ __html: existingSubmission.content }}
-                          />
-                        </div>
-                        
-                        {existingSubmission.githubUrl && (
-                          <div>
-                            <Label className="text-sm font-medium text-orange-800">GitHub:</Label>
-                            <div className="mt-1 p-2 bg-white border border-orange-200 rounded">
-                              <a href={existingSubmission.githubUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
-                                {existingSubmission.githubUrl}
-                              </a>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {existingSubmission.fileUrl && (
-                          <div>
-                            <Label className="text-sm font-medium text-orange-800">Fayl:</Label>
-                            <div className="mt-1 p-2 bg-white border border-orange-200 rounded">
-                              <a href={existingSubmission.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
-                                {existingSubmission.fileUrl}
-                              </a>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {existingSubmission.feedback && (
-                          <div>
-                            <Label className="text-sm font-medium text-orange-800">Müəllim rəyi:</Label>
-                            <div className="mt-1 p-3 bg-red-50 border border-red-200 rounded">
-                              <p className="text-sm text-red-700">{existingSubmission.feedback}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              })()}
-
-              <div>
-                <Label htmlFor="assignment-content">Tapşırıq Cavabı *</Label>
-                <div className="mt-2">
-                  <ReactQuill
-                    theme="snow"
-                    value={submissionForm.content}
-                    onChange={(content) => setSubmissionForm({...submissionForm, content})}
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link', 'blockquote', 'code'],
-                        ['clean']
-                      ]
-                    }}
-                    style={{ height: '200px', marginBottom: '50px' }}
-                    placeholder="Tapşırığın cavabını yazın..."
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="assignment-github">GitHub Linki (İstəyə bağlı)</Label>
-                <Input
-                  id="assignment-github"
-                  value={submissionForm.githubUrl}
-                  onChange={(e) => setSubmissionForm({...submissionForm, githubUrl: e.target.value})}
-                  placeholder="https://github.com/..."
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="assignment-file">Fayl Linki (İstəyə bağlı)</Label>
-                <Input
-                  id="assignment-file"
-                  value={submissionForm.fileUrl}
-                  onChange={(e) => setSubmissionForm({...submissionForm, fileUrl: e.target.value})}
-                  placeholder="Fayl linki..."
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setSubmissionDialog(false)}>
-                  Ləğv Et
-                </Button>
-                <Button 
-                  onClick={submitAssignment}
-                  disabled={!submissionForm.content.trim() || submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending}
-                >
-                  {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
-                    'Göndərilir...' : 
-                    (selectedAssignment && submissions.find(s => s.assignmentId === selectedAssignment.id && s.status === 'returned')
-                      ? 'Düzəliş Et və Yenidən Göndər' 
-                      : 'Göndər'
-                    )
-                  }
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
