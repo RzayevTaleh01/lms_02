@@ -576,7 +576,7 @@ export default function StudentCoursePage() {
                               );
 
                               const isSubmitted = !!studentSubmission;
-                              const isGraded = isSubmitted && studentSubmission?.grade !== null && studentSubmission?.status === 'graded';
+                              const isGraded = isSubmitted && studentSubmission?.grade !== null;
                               const isReturned = isSubmitted && studentSubmission?.status === 'returned';
                               const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
                               const isPending = isSubmitted && !isGraded && !isReturned && !isResubmitted;
@@ -600,7 +600,7 @@ export default function StudentCoursePage() {
                                           isResubmitted ? "secondary" : 
                                           "outline"
                                         }>
-                                          {!isSubmitted ? "Göndərilməyib" :
+                                          {!isSubmitted ? "Gözləyir" :
                                            isReturned ? "Düzəliş Tələb Olunur" : 
                                            isGraded ? "Qiymətləndirilib" : 
                                            isResubmitted ? "Yenidən Göndərilib" :
@@ -629,16 +629,13 @@ export default function StudentCoursePage() {
                                         "bg-blue-50 border-blue-200"
                                       )}>
                                         <div className="flex items-center space-x-2 mb-3">
-                                          {isReturned ? (
-                                            <AlertCircle className="w-4 h-4 text-red-600" />
-                                          ) : (
-                                            <CheckCircle className={cn(
-                                              "w-4 h-4",
-                                              isGraded ? "text-green-600" : 
-                                              isResubmitted ? "text-yellow-600" :
-                                              "text-blue-600"
-                                            )} />
-                                          )}
+                                          <CheckCircle className={cn(
+                                            "w-4 h-4",
+                                            isGraded ? "text-green-600" : 
+                                            isReturned ? "text-red-600" : 
+                                            isResubmitted ? "text-yellow-600" :
+                                            "text-blue-600"
+                                          )} />
                                           <span className={cn(
                                             "text-sm font-medium",
                                             isGraded ? "text-green-800" : 
@@ -646,7 +643,7 @@ export default function StudentCoursePage() {
                                             isResubmitted ? "text-yellow-800" :
                                             "text-blue-800"
                                           )}>
-                                            {isReturned ? "Düzəliş üçün qaytarılıb - Yenidən göndərməlisiniz" : 
+                                            {isReturned ? "Düzəliş üçün qaytarılıb" : 
                                              isGraded ? "Qiymətləndirilib" : 
                                              isResubmitted ? "Yenidən göndərilib" :
                                              "Qiymətləndirmə gözləyir"}
