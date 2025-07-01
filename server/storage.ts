@@ -827,29 +827,107 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateCourseProgress(courseId: number, studentId: string): Promise<void> {
-    // Get total lessons for this course
-    const totalLessons = await db.select({ count: count() })
-      .from(lessons)
-      .where(eq(lessons.courseId, courseId));
+    // Get all lessons for this course
+    const courseLessons = await db.select({
+      id: lessons.id,
+      title: lessons.title
+    })
+    .from(lessons)
+    .where(eq(lessons.courseId, courseId))
+    .orderBy(asc(lessons.orderIndex));
 
-    // Get completed lessons for this student
-    const completedLessons = await db.select({ count: count() })
+    if (courseLessons.length === 0) {
+      // No lessons in course, set progress to 0
+      await db.update(enrollments)
+        .set({
+          progress: 0,
+          completedAt: null
+        })
+        .where(and(
+          eq(enrollments.courseId, courseId),
+          eq(enrollments.studentId, studentId)
+        ));
+      return;
+    }
+
+    // Get lesson progress data
+    const lessonProgressData = await db.select()
       .from(lessonProgress)
       .where(and(
         eq(lessonProgress.courseId, courseId),
-        eq(lessonProgress.studentId, studentId),
-        eq(lessonProgress.isCompleted, true)
+        eq(lessonProgress.studentId, studentId)
       ));
 
-    const total = totalLessons[0]?.count || 0;
-    const completed = completedLessons[0]?.count || 0;
-    const progressPercentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+    // Get lesson assignments for graded assignments
+    const lessonAssignments = await db.select({
+      lessonId: lessonAssignments.lessonId,
+      id: lessonAssignments.id
+    })
+    .from(lessonAssignments)
+    .innerJoin(lessons, eq(lessonAssignments.lessonId, lessons.id))
+    .where(eq(lessons.courseId, courseId));
+
+    // Get submissions for lesson assignments
+    const assignmentSubmissions = await db.select({
+      assignmentId: submissions.assignmentId,
+      grade: submissions.grade,
+      isLessonAssignment: sql<boolean>`true`
+    })
+    .from(submissions)
+    .innerJoin(lessonAssignments, eq(submissions.assignmentId, lessonAssignments.id))
+    .innerJoin(lessons, eq(lessonAssignments.lessonId, lessons.id))
+    .where(and(
+      eq(lessons.courseId, courseId),
+      eq(submissions.studentId, studentId),
+      isNotNull(submissions.grade)
+    ));
+
+    let totalProgressPoints = 0;
+    let earnedProgressPoints = 0;
+
+    // Calculate progress for each lesson (50% view + 50% assignments)
+    for (const lesson of courseLessons) {
+      // Lesson view progress (50% of lesson progress)
+      const lessonViewProgress = lessonProgressData.find(lp => lp.lessonId === lesson.id);
+      const isLessonViewed = lessonViewProgress?.isCompleted || false;
+      
+      // Lesson assignments progress (50% of lesson progress)
+      const lessonAssignmentIds = lessonAssignments
+        .filter(la => la.lessonId === lesson.id)
+        .map(la => la.id);
+      
+      const completedAssignments = assignmentSubmissions.filter(as => 
+        lessonAssignmentIds.includes(as.assignmentId)
+      );
+
+      let lessonProgress = 0;
+      
+      if (lessonAssignmentIds.length === 0) {
+        // No assignments, progress based only on lesson view
+        lessonProgress = isLessonViewed ? 100 : 0;
+      } else {
+        // Has assignments: 50% view + 50% assignments
+        const viewPoints = isLessonViewed ? 50 : 0;
+        const assignmentPoints = lessonAssignmentIds.length > 0 
+          ? (completedAssignments.length / lessonAssignmentIds.length) * 50 
+          : 0;
+        lessonProgress = viewPoints + assignmentPoints;
+      }
+
+      totalProgressPoints += 100;
+      earnedProgressPoints += lessonProgress;
+    }
+
+    // Calculate overall course progress
+    const overallProgress = totalProgressPoints > 0 
+      ? Math.round((earnedProgressPoints / totalProgressPoints) * 100) 
+      : 0;
 
     // Update enrollment progress
     await db.update(enrollments)
       .set({
-        progress: progressPercentage,
-        completedAt: progressPercentage === 100 ? new Date() : null
+        progress: overallProgress,
+        completedAt: overallProgress === 100 ? new Date() : null
       })
       .where(and(
         eq(enrollments.courseId, courseId),

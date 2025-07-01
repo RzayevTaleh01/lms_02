@@ -877,8 +877,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/courses/:courseId/progress', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       const courseId = parseInt(req.params.courseId);
-      const progress = await storage.getLessonProgress(req.user!.id, courseId);
-      res.json(progress);
+      const studentId = req.user!.id;
+
+      // Get course lessons
+      const lessons = await storage.getLessonsByCourse(courseId);
+      
+      // Get lesson progress data
+      const lessonProgressData = await storage.getLessonProgress(studentId, courseId);
+      
+      // Get lesson assignments
+      const courseAssignments = await db.select({
+        id: lessonAssignments.id,
+        lessonId: lessonAssignments.lessonId,
+        title: lessonAssignments.title,
+        description: lessonAssignments.description,
+        points: lessonAssignments.points
+      })
+      .from(lessonAssignments)
+      .innerJoin(lessons, eq(lessonAssignments.lessonId, lessons.id))
+      .where(eq(lessons.courseId, courseId));
+
+      // Get assignment submissions
+      const assignmentSubmissions = await db.select({
+        assignmentId: submissions.assignmentId,
+        grade: submissions.grade,
+        feedback: submissions.feedback,
+        submittedAt: submissions.submittedAt,
+        gradedAt: submissions.gradedAt
+      })
+      .from(submissions)
+      .innerJoin(lessonAssignments, eq(submissions.assignmentId, lessonAssignments.id))
+      .innerJoin(lessons, eq(lessonAssignments.lessonId, lessons.id))
+      .where(and(
+        eq(lessons.courseId, courseId),
+        eq(submissions.studentId, studentId)
+      ));
+
+      // Calculate detailed progress for each lesson
+      const detailedProgress = lessons.map(lesson => {
+        const lessonProgress = lessonProgressData.find((lp: any) => lp.lessonId === lesson.id);
+        const isLessonViewed = lessonProgress?.isCompleted || false;
+        
+        const assignments = courseAssignments.filter(la => la.lessonId === lesson.id);
+        const completedAssignments = assignments.filter(assignment => {
+          const submission = assignmentSubmissions.find(as => as.assignmentId === assignment.id);
+          return submission && submission.grade !== null;
+        });
+
+        let lessonProgressPercentage = 0;
+        if (assignments.length === 0) {
+          lessonProgressPercentage = isLessonViewed ? 100 : 0;
+        } else {
+          const viewPoints = isLessonViewed ? 50 : 0;
+          const assignmentPoints = assignments.length > 0 
+            ? (completedAssignments.length / assignments.length) * 50 
+            : 0;
+          lessonProgressPercentage = Math.round(viewPoints + assignmentPoints);
+        }
+
+        return {
+          lessonId: lesson.id,
+          lessonTitle: lesson.title,
+          isViewed: isLessonViewed,
+          totalAssignments: assignments.length,
+          completedAssignments: completedAssignments.length,
+          progressPercentage: lessonProgressPercentage,
+          viewedAt: lessonProgress?.completedAt,
+          assignments: assignments.map(assignment => {
+            const submission = assignmentSubmissions.find(as => as.assignmentId === assignment.id);
+            return {
+              id: assignment.id,
+              title: assignment.title,
+              points: assignment.points,
+              isCompleted: submission && submission.grade !== null,
+              grade: submission?.grade,
+              submittedAt: submission?.submittedAt,
+              gradedAt: submission?.gradedAt
+            };
+          })
+        };
+      });
+
+      // Calculate overall course progress
+      const totalLessons = lessons.length;
+      const totalProgressPoints = totalLessons * 100;
+      const earnedProgressPoints = detailedProgress.reduce((sum, lesson) => sum + lesson.progressPercentage, 0);
+      const overallProgress = totalLessons > 0 
+        ? Math.round((earnedProgressPoints / totalProgressPoints) * 100) 
+        : 0;
+
+      // Update course progress in database
+      await storage.updateCourseProgress(courseId, studentId);
+
+      res.json({
+        courseId,
+        overallProgress,
+        totalLessons,
+        lessonDetails: detailedProgress
+      });
     } catch (error) {
       console.error('Error fetching lesson progress:', error);
       res.status(500).json({ message: 'Failed to fetch lesson progress' });

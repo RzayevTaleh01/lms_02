@@ -79,6 +79,13 @@ export default function StudentCoursePage() {
     enabled: !!id
   });
 
+  // Fetch course progress
+  const { data: courseProgress } = useQuery({
+    queryKey: ['/api/courses', id, 'detailed-progress'],
+    queryFn: () => fetch(`/api/courses/${id}/detailed-progress`).then(r => r.json()),
+    enabled: !!id && !!user
+  });
+
   // Fetch submissions
   const { data: submissions = [] } = useQuery({
     queryKey: ['/api/submissions'],
@@ -90,6 +97,8 @@ export default function StudentCoursePage() {
     queryKey: [`/api/courses/${id}/progress`],
     enabled: !!id && !!user
   });
+
+
 
   // Fetch lesson materials when lesson is selected
   const { data: materials = [] } = useQuery({
@@ -198,49 +207,19 @@ export default function StudentCoursePage() {
   }, [lessons, selectedLesson]);
 
   const isLessonCompleted = (lessonId: number) => {
-    return lessonProgress.some((progress: any) => 
-      progress.lessonId === lessonId && progress.isCompleted
-    );
+    if (!courseProgress?.lessonDetails) return false;
+    const lessonDetail = courseProgress.lessonDetails.find((detail: any) => detail.lessonId === lessonId);
+    return lessonDetail?.progressPercentage === 100 || false;
   };
 
   const calculateLessonProgress = (lessonId: number) => {
-    // Dərsə daxil olma (50%) + tapşırıqların tamamlanması (50%)
-    const isCompleted = isLessonCompleted(lessonId);
-    
-    // Bu dərsin tapşırıqlarını əldə et
-    const lessonAssignments = assignments.filter((a: any) => a.lessonId === lessonId);
-    
-    let progressScore = 0;
-    
-    // Dərsə daxil olma 50% verir
-    if (isCompleted) {
-      progressScore += 50;
-    }
-    
-    // Tapşırıqlar varsa, onların tamamlanması 50% verir
-    if (lessonAssignments.length > 0) {
-      const submittedAssignments = lessonAssignments.filter((assignment: any) => 
-        submissions.some((s: any) => s.assignmentId === assignment.id && s.grade !== null)
-      );
-      progressScore += (submittedAssignments.length / lessonAssignments.length) * 50;
-    } else {
-      // Tapşırıq yoxdursa, dərsə daxil olma 100% sayılır
-      if (isCompleted) {
-        progressScore = 100;
-      }
-    }
-    
-    return Math.round(progressScore);
+    if (!courseProgress?.lessonDetails) return 0;
+    const lessonDetail = courseProgress.lessonDetails.find((detail: any) => detail.lessonId === lessonId);
+    return lessonDetail?.progressPercentage || 0;
   };
 
   const calculateOverallProgress = () => {
-    if (lessons.length === 0) return 0;
-    
-    const totalProgress = lessons.reduce((sum: number, lesson: any) => {
-      return sum + calculateLessonProgress(lesson.id);
-    }, 0);
-    
-    return Math.round(totalProgress / lessons.length);
+    return courseProgress?.overallProgress || 0;
   };
 
   const getVideoId = (url: string) => {
@@ -369,7 +348,7 @@ export default function StudentCoursePage() {
                 <Menu size={20} />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{course?.title || 'Kurs'}</h1>
                 <p className="text-gray-600 mt-1">Kurs Məzmunu</p>
               </div>
             </div>
