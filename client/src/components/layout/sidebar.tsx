@@ -82,6 +82,7 @@ export default function Sidebar({
           { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
           { href: '/admin/courses', label: 'Kurslar', icon: BookOpen },
           { href: '/admin/teachers', label: 'Müəllimlər', icon: GraduationCap },
+          { href: '/admin/students', label: 'Tələbələr', icon: Users },
           { href: '/admin/settings', label: 'Settings', icon: Settings },
         ];
       case 'teacher':

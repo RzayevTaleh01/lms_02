@@ -326,10 +326,9 @@ export default function AdminDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="users" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3">
             <TabsTrigger value="users" className="text-xs sm:text-sm">İstifadəçilər</TabsTrigger>
-            <TabsTrigger value="courses" className="text-xs sm:text-sm">Kurslar</TabsTrigger>
-            <TabsTrigger value="sessions" className="text-xs sm:text-sm lg:block hidden">Sessiyalar</TabsTrigger>
+            <TabsTrigger value="sessions" className="text-xs sm:text-sm">Sessiyalar</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analitika</TabsTrigger>
           </TabsList>
 
@@ -470,66 +469,7 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* Courses Tab */}
-          <TabsContent value="courses" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Kurs İdarəetməsi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {coursesLoading ? (
-                  <div className="text-center py-8">Kurslar yüklənir...</div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">KURS</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">MÜƏLLİM</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">QEYDİYYATLAR</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">STATUS</th>
-                          <th className="text-left py-4 px-2 text-sm font-medium text-gray-600">YARADILMA TARİXİ</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {courses.map((course: Course) => {
-                          const instructor = users.find((u: User) => u.id === course.instructorId);
-                          return (
-                            <tr key={course.id} className="border-b border-gray-100">
-                              <td className="py-4 px-2">
-                                <div>
-                                  <div className="font-medium text-gray-900">{course.title}</div>
-                                  <div className="text-sm text-gray-500 truncate max-w-xs">
-                                    {course.description}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="py-4 px-2">
-                                <div className="text-sm text-gray-900">
-                                  {instructor ? `${instructor.firstName} ${instructor.lastName}` : 'Naməlum'}
-                                </div>
-                              </td>
-                              <td className="py-4 px-2">
-                                <Badge variant="outline">{course.enrollmentCount || 0}</Badge>
-                              </td>
-                              <td className="py-4 px-2">
-                                <Badge variant={course.isActive ? "default" : "secondary"}>
-                                  {course.isActive ? "Aktiv" : "Qeyri-aktiv"}
-                                </Badge>
-                              </td>
-                              <td className="py-4 px-2 text-sm text-gray-500">
-                                {format(new Date(course.createdAt), 'dd MMM yyyy')}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+          
 
           {/* Sessions Tab */}
           <TabsContent value="sessions" className="space-y-4">
