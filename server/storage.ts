@@ -333,6 +333,17 @@ export class DatabaseStorage implements IStorage {
     return submission;
   }
 
+  async getSubmissionByLessonAssignmentAndStudent(assignmentId: number, studentId: string) {
+    const [submission] = await db
+      .select()
+      .from(submissions)
+      .where(and(
+        eq(submissions.assignmentId, assignmentId),
+        eq(submissions.studentId, studentId)
+      ));
+    return submission;
+  }
+
   async getSubmissionsByStudent(studentId: string) {
     // Get regular assignment submissions 
     const regularSubmissions = await db

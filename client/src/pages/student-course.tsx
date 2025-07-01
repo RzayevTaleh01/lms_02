@@ -105,6 +105,21 @@ export default function StudentCoursePage() {
     enabled: !!selectedLesson
   });
 
+  // Get material and assignment counts for current lesson
+  const getCurrentLessonMaterialCount = (lessonId: number) => {
+    if (selectedLesson?.id === lessonId) {
+      return materials.length;
+    }
+    return 0; // Default olaraq 0 göstər, real data yüklənəndə yenilənəcək
+  };
+
+  const getCurrentLessonAssignmentCount = (lessonId: number) => {
+    if (selectedLesson?.id === lessonId) {
+      return assignments.length;
+    }
+    return 0; // Default olaraq 0 göstər, real data yüklənəndə yenilənəcək
+  };
+
   // Submit assignment mutation
   const submitAssignmentMutation = useMutation({
     mutationFn: async ({ assignmentId, content, githubUrl, fileUrl }: {
@@ -191,6 +206,8 @@ export default function StudentCoursePage() {
   const calculateLessonProgress = (lessonId: number) => {
     // Dərsə daxil olma (50%) + tapşırıqların tamamlanması (50%)
     const isCompleted = isLessonCompleted(lessonId);
+    
+    // Bu dərsin tapşırıqlarını əldə et
     const lessonAssignments = assignments.filter((a: any) => a.lessonId === lessonId);
     
     let progressScore = 0;
@@ -301,8 +318,8 @@ export default function StudentCoursePage() {
 
     const existingSubmission = submissions.find((s: any) => s.assignmentId === selectedAssignment.id);
     
-    if (existingSubmission && existingSubmission.status === 'returned') {
-      // Resubmit
+    if (existingSubmission && existingSubmission.feedback && existingSubmission.grade === null) {
+      // Resubmit - əgər feedback var və qiymət yoxdursa
       resubmitAssignmentMutation.mutate({
         submissionId: existingSubmission.id,
         content: submissionForm.content,
@@ -389,9 +406,8 @@ export default function StudentCoursePage() {
                       )}
                       onClick={() => {
                         setSelectedLesson(lesson);
-                        if (!completed) {
-                          handleMarkLessonComplete(lesson.id);
-                        }
+                        // Dərs seçiləndə həmişə completed kimi işarələ
+                        handleMarkLessonComplete(lesson.id);
                       }}
                     >
                       <div className="flex items-start space-x-3">
@@ -583,7 +599,7 @@ export default function StudentCoursePage() {
                               const studentSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
                               const isSubmitted = !!studentSubmission;
                               const isGraded = studentSubmission?.grade !== null;
-                              const isReturned = studentSubmission?.status === 'returned';
+                              const isReturned = studentSubmission?.feedback && studentSubmission?.grade === null;
 
                               return (
                                 <Card key={assignment.id}>
