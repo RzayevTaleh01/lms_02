@@ -273,11 +273,28 @@ export class DatabaseStorage implements IStorage {
   // Enrollment operations
   async getStudentEnrollments(studentId: string): Promise<(Enrollment & { course: Course })[]> {
     return await db
-      .select()
+      .select({
+        id: enrollments.id,
+        studentId: enrollments.studentId,
+        courseId: enrollments.courseId,
+        enrolledAt: enrollments.enrolledAt,
+        completedAt: enrollments.completedAt,
+        progress: enrollments.progress,
+        grade: enrollments.grade,
+        course: {
+          id: courses.id,
+          title: courses.title,
+          description: courses.description,
+          instructorId: courses.instructorId,
+          isActive: courses.isActive,
+          enrollmentCount: courses.enrollmentCount,
+          createdAt: courses.createdAt,
+          updatedAt: courses.updatedAt
+        }
+      })
       .from(enrollments)
       .innerJoin(courses, eq(enrollments.courseId, courses.id))
-      .where(eq(enrollments.studentId, studentId))
-      .then(rows => rows.map(row => ({ ...row.enrollments, course: row.courses })));
+      .where(eq(enrollments.studentId, studentId));
   }
 
   async enrollStudent(enrollment: InsertEnrollment): Promise<Enrollment> {
@@ -300,7 +317,15 @@ export class DatabaseStorage implements IStorage {
   }
 
    async getAllEnrollments(): Promise<Enrollment[]> {
-    return await db.select().from(enrollments);
+    return await db.select({
+      id: enrollments.id,
+      studentId: enrollments.studentId,
+      courseId: enrollments.courseId,
+      enrolledAt: enrollments.enrolledAt,
+      completedAt: enrollments.completedAt,
+      progress: enrollments.progress,
+      grade: enrollments.grade
+    }).from(enrollments);
   }
 
   // Assignment operations
