@@ -577,9 +577,10 @@ export default function StudentCoursePage() {
 
                               const isSubmitted = !!studentSubmission;
                               const isGraded = isSubmitted && studentSubmission?.grade !== null;
-                              const isReturned = isSubmitted && studentSubmission?.feedback && studentSubmission?.grade === null;
+                              const isReturned = isSubmitted && studentSubmission?.feedback && studentSubmission?.grade === null && !studentSubmission?.hasBeenResubmitted;
                               const isResubmitted = isSubmitted && studentSubmission?.status === 'resubmitted';
                               const isPending = isSubmitted && !isGraded && !isReturned && !isResubmitted;
+                              const hasBeenResubmitted = isSubmitted && studentSubmission?.hasBeenResubmitted;
 
                               return (
                                 <Card key={assignment.id}>
@@ -597,13 +598,13 @@ export default function StudentCoursePage() {
                                           !isSubmitted ? "destructive" :
                                           isReturned ? "destructive" : 
                                           isGraded ? "default" : 
-                                          isResubmitted ? "secondary" : 
+                                          isResubmitted || hasBeenResubmitted ? "secondary" : 
                                           "outline"
                                         }>
                                           {!isSubmitted ? "Gözləyir" :
                                            isReturned ? "Düzəliş Tələb Olunur" : 
                                            isGraded ? "Qiymətləndirilib" : 
-                                           isResubmitted ? "Yenidən Göndərilib" :
+                                           isResubmitted || hasBeenResubmitted ? "Göndərildi" :
                                            "Qiymətləndirmə Gözləyir"}
                                         </Badge>
                                         {assignment.dueDate && (
@@ -713,7 +714,7 @@ export default function StudentCoursePage() {
                                           )}
                                         </div>
 
-                                        {isReturned && (
+                                        {isReturned && !hasBeenResubmitted && (
                                           <div className="mt-4">
                                             <Button 
                                               onClick={() => handleSubmitAssignment(assignment)}
@@ -722,6 +723,13 @@ export default function StudentCoursePage() {
                                               <Edit className="w-4 h-4 mr-2" />
                                               Düzəliş Et və Yenidən Göndər
                                             </Button>
+                                          </div>
+                                        )}
+
+                                        {hasBeenResubmitted && studentSubmission?.feedback && studentSubmission?.grade === null && (
+                                          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+                                            <div className="text-sm font-medium text-blue-800 mb-1">Qeyd:</div>
+                                            <div className="text-sm text-blue-700">Bu tapşırığı artıq bir dəfə düzəliş etmisiniz. Qiymətləndirmə gözləyin.</div>
                                           </div>
                                         )}
                                       </div>
