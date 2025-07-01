@@ -624,22 +624,25 @@ export default function StudentCoursePage() {
                                       <div className={cn(
                                         "border rounded-lg p-4",
                                         isGraded ? "bg-green-50 border-green-200" : 
-                                        isReturned ? "bg-red-50 border-red-200" : 
+                                        isReturned ? "bg-orange-50 border-orange-200" : 
                                         isResubmitted ? "bg-yellow-50 border-yellow-200" :
                                         "bg-blue-50 border-blue-200"
                                       )}>
                                         <div className="flex items-center space-x-2 mb-3">
-                                          <CheckCircle className={cn(
-                                            "w-4 h-4",
-                                            isGraded ? "text-green-600" : 
-                                            isReturned ? "text-red-600" : 
-                                            isResubmitted ? "text-yellow-600" :
-                                            "text-blue-600"
-                                          )} />
+                                          {isReturned ? (
+                                            <Edit className="w-4 h-4 text-orange-600" />
+                                          ) : (
+                                            <CheckCircle className={cn(
+                                              "w-4 h-4",
+                                              isGraded ? "text-green-600" : 
+                                              isResubmitted ? "text-yellow-600" :
+                                              "text-blue-600"
+                                            )} />
+                                          )}
                                           <span className={cn(
                                             "text-sm font-medium",
                                             isGraded ? "text-green-800" : 
-                                            isReturned ? "text-red-800" : 
+                                            isReturned ? "text-orange-800" : 
                                             isResubmitted ? "text-yellow-800" :
                                             "text-blue-800"
                                           )}>
@@ -696,9 +699,9 @@ export default function StudentCoursePage() {
                                           )}
 
                                           {isReturned && studentSubmission.feedback && (
-                                            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded">
-                                              <div className="text-sm font-medium text-red-800 mb-1">Düzəliş tələbi:</div>
-                                              <div className="text-sm text-red-700">{studentSubmission.feedback}</div>
+                                            <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded">
+                                              <div className="text-sm font-medium text-orange-800 mb-1">Düzəliş tələbi:</div>
+                                              <div className="text-sm text-orange-700">{studentSubmission.feedback}</div>
                                             </div>
                                           )}
 
@@ -767,7 +770,7 @@ export default function StudentCoursePage() {
                   className="text-sm text-gray-600 mt-1 prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{ __html: selectedAssignment.description }}
                 />
-                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                <div className="flex items-center space-x-4 mt-2text-sm text-gray-500">
                   {selectedAssignment.dueDate && (
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-4 h-4" />
@@ -788,10 +791,10 @@ export default function StudentCoursePage() {
                   return (
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                       <div className="flex items-center space-x-2 mb-3">
-                        <AlertCircle className="w-4 h-4 text-orange-600" />
+                        <Edit className="w-4 h-4 text-orange-600" />
                         <span className="text-sm font-medium text-orange-800">Əvvəlki cavabınız və müəllim rəyi</span>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div>
                           <Label className="text-sm font-medium text-orange-800">Əvvəlki cavabınız:</Label>
@@ -800,7 +803,7 @@ export default function StudentCoursePage() {
                             dangerouslySetInnerHTML={{ __html: existingSubmission.content }}
                           />
                         </div>
-                        
+
                         {existingSubmission.githubUrl && (
                           <div>
                             <Label className="text-sm font-medium text-orange-800">GitHub:</Label>
@@ -811,7 +814,7 @@ export default function StudentCoursePage() {
                             </div>
                           </div>
                         )}
-                        
+
                         {existingSubmission.fileUrl && (
                           <div>
                             <Label className="text-sm font-medium text-orange-800">Fayl:</Label>
@@ -822,7 +825,7 @@ export default function StudentCoursePage() {
                             </div>
                           </div>
                         )}
-                        
+
                         {existingSubmission.feedback && (
                           <div>
                             <Label className="text-sm font-medium text-orange-800">Müəllim rəyi:</Label>
