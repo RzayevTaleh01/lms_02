@@ -1021,7 +1021,8 @@ export class DatabaseStorage implements IStorage {
         feedback,
         gradedBy: teacherId,
         gradedAt: new Date(),
-        grade: null // Clear any existing grade
+        grade: null, // Clear any existing grade
+        status: 'returned' // Set status to returned
       })
       .where(eq(submissions.id, submissionId));
   }
@@ -1036,7 +1037,8 @@ export class DatabaseStorage implements IStorage {
         submittedAt: new Date(),
         grade: null,
         gradedAt: null,
-        gradedBy: null
+        gradedBy: null,
+        status: 'submitted' // Reset status to submitted
       })
       .where(eq(submissions.id, submissionId));
   }

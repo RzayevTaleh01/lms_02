@@ -1319,7 +1319,7 @@ export default function EnhancedLessonManagement({
                       )}
                     </div>
 
-                    {submission.status !== 'graded' && submission.status !== 'returned' && (
+                    {submission.status !== 'graded' && (
                       <div className="flex space-x-2 mt-4 pt-4 border-t">
                         <div className="flex-1">
                           <div className="flex space-x-2">
@@ -1374,8 +1374,20 @@ export default function EnhancedLessonManagement({
                           disabled={returnSubmissionMutation.isPending}
                           className="text-orange-600 hover:text-orange-700"
                         >
-                          Düzəliş üçün qaytár
+                          {submission.status === 'returned' ? 'Yenidən Düzəliş üçün qaytár' : 'Düzəliş üçün qaytár'}
                         </Button>
+                      </div>
+                    )}
+
+                    {/* Show final actions for returned submissions that have been resubmitted */}
+                    {submission.status === 'returned' && (
+                      <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded">
+                        <p className="text-sm text-orange-800 mb-2">
+                          Bu tapşırıq düzəliş üçün qaytarılıb. Tələbə yenidən göndərə bilər.
+                        </p>
+                        <p className="text-xs text-orange-600">
+                          Tələbə düzəliş edib yenidən göndərdikdə, yenidən qiymətləndirə bilərsiniz.
+                        </p>
                       </div>
                     )}
                   </CardContent>
