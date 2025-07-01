@@ -30,107 +30,25 @@ import {
   ClipboardList,
   User,
   LogOut,
-  AlertCircle
+  AlertCircle,
+  ExternalLink,
+  Send,
+  Eye
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-
-const StudentSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const [location] = useLocation();
-  const { user, logout } = useAuth();
-
-  const menuItems = [
-    { icon: Home, label: "Ana Səhifə", href: "/student", exact: true },
-    { icon: GraduationCap, label: "Kurslarım", href: "/student/courses" },
-    { icon: ClipboardList, label: "Davamiyyət", href: "/student/attendance" },
-    { icon: Award, label: "Qiymətlərim", href: "/student/grades" },
-    { icon: User, label: "Profil", href: "/student/profile" },
-  ];
-
-  return (
-    <>
-      {/* Mobile backdrop */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div className={cn(
-        "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
-        isOpen ? "translate-x-0" : "-translate-x-full",
-        "lg:translate-x-0 lg:relative lg:z-0"
-      )}>
-        {/* Header */}
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-bold text-gray-900">DevCode Academy</h2>
-          <p className="text-sm text-gray-600">Tələbə Paneli</p>
-        </div>
-
-        {/* User Info */}
-        <div className="p-4 border-b bg-gray-50">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-              {user?.firstName?.[0]}{user?.lastName?.[0]}
-            </div>
-            <div>
-              <p className="font-medium text-gray-900">{user?.firstName} {user?.lastName}</p>
-              <p className="text-xs text-gray-600">{user?.email}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="p-4 space-y-2 flex-1">
-          {menuItems.map((item) => {
-            const isActive = item.exact 
-              ? location === item.href 
-              : location.startsWith(item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
-                  isActive 
-                    ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
-                    : "text-gray-700 hover:bg-gray-50"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Logout */}
-        <div className="p-4 border-t">
-          <button
-            onClick={logout}
-            className="flex items-center space-x-3 px-3 py-2 w-full text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <LogOut className="h-5 w-5" />
-            <span>Çıxış</span>
-          </button>
-        </div>
-      </div>
-    </>
-  );
-};
+import { StaticSidebar } from "@/components/layout/static-sidebar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function StudentCourse() {
   const { id } = useParams();
-  const { user } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, logout } = useAuth();
   const { toast } = useToast();
-  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const [activeTab, setActiveTab] = useState("content");
   const [submissionForm, setSubmissionForm] = useState({
     content: "",
     githubUrl: "",
@@ -139,172 +57,49 @@ export default function StudentCourse() {
 
   // Fetch course data
   const { data: course } = useQuery({
-    queryKey: [`/api/courses/${id}`],
+    queryKey: ['/api/courses', id],
     enabled: !!id
   });
 
   // Fetch lessons
   const { data: lessons = [] } = useQuery({
-    queryKey: [`/api/courses/${id}/lessons`],
+    queryKey: ['/api/courses', id, 'lessons'],
     enabled: !!id
   });
 
-  // Fetch lesson materials
-  const { data: materials = [] } = useQuery({
-    queryKey: [`/api/lessons/${selectedLesson?.id}/materials`],
-    enabled: !!selectedLesson
+  // Fetch course progress
+  const { data: lessonProgress = [] } = useQuery({
+    queryKey: ['/api/courses', id, 'progress'],
+    enabled: !!id
   });
 
-  // Fetch lesson assignments
-  const { data: assignments = [] } = useQuery({
-    queryKey: [`/api/lessons/${selectedLesson?.id}/assignments`],
-    enabled: !!selectedLesson
-  });
-
-  // Fetch student submissions
+  // Fetch submissions
   const { data: submissions = [] } = useQuery({
-    queryKey: ["/api/submissions"],
+    queryKey: ['/api/submissions'],
     enabled: !!user
   });
 
-  // Fetch lesson progress
-  const { data: lessonProgress = [] } = useQuery({
-    queryKey: [`/api/courses/${id}/progress`],
-    enabled: !!id && !!user
+  // Fetch lesson materials when lesson is selected
+  const { data: materials = [] } = useQuery({
+    queryKey: ['/api/lessons', selectedLesson?.id, 'materials'],
+    enabled: !!selectedLesson
   });
 
-  // Submit assignment mutation
-  const submitAssignmentMutation = useMutation({
-    mutationFn: async ({ assignmentId, content, githubUrl, fileUrl }: {
-      assignmentId: number;
-      content: string;
-      githubUrl?: string;
-      fileUrl?: string;
-    }) => {
-      return apiRequest("POST", `/api/assignments/${assignmentId}/submissions`, {
-        content,
-        githubUrl,
-        fileUrl,
-        studentId: user?.id
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
-      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
-      toast({ title: "Tapşırıq uğurla göndərildi!" });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.message || "Tapşırıq göndərilərkən xəta baş verdi";
-      toast({ title: errorMessage, variant: "destructive" });
-    }
+  // Fetch lesson assignments when lesson is selected
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['/api/lessons', selectedLesson?.id, 'assignments'],
+    enabled: !!selectedLesson
   });
 
-  // Resubmit assignment mutation
-  const resubmitAssignmentMutation = useMutation({
-    mutationFn: async ({ submissionId, content, githubUrl, fileUrl }: {
-      submissionId: number;
-      content: string;
-      githubUrl?: string;
-      fileUrl?: string;
-    }) => {
-      return apiRequest("PATCH", `/api/submissions/${submissionId}/resubmit`, {
-        content,
-        githubUrl,
-        fileUrl,
-        studentId: user?.id
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/submissions"] });
-      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
-      toast({ title: "Tapşırıq yenidən göndərildi!" });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.message || "Tapşırıq yenidən göndərilərkən xəta baş verdi";
-      toast({ title: errorMessage, variant: "destructive" });
-    }
-  });
-
-  // Mark lesson as completed mutation
-  const markLessonCompleteMutation = useMutation({
-    mutationFn: async (lessonId: number) => {
-      return apiRequest("POST", `/api/lessons/${lessonId}/complete`, {
-        courseId: parseInt(id!)
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/progress`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/enrollments"] });
-      toast({ title: "Dərs tamamlandı!" });
-    }
-  });
-
-  // Auto-select first lesson if none selected
-  if (lessons.length > 0 && !selectedLesson) {
-    setSelectedLesson(lessons[0]);
-  }
-
-  const renderYouTubeVideo = (url: string) => {
-    if (!url) return null;
-
-    let videoId = "";
-    if (url.includes("youtu.be/")) {
-      videoId = url.split("youtu.be/")[1].split("?")[0];
-    } else if (url.includes("youtube.com/watch?v=")) {
-      videoId = url.split("v=")[1].split("&")[0];
-    }
-
-    if (videoId) {
-      return (
-        <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-          <iframe
-            className="absolute top-0 left-0 w-full h-full rounded-lg"
-            src={`https://www.youtube.com/embed/${videoId}`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      );
-    }
-
-    return (
-      <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
-        <div className="text-center">
-          <Video className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">Video dəstəklənmir</p>
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">
-            Linki açın
-          </a>
-        </div>
-      </div>
-    );
-  };
-
-  const handleSubmitAssignment = (assignmentId: number) => {
-    if (submissionForm.content.trim()) {
-      submitAssignmentMutation.mutate({
-        assignmentId: assignmentId,
-        content: submissionForm.content,
-        githubUrl: submissionForm.githubUrl || undefined,
-        fileUrl: submissionForm.fileUrl || undefined
-      });
-    }
-  };
-
-  const handleResubmitAssignment = (submissionId: number) => {
-    if (submissionForm.content.trim()) {
-      resubmitAssignmentMutation.mutate({
-        submissionId: submissionId,
-        content: submissionForm.content,
-        githubUrl: submissionForm.githubUrl || undefined,
-        fileUrl: submissionForm.fileUrl || undefined
-      });
-    }
-  };
-
-  // Populate form when assignment changes and has returned submission
+  // Select first lesson on load
   useEffect(() => {
-    // Clear form when changing lessons
+    if (lessons.length > 0 && !selectedLesson) {
+      setSelectedLesson(lessons[0]);
+    }
+  }, [lessons, selectedLesson]);
+
+  // Clear form when changing lessons
+  useEffect(() => {
     setSubmissionForm({
       content: "",
       githubUrl: "",
@@ -312,7 +107,7 @@ export default function StudentCourse() {
     });
   }, [selectedLesson]);
 
-  // Populate form for returned submissions when viewing assignments
+  // Populate form for returned submissions
   useEffect(() => {
     if (assignments.length > 0 && submissions.length > 0) {
       assignments.forEach(assignment => {
@@ -330,451 +125,584 @@ export default function StudentCourse() {
     }
   }, [assignments, submissions]);
 
+  // Lesson completion mutation
+  const completeLessonMutation = useMutation({
+    mutationFn: (lessonId: number) => 
+      apiRequest(`/api/lessons/${lessonId}/complete`, {
+        method: 'POST',
+        body: { courseId: id }
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/courses', id, 'progress'] });
+      toast({ title: "Dərs tamamlandı!" });
+    }
+  });
+
+  // Watch time tracking mutation
+  const watchTimeMutation = useMutation({
+    mutationFn: ({ lessonId, timeSpent }: { lessonId: number; timeSpent: number }) =>
+      apiRequest(`/api/lessons/${lessonId}/watch-time`, {
+        method: 'POST',
+        body: { courseId: id, timeSpent }
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/courses', id, 'progress'] });
+    }
+  });
+
+  // Assignment submission mutation
+  const submitAssignmentMutation = useMutation({
+    mutationFn: ({ assignmentId, submissionData }: { assignmentId: number; submissionData: any }) =>
+      apiRequest(`/api/lesson-assignments/${assignmentId}/submissions`, {
+        method: 'POST',
+        body: submissionData
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/submissions'] });
+      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
+      toast({ title: "Tapşırıq göndərildi!" });
+    }
+  });
+
+  // Assignment resubmission mutation
+  const resubmitAssignmentMutation = useMutation({
+    mutationFn: ({ submissionId, submissionData }: { submissionId: number; submissionData: any }) =>
+      apiRequest(`/api/submissions/${submissionId}/resubmit`, {
+        method: 'PATCH',
+        body: submissionData
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/submissions'] });
+      setSubmissionForm({ content: "", githubUrl: "", fileUrl: "" });
+      toast({ title: "Tapşırıq yenidən göndərildi!" });
+    }
+  });
+
+  // Utility functions
   const isLessonCompleted = (lessonId: number) => {
     return lessonProgress.some((progress: any) => 
-      progress.lessonId === lessonId && progress.isCompleted
+      progress.lessonId === lessonId && progress.completed
     );
   };
 
-  const handleMarkLessonComplete = (lessonId: number) => {
-    if (!isLessonCompleted(lessonId)) {
-      markLessonCompleteMutation.mutate(lessonId);
+  const getLessonProgress = (lessonId: number) => {
+    const progress = lessonProgress.find((p: any) => p.lessonId === lessonId);
+    return progress ? progress.progress || 0 : 0;
+  };
+
+  const getVideoId = (url: string) => {
+    if (!url) return null;
+    
+    try {
+      // Handle youtube.com/watch?v= format
+      const watchMatch = url.match(/[?&]v=([^&]+)/);
+      if (watchMatch) return watchMatch[1];
+      
+      // Handle youtu.be/ format
+      const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+      if (shortMatch) return shortMatch[1];
+      
+      // Handle youtube.com/embed/ format
+      const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/);
+      if (embedMatch) return embedMatch[1];
+      
+      return null;
+    } catch {
+      return null;
     }
+  };
+
+  const handleAssignmentSubmit = (assignment: any) => {
+    const existingSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
+    
+    const submissionData = {
+      ...submissionForm,
+      studentId: user?.id,
+      courseId: id
+    };
+
+    if (existingSubmission && existingSubmission.status === 'returned') {
+      // Resubmit
+      resubmitAssignmentMutation.mutate({
+        submissionId: existingSubmission.id,
+        submissionData
+      });
+    } else {
+      // New submission
+      submitAssignmentMutation.mutate({
+        assignmentId: assignment.id,
+        submissionData
+      });
+    }
+  };
+
+  const handleCompleteLesson = () => {
+    if (selectedLesson) {
+      completeLessonMutation.mutate(selectedLesson.id);
+    }
+  };
+
+  const calculateOverallProgress = () => {
+    if (lessons.length === 0) return 0;
+    
+    let totalProgress = 0;
+    lessons.forEach((lesson: any) => {
+      const progress = getLessonProgress(lesson.id);
+      totalProgress += progress;
+    });
+    
+    return Math.round(totalProgress / lessons.length);
   };
 
   if (!course) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+      <div className="flex h-screen">
+        <StaticSidebar user={user} onLogout={logout} />
+        <div className="flex-1 ml-64 p-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Main Sidebar */}
-      <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Main Content */}
-      <div className="flex-1 lg:ml-0 flex">
-        {/* Top Navigation */}
-        <div className="absolute top-0 left-0 right-0 bg-white shadow-sm border-b z-30 lg:left-64">
-          <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
+    <div className="flex h-screen bg-gray-50">
+      <StaticSidebar user={user} onLogout={logout} />
+      
+      <div className="flex-1 ml-64 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-4 sm:mb-0">
+              <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
+              <p className="text-gray-600 mt-1">Kurs Məzmunu</p>
+            </div>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-              >
-                <Menu className="h-6 w-6" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">{course.title}</h1>
-                <p className="text-gray-600">Kurs Məzmunu</p>
+              <div className="text-sm text-gray-500">
+                Ümumi tərəqqi: {calculateOverallProgress()}%
               </div>
+              <Progress value={calculateOverallProgress()} className="w-32" />
             </div>
           </div>
         </div>
 
-        {/* Course Content Sidebar */}
-        <div className="w-80 border-r bg-background mt-16">
-          <div className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Dərslər</h2>
-            <p className="text-sm text-muted-foreground">Kursun məzmunu</p>
-          </div>
-
-        <ScrollArea className="h-[calc(100vh-80px)]">
-          <div className="p-4 space-y-2">
-            {lessons.length === 0 ? (
-              <div className="text-center py-8">
-                <BookOpen className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">Hələ dərs əlavə edilməyib</p>
-              </div>
-            ) : (
-              lessons.map((lesson: any, index: number) => {
-                const completed = isLessonCompleted(lesson.id);
-                return (
-                  <Button
-                    key={lesson.id}
-                    variant={selectedLesson?.id === lesson.id ? "default" : "ghost"}
-                    className="w-full justify-start h-auto p-3"
-                    onClick={() => setSelectedLesson(lesson)}
-                  >
-                    <div className="flex items-start space-x-3 w-full">
-                      <div className="flex-shrink-0 mt-0.5">
-                        {completed ? (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                        ) : selectedLesson?.id === lesson.id ? (
-                          <PlayCircle className="w-4 h-4" />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
-                            {index + 1}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Lessons Sidebar */}
+          <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="font-semibold text-gray-900">Dərslər</h2>
+              <p className="text-sm text-gray-500">{lessons.length} məzmun</p>
+            </div>
+            
+            <ScrollArea className="flex-1">
+              <div className="p-2">
+                {lessons.map((lesson: any, index: number) => {
+                  const progress = getLessonProgress(lesson.id);
+                  const isCompleted = isLessonCompleted(lesson.id);
+                  const isActive = selectedLesson?.id === lesson.id;
+                  
+                  return (
+                    <div
+                      key={lesson.id}
+                      className={cn(
+                        "p-4 rounded-lg cursor-pointer transition-colors mb-2",
+                        isActive
+                          ? "bg-orange-50 border-2 border-orange-200"
+                          : "hover:bg-gray-50 border border-transparent"
+                      )}
+                      onClick={() => setSelectedLesson(lesson)}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="text-xs font-medium text-gray-500">
+                              {index + 1}.
+                            </span>
+                            <h3 className="text-sm font-medium text-gray-900 truncate">
+                              {lesson.title}
+                            </h3>
+                            {isCompleted && (
+                              <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                            )}
                           </div>
-                        )}
-                      </div>
-                      <div className="flex-1 text-left">
-                        <div className={cn("font-medium text-sm", completed && "line-through text-muted-foreground")}>
-                          {lesson.title}
+                          
+                          {lesson.duration && (
+                            <div className="flex items-center text-xs text-gray-500 mb-2">
+                              <Clock className="w-3 h-3 mr-1" />
+                              {lesson.duration} dəq
+                            </div>
+                          )}
+                          
+                          <Progress value={progress} className="h-1" />
+                          <p className="text-xs text-gray-500 mt-1">{progress}% tamamlandı</p>
                         </div>
-                        {lesson.duration && (
-                          <div className="flex items-center text-xs text-muted-foreground mt-1">
-                            <Clock className="w-3 h-3 mr-1" />
-                            {lesson.duration} dəqiqə
-                            {completed && <span className="ml-2 text-green-600">✓</span>}
-                          </div>
-                        )}
+                        
+                        <ChevronRight className={cn(
+                          "w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ml-2",
+                          isActive && "rotate-90"
+                        )} />
                       </div>
-                      <ChevronRight className="w-4 h-4 flex-shrink-0" />
                     </div>
-                  </Button>
-                );
-              })
-            )}
-          </div>
-        </ScrollArea>
-        </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        {selectedLesson ? (
-          <>
-            {/* Video Section */}
-            <div className="p-6 border-b">
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold mb-2">{selectedLesson.title}</h2>
-                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                  {selectedLesson.duration && (
-                    <div className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {selectedLesson.duration} dəqiqə
-                    </div>
-                  )}
-                </div>
+                  );
+                })}
               </div>
+            </ScrollArea>
+          </div>
 
-              {selectedLesson.videoUrl && (
-                <div className="mb-6">
-                  {renderYouTubeVideo(selectedLesson.videoUrl)}
-                </div>
-              )}
-
-              {/* Lesson Completion Button */}
-              <div className="mb-6">
-                {isLessonCompleted(selectedLesson.id) ? (
-                  <div className="flex items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                    <span className="text-green-800 font-medium">Bu dərs tamamlandı</span>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {selectedLesson ? (
+              <>
+                {/* Lesson Header */}
+                <div className="bg-white border-b border-gray-200 p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                    <div className="mb-4 sm:mb-0">
+                      <h1 className="text-xl font-bold text-gray-900">{selectedLesson.title}</h1>
+                      {selectedLesson.duration && (
+                        <div className="flex items-center text-sm text-gray-500 mt-1">
+                          <Clock className="w-4 h-4 mr-1" />
+                          {selectedLesson.duration} dəqiqə
+                        </div>
+                      )}
+                    </div>
+                    
+                    <Button
+                      onClick={handleCompleteLesson}
+                      disabled={isLessonCompleted(selectedLesson.id) || completeLessonMutation.isPending}
+                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      {isLessonCompleted(selectedLesson.id) ? "Tamamlandı" : "Dərsi Tamamla"}
+                    </Button>
                   </div>
-                ) : (
-                  <Button
-                    onClick={() => handleMarkLessonComplete(selectedLesson.id)}
-                    disabled={markLessonCompleteMutation.isPending}
-                    className="w-full"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    {markLessonCompleteMutation.isPending ? "Tamamlanır..." : "Dərsi Tamamla"}
-                  </Button>
-                )}
-              </div>
-            </div>
+                </div>
 
-            {/* Content Tabs */}
-            <div className="flex-1 p-6">
-              <Tabs defaultValue="content" className="h-full">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="content">Məzmun</TabsTrigger>
-                  <TabsTrigger value="materials">Materiallar ({materials.length})</TabsTrigger>
-                  <TabsTrigger value="assignments">Tapşırıqlar ({assignments.length})</TabsTrigger>
-                </TabsList>
+                {/* Lesson Content */}
+                <div className="flex-1 overflow-auto">
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+                    <TabsList className="w-full justify-start border-b border-gray-200 rounded-none bg-transparent p-0">
+                      <TabsTrigger 
+                        value="content" 
+                        className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent"
+                      >
+                        Məzmun
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="materials" 
+                        className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent"
+                      >
+                        Materiallar ({materials.length})
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="assignments" 
+                        className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent"
+                      >
+                        Tapşırıqlar ({assignments.length})
+                      </TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="content" className="h-full">
-                  <ScrollArea className="h-[calc(100vh-300px)]">
-                    <div className="prose prose-sm max-w-none">
-                      {selectedLesson.content ? (
-                        <div dangerouslySetInnerHTML={{ __html: selectedLesson.content }} />
-                      ) : (
-                        <div className="text-center py-8">
-                          <FileText className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="text-muted-foreground">Bu dərsin məzmunu yoxdur</p>
-                        </div>
-                      )}
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-
-                <TabsContent value="materials" className="h-full">
-                  <ScrollArea className="h-[calc(100vh-300px)]">
-                    <div className="space-y-4">
-                      {materials.length === 0 ? (
-                        <div className="text-center py-8">
-                          <Download className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="text-muted-foreground">Bu dərsin materialı yoxdur</p>
-                        </div>
-                      ) : (
-                        materials.map((material: any) => (
-                          <Card key={material.id}>
-                            <CardContent className="p-4">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <h4 className="font-semibold mb-1">{material.title}</h4>
-                                  <Badge variant="outline" className="mb-2">
-                                    {material.type === "video" ? "Video" : 
-                                     material.type === "document" ? "Sənəd" : "Link"}
-                                  </Badge>
-                                  {material.description && (
-                                    <div 
-                                      className="text-sm text-muted-foreground prose prose-sm"
-                                      dangerouslySetInnerHTML={{ __html: material.description }}
-                                    />
-                                  )}
-                                </div>
-                                {material.url && (
-                                  <a
-                                    href={material.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-shrink-0 ml-4"
-                                  >
-                                    <Button size="sm" variant="outline">
-                                      <Link2 className="w-4 h-4 mr-1" />
-                                      Aç
-                                    </Button>
-                                  </a>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))
-                      )}
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-
-                <TabsContent value="assignments" className="h-full">
-                  <ScrollArea className="h-[calc(100vh-300px)]">
-                    <div className="space-y-4">
-                      {assignments.length === 0 ? (
-                        <div className="text-center py-8">
-                          <FileText className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="text-muted-foreground">Bu dərsin tapşırığı yoxdur</p>
-                        </div>
-                      ) : (
-                        assignments.map((assignment: any) => {
-                          const studentSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
-                          console.log('Assignment:', assignment.id, 'Submission:', studentSubmission);
-
-                          return (
-                            <Card key={assignment.id}>
-                              <CardContent className="p-6">
-                                <div className="space-y-4">
-                                  {/* Assignment Header */}
-                                  <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                      <h4 className="text-lg font-semibold mb-2">{assignment.title}</h4>
-                                      <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-3">
-                                        <div className="flex items-center">
-                                          <Award className="w-4 h-4 mr-1" />
-                                          {assignment.maxPoints} bal
+                    <div className="flex-1 overflow-auto">
+                      <TabsContent value="content" className="m-0 h-full">
+                        <div className="p-6 space-y-6">
+                          {/* Video Player */}
+                          {selectedLesson.videoUrl && (
+                            <Card>
+                              <CardContent className="p-0">
+                                {(() => {
+                                  const videoId = getVideoId(selectedLesson.videoUrl);
+                                  if (videoId) {
+                                    return (
+                                      <div className="relative w-full pt-[56.25%]">
+                                        <iframe
+                                          className="absolute top-0 left-0 w-full h-full rounded-lg"
+                                          src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1`}
+                                          title={selectedLesson.title}
+                                          frameBorder="0"
+                                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                          allowFullScreen
+                                        />
+                                      </div>
+                                    );
+                                  } else {
+                                    return (
+                                      <div className="relative w-full pt-[56.25%] bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
+                                          <Video className="w-12 h-12 mb-2" />
+                                          <p className="text-sm">Video mövcud deyil</p>
+                                          <a 
+                                            href={selectedLesson.videoUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-500 hover:underline text-sm mt-2 flex items-center"
+                                          >
+                                            <ExternalLink className="w-3 h-3 mr-1" />
+                                            Xarici linkdə aç
+                                          </a>
                                         </div>
-                                        {assignment.dueDate && (
-                                          <div className="flex items-center">
-                                            <Calendar className="w-4 h-4 mr-1" />
-                                            {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
-                                          </div>
+                                      </div>
+                                    );
+                                  }
+                                })()}
+                              </CardContent>
+                            </Card>
+                          )}
+
+                          {/* Lesson Description */}
+                          {selectedLesson.description && (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className="text-lg">Dərs Haqqında</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div 
+                                  className="prose prose-sm max-w-none"
+                                  dangerouslySetInnerHTML={{ __html: selectedLesson.description }}
+                                />
+                              </CardContent>
+                            </Card>
+                          )}
+
+                          {/* Lesson Content */}
+                          {selectedLesson.content && (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className="text-lg">Dərs Məzmunu</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div 
+                                  className="prose prose-sm max-w-none"
+                                  dangerouslySetInnerHTML={{ __html: selectedLesson.content }}
+                                />
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="materials" className="m-0 h-full">
+                        <div className="p-6">
+                          {materials.length === 0 ? (
+                            <div className="text-center py-12">
+                              <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                              <p className="text-gray-500">Bu dərsin materialı yoxdur</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {materials.map((material: any) => (
+                                <Card key={material.id} className="hover:shadow-md transition-shadow">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1">
+                                        <h3 className="font-medium text-gray-900 mb-2">{material.title}</h3>
+                                        {material.description && (
+                                          <div 
+                                            className="prose prose-sm text-gray-600 mb-3"
+                                            dangerouslySetInnerHTML={{ __html: material.description }}
+                                          />
                                         )}
-                                      </div>
-                                    </div>
-                                    {studentSubmission && (
-                                      <Badge 
-                                        variant={
-                                          studentSubmission.status === 'returned' ? "destructive" :
-                                          studentSubmission.grade ? "default" : "secondary"
-                                        }
-                                        className="ml-4"
-                                      >
-                                        {studentSubmission.status === 'returned' ? "Yenidən Göndər" :
-                                         studentSubmission.grade ? `${studentSubmission.grade} bal` : "Gözləyir"}
-                                      </Badge>
-                                    )}
-                                  </div>
-
-                                  {/* Assignment Description */}
-                                  {assignment.description && (
-                                    <div 
-                                      className="prose prose-sm"
-                                      dangerouslySetInnerHTML={{ __html: assignment.description }}
-                                    />
-                                  )}
-
-                                  <Separator />
-
-                                  {/* Submission Section */}
-                                  {!studentSubmission || (studentSubmission && studentSubmission.status === 'returned') ? (
-                                    <div className="space-y-4">
-                                      {/* Show returned submission notice */}
-                                      {studentSubmission && studentSubmission.status === 'returned' && (
-                                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-                                          <div className="flex items-center space-x-2 mb-2">
-                                            <AlertCircle className="w-4 h-4 text-red-600" />
-                                            <span className="text-sm font-medium text-red-800">Tapşırıq yenidən göndərilməlidir</span>
-                                          </div>
-                                          {studentSubmission.feedback && (
-                                            <p className="text-sm text-red-700 mt-2">
-                                              <strong>Müəllim rəyi:</strong> {studentSubmission.feedback}
-                                            </p>
-                                          )}
+                                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                          <Badge variant="outline">{material.type}</Badge>
                                         </div>
-                                      )}
-
-                                      <div>
-                                        <Label htmlFor="assignmentContent">Cavab məzmunu</Label>
-                                        <Textarea
-                                          id="assignmentContent"
-                                          placeholder="Tapşırığınızın cavabını yazın..."
-                                          value={submissionForm.content}
-                                          onChange={(e) => setSubmissionForm({ ...submissionForm, content: e.target.value })}
-                                          rows={4}
-                                        />
                                       </div>
-
-                                      <div>
-                                        <Label htmlFor="githubUrl">GitHub Link (isteğe bağlı)</Label>
-                                        <Input
-                                          id="githubUrl"
-                                          type="url"
-                                          placeholder="https://github.com/username/repository"
-                                          value={submissionForm.githubUrl}
-                                          onChange={(e) => setSubmissionForm({ ...submissionForm, githubUrl: e.target.value })}
-                                        />
-                                      </div>
-
-                                      {/* Conditional warning message */}
-                                      {!studentSubmission ? (
-                                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-                                          <div className="flex items-center space-x-2">
-                                            <AlertCircle className="w-4 h-4 text-amber-600" />
-                                            <p className="text-sm text-amber-800">
-                                              <strong>Diqqət:</strong> Hər tapşırığı yalnız bir dəfə göndərə bilərsiniz. Göndərdikdən sonra yenidən dəyişdirmək mümkün olmayacaq.
-                                            </p>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                                          <div className="flex items-center space-x-2">
-                                            <AlertCircle className="w-4 h-4 text-blue-600" />
-                                            <p className="text-sm text-blue-800">
-                                              <strong>İnfo:</strong> Tapşırığı yenidən göndərərkən əvvəlki cavabınız əvəzlənəcək.
-                                            </p>
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      <div>
-                                        <Button
-                                          onClick={() => {
-                                            if (studentSubmission && studentSubmission.status === 'returned') {
-                                              handleResubmitAssignment(studentSubmission.id);
-                                            } else {
-                                              handleSubmitAssignment(assignment.id);
-                                            }
-                                          }}
-                                          disabled={
-                                            !submissionForm.content.trim() ||
-                                            submitAssignmentMutation.isPending ||
-                                            resubmitAssignmentMutation.isPending
-                                          }
-                                          className="w-full"
-                                        >
-                                          <Upload className="w-4 h-4 mr-2" />
-                                          {(submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending) ? 
-                                            "Göndərilir..." : 
-                                            (studentSubmission && studentSubmission.status === 'returned') ? 
-                                              "Yenidən Göndər" : 
-                                              "Tapşırığı Göndər"
-                                          }
+                                      {material.url && (
+                                        <Button variant="outline" size="sm" asChild>
+                                          <a href={material.url} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="w-4 h-4 mr-1" />
+                                            Aç
+                                          </a>
                                         </Button>
-                                      </div>
+                                      )}
                                     </div>
-                                  ) : (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-2">
-                                          <CheckCircle className="w-5 h-5 text-green-600" />
-                                          <span className="font-medium text-green-600">Tapşırıq göndərilib</span>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="assignments" className="m-0 h-full">
+                        <div className="p-6">
+                          {assignments.length === 0 ? (
+                            <div className="text-center py-12">
+                              <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                              <p className="text-gray-500">Bu dərsin tapşırığı yoxdur</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-6">
+                              {assignments.map((assignment: any) => {
+                                const studentSubmission = submissions.find((s: any) => s.assignmentId === assignment.id);
+                                const isReturned = studentSubmission?.status === 'returned';
+                                const isGraded = studentSubmission?.grade !== null && studentSubmission?.grade !== undefined;
+                                
+                                return (
+                                  <Card key={assignment.id} className="overflow-hidden">
+                                    <CardContent className="p-6">
+                                      {/* Assignment Header */}
+                                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4">
+                                        <div className="flex-1 mb-4 sm:mb-0">
+                                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{assignment.title}</h3>
+                                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                                            <div className="flex items-center">
+                                              <Award className="w-4 h-4 mr-1" />
+                                              {assignment.points} bal
+                                            </div>
+                                            {assignment.dueDate && (
+                                              <div className="flex items-center">
+                                                <Calendar className="w-4 h-4 mr-1" />
+                                                {new Date(assignment.dueDate).toLocaleDateString('az-AZ')}
+                                              </div>
+                                            )}
+                                          </div>
                                         </div>
-                                        {studentSubmission.grade !== null && (
-                                          <Badge variant="default" className="text-lg px-3 py-1">
-                                            {studentSubmission.grade} / {assignment.maxPoints} bal
+                                        {studentSubmission && (
+                                          <Badge 
+                                            variant={isReturned ? "destructive" : isGraded ? "default" : "secondary"}
+                                            className="mb-2 sm:mb-0"
+                                          >
+                                            {isReturned ? "Yenidən Göndər" :
+                                             isGraded ? `${studentSubmission.grade} bal` : "Gözləyir"}
                                           </Badge>
                                         )}
                                       </div>
 
-                                      <div className="bg-muted p-4 rounded-lg space-y-2">
-                                        <p className="text-sm"><strong>Cavab:</strong> {studentSubmission.content}</p>
-                                        {studentSubmission.githubUrl && (
-                                          <p className="text-sm">
-                                            <strong>GitHub:</strong> 
-                                            <a href={studentSubmission.githubUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
-                                              {studentSubmission.githubUrl}
-                                            </a>
-                                          </p>
-                                        )}
-                                        <p className="text-xs text-muted-foreground">
-                                          Göndərilmə tarixi: {new Date(studentSubmission.submittedAt).toLocaleString('az-AZ')}
-                                        </p>
+                                      {/* Assignment Description */}
+                                      {assignment.description && (
+                                        <>
+                                          <div 
+                                            className="prose prose-sm max-w-none mb-4"
+                                            dangerouslySetInnerHTML={{ __html: assignment.description }}
+                                          />
+                                          <Separator className="mb-4" />
+                                        </>
+                                      )}
 
-                                        {studentSubmission.grade !== null ? (
-                                          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                                            <div className="flex items-center space-x-2 mb-2">
-                                              <Award className="w-4 h-4 text-green-600" />
-                                              <span className="text-sm font-medium text-green-800">Qiymətləndirilib</span>
+                                      {/* Submission Section */}
+                                      {!studentSubmission || isReturned ? (
+                                        <div className="space-y-4">
+                                          {/* Returned submission notice */}
+                                          {isReturned && (
+                                            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                                              <div className="flex items-center space-x-2 mb-2">
+                                                <AlertCircle className="w-4 h-4 text-red-600" />
+                                                <span className="text-sm font-medium text-red-800">Tapşırıq yenidən göndərilməlidir</span>
+                                              </div>
+                                              {studentSubmission.feedback && (
+                                                <div className="text-sm text-red-700 bg-red-100 rounded p-2">
+                                                  <strong>Müəllim rəyi:</strong> {studentSubmission.feedback}
+                                                </div>
+                                              )}
                                             </div>
-                                            {studentSubmission.feedback && (
-                                              <p className="text-sm text-green-700">
-                                                <strong>Müəllim rəyi:</strong> {studentSubmission.feedback}
-                                              </p>
+                                          )}
+
+                                          {/* Submission Form */}
+                                          <div className="space-y-4">
+                                            <div>
+                                              <Label htmlFor={`content-${assignment.id}`}>Cavab *</Label>
+                                              <Textarea
+                                                id={`content-${assignment.id}`}
+                                                placeholder="Tapşırığınızın cavabını yazın..."
+                                                value={submissionForm.content}
+                                                onChange={(e) => setSubmissionForm(prev => ({ ...prev, content: e.target.value }))}
+                                                className="mt-1"
+                                                rows={4}
+                                              />
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                              <div>
+                                                <Label htmlFor={`github-${assignment.id}`}>GitHub URL</Label>
+                                                <Input
+                                                  id={`github-${assignment.id}`}
+                                                  type="url"
+                                                  placeholder="https://github.com/..."
+                                                  value={submissionForm.githubUrl}
+                                                  onChange={(e) => setSubmissionForm(prev => ({ ...prev, githubUrl: e.target.value }))}
+                                                  className="mt-1"
+                                                />
+                                              </div>
+
+                                              <div>
+                                                <Label htmlFor={`file-${assignment.id}`}>Fayl URL</Label>
+                                                <Input
+                                                  id={`file-${assignment.id}`}
+                                                  type="url"
+                                                  placeholder="https://example.com/file..."
+                                                  value={submissionForm.fileUrl}
+                                                  onChange={(e) => setSubmissionForm(prev => ({ ...prev, fileUrl: e.target.value }))}
+                                                  className="mt-1"
+                                                />
+                                              </div>
+                                            </div>
+
+                                            <Button 
+                                              onClick={() => handleAssignmentSubmit(assignment)}
+                                              disabled={!submissionForm.content.trim() || submitAssignmentMutation.isPending || resubmitAssignmentMutation.isPending}
+                                              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                                            >
+                                              <Send className="w-4 h-4 mr-2" />
+                                              {isReturned ? "Yenidən Göndər" : "Tapşırığı Göndər"}
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        /* Submission Details */
+                                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                          <div className="flex items-center space-x-2 mb-3">
+                                            <CheckCircle className="w-4 h-4 text-green-600" />
+                                            <span className="text-sm font-medium text-green-800">Tapşırıq göndərilib</span>
+                                          </div>
+                                          
+                                          <div className="space-y-2 text-sm">
+                                            <div>
+                                              <strong>Cavab:</strong> {studentSubmission.content}
+                                            </div>
+                                            {studentSubmission.githubUrl && (
+                                              <div>
+                                                <strong>GitHub:</strong> 
+                                                <a href={studentSubmission.githubUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+                                                  {studentSubmission.githubUrl}
+                                                </a>
+                                              </div>
                                             )}
-                                            {studentSubmission.gradedAt && (
-                                              <p className="text-xs text-green-600 mt-1">
-                                                Qiymətləndirmə tarixi: {new Date(studentSubmission.gradedAt).toLocaleString('az-AZ')}
-                                              </p>
+                                            <div className="text-xs text-gray-500">
+                                              Göndərilmə tarixi: {new Date(studentSubmission.submittedAt).toLocaleDateString('az-AZ')} {new Date(studentSubmission.submittedAt).toLocaleTimeString('az-AZ')}
+                                            </div>
+                                            
+                                            {isGraded && studentSubmission.feedback && (
+                                              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+                                                <div className="text-sm font-medium text-blue-800 mb-1">Müəllim rəyi:</div>
+                                                <div className="text-sm text-blue-700">{studentSubmission.feedback}</div>
+                                              </div>
                                             )}
                                           </div>
-                                        ) : (
-                                          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                            <div className="flex items-center space-x-2">
-                                              <Clock className="w-4 h-4 text-yellow-600" />
-                                              <span className="text-sm font-medium text-yellow-800">Qiymətləndirmə gözlənilir</span>
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })
-                      )}
+                                        </div>
+                                      )}
+                                    </CardContent>
+                                  </Card>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </TabsContent>
                     </div>
-                  </ScrollArea>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <BookOpen className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Dərs seçin</h3>
-              <p className="text-muted-foreground">Soldan dərsi seçərək öyrənməyə başlayın</p>
-            </div>
+                  </Tabs>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <BookOpen className="w-12 h-12 mx-auto mb-4" />
+                  <p>Dərsi seçin</p>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
       </div>
     </div>
   );
