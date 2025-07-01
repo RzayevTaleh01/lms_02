@@ -260,7 +260,7 @@ export default function EnhancedLessonManagement({
   const [activeTab, setActiveTab] = useState("materials");
   const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
   const [isSubmissionsDialogOpen, setIsSubmissionsDialogOpen] = useState(false);
-  
+
   // Edit states
   const [editingMaterial, setEditingMaterial] = useState<any>(null);
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
@@ -351,13 +351,13 @@ export default function EnhancedLessonManagement({
     }
   });
 
-  // Create assignment mutation
+  // Create lesson assignment mutation
   const createAssignmentMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch(`/api/lessons/${selectedLesson.id}/assignments`, {
+      const response = await fetch(`/api/lessons/${selectedLesson?.id}/assignments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ ...data, courseId })
       });
       if (!response.ok) throw new Error('Failed to create assignment');
       return response.json();
@@ -520,7 +520,8 @@ export default function EnhancedLessonManagement({
     } else {
       createAssignmentMutation.mutate({
         ...assignmentForm,
-        dueDate: assignmentForm.dueDate ? new Date(assignmentForm.dueDate).toISOString() : null
+        dueDate: assignmentForm.dueDate ? new Date(assignmentForm.dueDate).toISOString() : null,
+        courseId
       });
     }
   };
@@ -655,7 +656,7 @@ export default function EnhancedLessonManagement({
         </div>
       );
     }
-    
+
     // Show lesson selection interface if lessons exist
     return (
       <div className="space-y-6">
@@ -1226,7 +1227,7 @@ export default function EnhancedLessonManagement({
               <span>{selectedAssignment?.title} - Tələbə Cavabları</span>
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             {submissions.length === 0 ? (
               <div className="text-center py-10">
@@ -1342,7 +1343,7 @@ export default function EnhancedLessonManagement({
                                 const feedbackInput = document.getElementById(`feedback-${submission.id}`) as HTMLInputElement;
                                 const grade = parseInt(gradeInput.value);
                                 const feedback = feedbackInput.value;
-                                
+
                                 if (grade >= 0 && feedback.trim()) {
                                   gradeSubmissionMutation.mutate({
                                     submissionId: submission.id,
@@ -1364,7 +1365,7 @@ export default function EnhancedLessonManagement({
                           onClick={() => {
                             const feedbackInput = document.getElementById(`feedback-${submission.id}`) as HTMLInputElement;
                             const feedback = feedbackInput.value || "Düzəliş tələb olunur";
-                            
+
                             returnSubmissionMutation.mutate({
                               submissionId: submission.id,
                               feedback
