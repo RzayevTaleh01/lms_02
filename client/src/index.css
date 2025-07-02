@@ -121,35 +121,35 @@
 
 :root {
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(216, 19%, 16%);
-  --muted: hsl(210, 40%, 98%);
-  --muted-foreground: hsl(215, 16%, 47%);
+  --foreground: hsl(224, 71%, 4%);
+  --muted: hsl(220, 14%, 96%);
+  --muted-foreground: hsl(220, 9%, 46%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(216, 19%, 16%);
+  --popover-foreground: hsl(224, 71%, 4%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(216, 19%, 16%);
-  --border: hsl(214, 32%, 91%);
-  --input: hsl(214, 32%, 91%);
-  --primary: hsl(28, 100%, 55%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(210, 40%, 98%);
-  --secondary-foreground: hsl(216, 19%, 16%);
-  --accent: hsl(210, 40%, 98%);
-  --accent-foreground: hsl(216, 19%, 16%);
+  --card-foreground: hsl(224, 71%, 4%);
+  --border: hsl(220, 13%, 91%);
+  --input: hsl(220, 13%, 91%);
+  --primary: hsl(262, 83%, 58%);
+  --primary-foreground: hsl(210, 20%, 98%);
+  --secondary: hsl(220, 14%, 96%);
+  --secondary-foreground: hsl(220, 9%, 46%);
+  --accent: hsl(220, 14%, 96%);
+  --accent-foreground: hsl(220, 9%, 46%);
   --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(28, 100%, 55%);
-  --radius: 0.75rem;
+  --destructive-foreground: hsl(210, 20%, 98%);
+  --ring: hsl(262, 83%, 58%);
+  --radius: 0.5rem;
   
-  /* DevCode Academy Modern Brand Colors */
-  --devcode-orange: hsl(28, 100%, 55%);
-  --devcode-orange-light: hsl(32, 100%, 65%);
-  --devcode-orange-dark: hsl(24, 95%, 45%);
-  --devcode-dark: hsl(216, 28%, 15%);
-  --devcode-gray: hsl(215, 16%, 47%);
-  --devcode-light: hsl(210, 40%, 98%);
-  --devcode-gradient-start: hsl(28, 100%, 55%);
-  --devcode-gradient-end: hsl(32, 100%, 65%);
+  /* DevCode Academy Clean Design Colors */
+  --devcode-purple: hsl(262, 83%, 58%);
+  --devcode-purple-light: hsl(266, 85%, 70%);
+  --devcode-purple-dark: hsl(258, 90%, 48%);
+  --devcode-dark: hsl(224, 71%, 4%);
+  --devcode-gray: hsl(220, 9%, 46%);
+  --devcode-light: hsl(220, 14%, 96%);
+  --devcode-blue: hsl(217, 91%, 60%);
+  --devcode-teal: hsl(174, 83%, 40%);
   
   /* Sidebar width variables */
   --sidebar-width: 16rem;
@@ -191,16 +191,24 @@
 
 @layer utilities {
   /* Text Colors */
-  .text-devcode-orange {
-    color: var(--devcode-orange);
+  .text-devcode-purple {
+    color: var(--devcode-purple);
   }
   
-  .text-devcode-orange-light {
-    color: var(--devcode-orange-light);
+  .text-devcode-purple-light {
+    color: var(--devcode-purple-light);
   }
   
-  .text-devcode-orange-dark {
-    color: var(--devcode-orange-dark);
+  .text-devcode-purple-dark {
+    color: var(--devcode-purple-dark);
+  }
+  
+  .text-devcode-blue {
+    color: var(--devcode-blue);
+  }
+  
+  .text-devcode-teal {
+    color: var(--devcode-teal);
   }
   
   .text-devcode-dark {
@@ -212,16 +220,24 @@
   }
   
   /* Background Colors */
-  .bg-devcode-orange {
-    background-color: var(--devcode-orange);
+  .bg-devcode-purple {
+    background-color: var(--devcode-purple);
   }
   
-  .bg-devcode-orange-light {
-    background-color: var(--devcode-orange-light);
+  .bg-devcode-purple-light {
+    background-color: var(--devcode-purple-light);
   }
   
-  .bg-devcode-orange-dark {
-    background-color: var(--devcode-orange-dark);
+  .bg-devcode-purple-dark {
+    background-color: var(--devcode-purple-dark);
+  }
+  
+  .bg-devcode-blue {
+    background-color: var(--devcode-blue);
+  }
+  
+  .bg-devcode-teal {
+    background-color: var(--devcode-teal);
   }
   
   .bg-devcode-dark {
@@ -237,53 +253,59 @@
   }
   
   /* Border Colors */
-  .border-devcode-orange {
-    border-color: var(--devcode-orange);
+  .border-devcode-purple {
+    border-color: var(--devcode-purple);
   }
   
-  .border-devcode-orange-light {
-    border-color: var(--devcode-orange-light);
+  .border-devcode-blue {
+    border-color: var(--devcode-blue);
+  }
+  
+  .border-devcode-teal {
+    border-color: var(--devcode-teal);
   }
   
   /* Gradients */
-  .bg-devcode-gradient {
-    background: linear-gradient(135deg, var(--devcode-gradient-start), var(--devcode-gradient-end));
+  .bg-gradient-purple {
+    background: linear-gradient(135deg, var(--devcode-purple), var(--devcode-purple-light));
   }
   
-  .bg-devcode-gradient-radial {
-    background: radial-gradient(ellipse at center, var(--devcode-gradient-start), var(--devcode-gradient-end));
+  .bg-gradient-blue {
+    background: linear-gradient(135deg, var(--devcode-blue), var(--devcode-purple));
+  }
+  
+  .bg-gradient-teal {
+    background: linear-gradient(135deg, var(--devcode-teal), var(--devcode-blue));
   }
   
   /* Hover States */
-  .hover\:bg-devcode-orange:hover {
-    background-color: var(--devcode-orange);
+  .hover\:bg-devcode-purple:hover {
+    background-color: var(--devcode-purple);
   }
   
-  .hover\:bg-devcode-orange-dark:hover {
-    background-color: var(--devcode-orange-dark);
+  .hover\:bg-devcode-purple-dark:hover {
+    background-color: var(--devcode-purple-dark);
   }
   
-  .hover\:text-devcode-orange:hover {
-    color: var(--devcode-orange);
+  .hover\:text-devcode-purple:hover {
+    color: var(--devcode-purple);
   }
   
-  .hover\:border-devcode-orange:hover {
-    border-color: var(--devcode-orange);
+  .hover\:border-devcode-purple:hover {
+    border-color: var(--devcode-purple);
   }
   
-  /* Modern Effects */
-  .glass-effect {
-    backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Clean Shadows */
+  .shadow-clean {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
   
-  .shadow-devcode {
-    box-shadow: 0 10px 25px -3px rgba(251, 146, 60, 0.1), 0 4px 6px -2px rgba(251, 146, 60, 0.05);
+  .shadow-clean-lg {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   
-  .shadow-devcode-lg {
-    box-shadow: 0 20px 25px -5px rgba(251, 146, 60, 0.1), 0 10px 10px -5px rgba(251, 146, 60, 0.04);
+  .shadow-clean-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
   
   /* React Quill Editor Styles */
