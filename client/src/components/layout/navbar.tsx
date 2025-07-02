@@ -86,12 +86,15 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/">
               <div className="flex items-center space-x-2 cursor-pointer">
-                <div className="w-10 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">D</span>
-                </div>
                 <div className="flex items-center">
-                  <span className="text-lg font-bold text-gray-900">/ code</span>
-                  <span className="text-lg font-bold text-gray-900 ml-1">academy</span>
+                  <div className="w-8 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded flex items-center justify-center mr-1">
+                    <span className="text-white font-bold text-sm">D</span>
+                  </div>
+                  <span className="text-lg font-bold text-gray-900">/</span>
+                </div>
+                <div className="flex flex-col -ml-1">
+                  <span className="text-lg font-bold text-gray-900 leading-none">code</span>
+                  <span className="text-sm font-bold text-gray-900 leading-none">academy</span>
                 </div>
               </div>
             </Link>
