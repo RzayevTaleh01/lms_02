@@ -59,7 +59,7 @@ export default function Navbar() {
   return (
     <>
       {/* Top Navigation Bar */}
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-devcode-light border-b border-devcode-orange/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-9 text-xs">
             {/* Left side empty or can add content */}
@@ -69,7 +69,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-6">
               {topNavItems.map((item) => (
                 <Link key={item.href} href={item.href}>
-                  <span className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer text-xs">
+                  <span className="text-devcode-gray hover:text-devcode-orange transition-colors cursor-pointer text-xs font-medium">
                     {item.label}
                   </span>
                 </Link>
@@ -80,21 +80,21 @@ export default function Navbar() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+      <nav className="bg-white shadow-devcode border-b border-devcode-orange/10 sticky top-0 z-50 backdrop-blur-xl bg-white/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/">
-              <div className="flex items-center space-x-2 cursor-pointer">
+              <div className="flex items-center space-x-3 cursor-pointer group">
                 <div className="flex items-center">
-                  <div className="w-8 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded flex items-center justify-center mr-1">
-                    <span className="text-white font-bold text-sm">D</span>
+                  <div className="w-10 h-8 bg-devcode-gradient rounded-xl flex items-center justify-center shadow-devcode group-hover:shadow-devcode-lg transition-all">
+                    <span className="text-white font-bold text-lg">D</span>
                   </div>
-                  <span className="text-lg font-bold text-gray-900">/</span>
+                  <span className="text-xl font-bold text-devcode-dark ml-1">/</span>
                 </div>
-                <div className="flex flex-col -ml-1">
-                  <span className="text-lg font-bold text-gray-900 leading-none">code</span>
-                  <span className="text-sm font-bold text-gray-900 leading-none">academy</span>
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold text-devcode-dark leading-none">code</span>
+                  <span className="text-sm font-bold text-devcode-orange leading-none">academy</span>
                 </div>
               </div>
             </Link>
@@ -103,10 +103,10 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-8">
               {navItems.map((item) => (
                 <Link key={item.href} href={item.href}>
-                  <span className={`transition-colors cursor-pointer font-medium text-sm ${
+                  <span className={`transition-colors cursor-pointer font-semibold text-sm ${
                     location === item.href 
-                      ? "text-orange-500" 
-                      : "text-gray-700 hover:text-orange-500"
+                      ? "text-devcode-orange" 
+                      : "text-devcode-dark hover:text-devcode-orange"
                   }`}>
                     {item.label}
                   </span>
@@ -115,12 +115,12 @@ export default function Navbar() {
             </div>
 
             {/* Auth Section */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
                   {/* Dashboard Link for authenticated users */}
                   <Link href={getDashboardLink()}>
-                    <Button variant="ghost" size="sm" className="hidden md:flex">
+                    <Button variant="ghost" size="sm" className="hidden md:flex text-devcode-dark hover:text-devcode-orange font-medium">
                       İdarə Paneli
                     </Button>
                   </Link>
@@ -128,20 +128,20 @@ export default function Navbar() {
                   {/* User Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-orange-500 text-white">
+                      <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-devcode-orange/5">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback className="bg-devcode-gradient text-white font-semibold">
                             {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
-                      <div className="flex flex-col space-y-1 p-2">
-                        <p className="text-sm font-medium leading-none">
+                      <div className="flex flex-col space-y-1 p-3">
+                        <p className="text-sm font-semibold leading-none text-devcode-dark">
                           {user?.firstName} {user?.lastName}
                         </p>
-                        <p className="text-xs leading-none text-muted-foreground">
+                        <p className="text-xs leading-none text-devcode-gray">
                           {user?.email}
                         </p>
                       </div>
@@ -157,6 +157,7 @@ export default function Navbar() {
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => logoutMutation.mutate()}
+                        className="text-red-600"
                       >
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Çıxış</span>
@@ -169,13 +170,13 @@ export default function Navbar() {
                   <Button 
                     variant="ghost" 
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="hidden md:flex text-gray-700 hover:text-gray-900 text-sm"
+                    className="hidden md:flex text-devcode-dark hover:text-devcode-orange text-sm font-medium"
                   >
                     Giriş
                   </Button>
                   <Button 
                     onClick={() => setIsSignupModalOpen(true)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black hidden md:flex font-semibold text-sm px-6 py-2 rounded-lg"
+                    className="bg-devcode-gradient hover:bg-devcode-orange-dark text-white hidden md:flex font-semibold text-sm px-6 py-2 rounded-xl shadow-devcode"
                   >
                     ✉ Müraciət et
                   </Button>
@@ -207,10 +208,10 @@ export default function Navbar() {
                     {navItems.map((item) => (
                       <Link key={item.href} href={item.href}>
                         <span 
-                          className={`block py-2 px-4 text-lg transition-colors cursor-pointer ${
+                          className={`block py-3 px-4 text-lg transition-colors cursor-pointer font-semibold ${
                             location === item.href 
-                              ? "text-orange-500" 
-                              : "text-gray-700 hover:text-orange-500"
+                              ? "text-devcode-orange" 
+                              : "text-devcode-dark hover:text-devcode-orange"
                           }`}
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
@@ -223,7 +224,7 @@ export default function Navbar() {
                       <>
                         <Link href={getDashboardLink()}>
                           <span 
-                            className="block py-2 px-4 text-lg text-gray-700 hover:text-orange-500 cursor-pointer"
+                            className="block py-3 px-4 text-lg text-devcode-dark hover:text-devcode-orange cursor-pointer font-medium"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             İdarə Paneli
@@ -232,20 +233,20 @@ export default function Navbar() {
                         <Button 
                           variant="outline"
                           onClick={() => logoutMutation.mutate()}
-                          className="mx-4 mt-4"
+                          className="mx-4 mt-4 border-red-300 text-red-600 hover:bg-red-50"
                         >
                           Çıxış
                         </Button>
                       </>
                     ) : (
-                      <div className="px-4 pt-4 space-y-2">
+                      <div className="px-4 pt-4 space-y-3">
                         <Button 
                           variant="outline" 
                           onClick={() => {
                             setIsLoginModalOpen(true);
                             setIsMobileMenuOpen(false);
                           }}
-                          className="w-full"
+                          className="w-full border-devcode-orange text-devcode-orange hover:bg-devcode-orange/5"
                         >
                           Giriş
                         </Button>
@@ -254,7 +255,7 @@ export default function Navbar() {
                             setIsSignupModalOpen(true);
                             setIsMobileMenuOpen(false);
                           }}
-                          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                          className="w-full bg-devcode-gradient hover:bg-devcode-orange-dark text-white shadow-devcode"
                         >
                           ✉ Müraciət et
                         </Button>
