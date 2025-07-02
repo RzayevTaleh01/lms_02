@@ -39,22 +39,35 @@ export default function Landing() {
       <Navbar />
       
       {/* Hero Section - Modern DevCode Style */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white py-24 lg:py-32 overflow-hidden">
-        {/* Enhanced Background Animation */}
+      <section className="relative bg-gradient-to-br from-gray-900 via-orange-900 to-yellow-900 text-white py-24 lg:py-32 overflow-hidden">
+        {/* Enhanced Background Animation with Sliding Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-500/25 rounded-full blur-3xl animate-pulse delay-700"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          {/* Animated Background Orbs */}
+          <div className="absolute top-20 left-20 w-96 h-96 bg-orange-500/40 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-yellow-500/30 rounded-full blur-3xl animate-pulse delay-700"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-500/25 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          
+          {/* Sliding Elements from Left */}
+          <div className="absolute top-40 -left-20 w-32 h-32 bg-gradient-to-r from-orange-400/20 to-transparent animate-slide-right"></div>
+          <div className="absolute top-80 -left-16 w-24 h-24 bg-gradient-to-r from-yellow-400/20 to-transparent animate-slide-right delay-500"></div>
+          
+          {/* Sliding Elements from Right */}
+          <div className="absolute top-60 -right-20 w-28 h-28 bg-gradient-to-l from-amber-400/20 to-transparent animate-slide-left"></div>
+          <div className="absolute bottom-40 -right-16 w-20 h-20 bg-gradient-to-l from-orange-400/20 to-transparent animate-slide-left delay-700"></div>
           
           {/* Floating Code Elements */}
-          <div className="absolute top-32 right-32 text-blue-300/30 text-6xl font-mono animate-bounce delay-500">{'{'}</div>
-          <div className="absolute bottom-32 left-32 text-indigo-300/30 text-6xl font-mono animate-bounce delay-1000">{'}'}</div>
-          <div className="absolute top-1/3 left-1/4 text-blue-200/40 text-4xl font-mono animate-pulse delay-300">&lt;/&gt;</div>
-          <div className="absolute bottom-1/3 right-1/4 text-indigo-200/40 text-4xl font-mono animate-pulse delay-800">( )</div>
+          <div className="absolute top-32 right-32 text-orange-300/40 text-6xl font-mono animate-bounce delay-500">{'{'}</div>
+          <div className="absolute bottom-32 left-32 text-yellow-300/40 text-6xl font-mono animate-bounce delay-1000">{'}'}</div>
+          <div className="absolute top-1/3 left-1/4 text-amber-200/50 text-4xl font-mono animate-pulse delay-300">&lt;/&gt;</div>
+          <div className="absolute bottom-1/3 right-1/4 text-orange-200/50 text-4xl font-mono animate-pulse delay-800">( )</div>
           
           {/* Moving Geometric Shapes */}
-          <div className="absolute top-16 left-1/3 w-8 h-8 bg-blue-400/40 rotate-45 animate-spin"></div>
-          <div className="absolute bottom-16 right-1/3 w-6 h-6 bg-indigo-400/40 rounded-full animate-ping delay-500"></div>
+          <div className="absolute top-16 left-1/3 w-8 h-8 bg-orange-500/50 rotate-45 animate-spin"></div>
+          <div className="absolute bottom-16 right-1/3 w-6 h-6 bg-yellow-400/50 rounded-full animate-ping delay-500"></div>
+          
+          {/* Modern Visual Graphics */}
+          <div className="absolute top-24 left-1/2 w-2 h-16 bg-gradient-to-b from-orange-400/30 to-transparent animate-slide-down"></div>
+          <div className="absolute bottom-24 right-1/2 w-2 h-12 bg-gradient-to-t from-yellow-400/30 to-transparent animate-slide-up"></div>
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,7 +89,7 @@ export default function Landing() {
             <h2 className="text-3xl lg:text-6xl font-bold leading-tight mb-8 max-w-5xl mx-auto animate-fade-in">
               <span className="text-white drop-shadow-lg">Proqramlaşdırma</span>
               <br className="hidden lg:block" />
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent drop-shadow-lg">
+              <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent drop-shadow-lg">
                 Dünyasında Liderik
               </span>
             </h2>
@@ -84,37 +97,64 @@ export default function Landing() {
             {/* Description */}
             <p className="text-xl lg:text-2xl text-gray-100 mb-12 max-w-4xl mx-auto leading-relaxed animate-slide-up">
               DevCode Academy ilə texnologiya sektorunda karyeranızı qurun. 
-              <strong className="text-cyan-300">Sıfırdan mütəxəssis səviyyəyə</strong> qədər keyfiyyətli təhsil və 
-              <strong className="text-blue-300">praktik bilik</strong> ilə öz potensialınızı realize edin.
+              <strong className="text-orange-300">Sıfırdan mütəxəssis səviyyəyə</strong> qədər keyfiyyətli təhsil və 
+              <strong className="text-yellow-300">praktik bilik</strong> ilə öz potensialınızı realize edin.
             </p>
             
             {/* CTA Buttons */}
             <div className="flex justify-center items-center mb-16">
               <Link href="/contact">
-                <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-12 py-4 text-xl font-bold rounded-xl shadow-2xl shadow-cyan-500/30 transform hover:scale-105 transition-all">
+                <Button size="lg" className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-black px-12 py-4 text-xl font-bold rounded-xl shadow-2xl shadow-orange-500/30 transform hover:scale-105 transition-all">
                   <Phone className="w-6 h-6 mr-3" />
                   Əlaqə
                 </Button>
               </Link>
             </div>
             
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
+            {/* Modern Stats with Visual Elements */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+              <div className="text-center group">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-orange-400 to-yellow-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-ping"></div>
+                </div>
                 <div className="text-3xl lg:text-4xl font-bold text-orange-400 mb-2">500+</div>
-                <div className="text-blue-200">Məzun Tələbə</div>
+                <div className="text-orange-200">Məzun Tələbə</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-green-400 mb-2">95%</div>
-                <div className="text-blue-200">İş Təminatı</div>
+              
+              <div className="text-center group">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full animate-ping delay-300"></div>
+                </div>
+                <div className="text-3xl lg:text-4xl font-bold text-yellow-400 mb-2">95%</div>
+                <div className="text-orange-200">Məşğulluq Nisbəti</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-yellow-400 mb-2">25+</div>
-                <div className="text-blue-200">Ekspert Müəllim</div>
+              
+              <div className="text-center group">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <BookOpen className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-ping delay-600"></div>
+                </div>
+                <div className="text-3xl lg:text-4xl font-bold text-amber-400 mb-2">25+</div>
+                <div className="text-orange-200">Ekspert Müəllim</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-purple-400 mb-2">300+</div>
-                <div className="text-blue-200">Aktiv Tələbə</div>
+              
+              <div className="text-center group">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Award className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full animate-ping delay-900"></div>
+                </div>
+                <div className="text-3xl lg:text-4xl font-bold text-orange-500 mb-2">300+</div>
+                <div className="text-orange-200">Aktiv Tələbə</div>
               </div>
             </div>
           </div>
