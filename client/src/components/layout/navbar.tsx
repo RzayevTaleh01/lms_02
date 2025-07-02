@@ -29,11 +29,11 @@ export default function Navbar() {
   });
 
   const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/courses", label: "Courses" },
-    { href: "/blog", label: "Blog" },
-    { href: "/verify", label: "Verify Certificate" },
-    { href: "/contact", label: "Contact" },
+    { href: "/", label: "Ana səhifə" },
+    { href: "/courses", label: "Kurslar" },
+    { href: "/blog", label: "Bloq" },
+    { href: "/verify", label: "Sertifikat yoxla" },
+    { href: "/contact", label: "Əlaqə" },
   ];
 
   const getDashboardLink = () => {
@@ -88,7 +88,7 @@ export default function Navbar() {
                   {/* Dashboard Link for authenticated users */}
                   <Link href={getDashboardLink()}>
                     <Button variant="ghost" size="sm" className="hidden md:flex">
-                      Dashboard
+                      İdarə Paneli
                     </Button>
                   </Link>
 
@@ -115,18 +115,18 @@ export default function Navbar() {
                       <DropdownMenuItem asChild>
                         <Link href={getDashboardLink()}>
                           <User className="mr-2 h-4 w-4" />
-                          <span>Dashboard</span>
+                          <span>İdarə Paneli</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
+                        <span>Ayarlar</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => logoutMutation.mutate()}
                       >
                         <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
+                        <span>Çıxış</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -138,13 +138,13 @@ export default function Navbar() {
                     onClick={() => setIsLoginModalOpen(true)}
                     className="hidden md:flex"
                   >
-                    Login
+                    Giriş
                   </Button>
                   <Button 
                     onClick={() => setIsSignupModalOpen(true)}
                     className="bg-devcode-orange hover:bg-orange-600 hidden md:flex"
                   >
-                    Sign Up
+                    Qeydiyyat
                   </Button>
                 </>
               )}
@@ -180,7 +180,7 @@ export default function Navbar() {
                             className="block py-2 px-4 text-lg text-devcode-dark hover:text-devcode-orange cursor-pointer"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            Dashboard
+                            İdarə Paneli
                           </span>
                         </Link>
                         <Button 
@@ -188,7 +188,7 @@ export default function Navbar() {
                           onClick={() => logoutMutation.mutate()}
                           className="mx-4 mt-4"
                         >
-                          Logout
+                          Çıxış
                         </Button>
                       </>
                     ) : (
@@ -201,7 +201,7 @@ export default function Navbar() {
                           }}
                           className="w-full"
                         >
-                          Login
+                          Giriş
                         </Button>
                         <Button 
                           onClick={() => {
@@ -210,7 +210,7 @@ export default function Navbar() {
                           }}
                           className="w-full bg-devcode-orange hover:bg-orange-600"
                         >
-                          Sign Up
+                          Qeydiyyat
                         </Button>
                       </div>
                     )}

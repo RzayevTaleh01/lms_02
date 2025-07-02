@@ -83,16 +83,37 @@ export default function Landing() {
               </div>
             </div>
             
-            {/* Right Image */}
+            {/* Right Code Visual */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-orange-100 to-yellow-100 rounded-2xl p-8 shadow-xl">
-                <div className="w-full h-80 bg-white rounded-lg shadow-md flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <Monitor className="w-10 h-10 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">Praktik Təhsil</h3>
-                    <p className="text-gray-600">Real layihələrlə öyrənin</p>
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 shadow-xl overflow-hidden">
+                {/* Code Editor Header */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span className="text-gray-400 text-sm ml-4">app.js</span>
+                </div>
+                
+                {/* Code Content */}
+                <div className="text-sm font-mono">
+                  <div className="text-gray-500 mb-2">// DevCode Academy - Real Kod</div>
+                  <div className="text-orange-400 mb-1">function <span className="text-blue-400">createDeveloper</span><span className="text-gray-300">() {`{`}</span></div>
+                  <div className="text-gray-300 ml-4 mb-1">const <span className="text-green-400">student</span> = <span className="text-yellow-300">'yeni başlayan'</span>;</div>
+                  <div className="text-gray-300 ml-4 mb-1">const <span className="text-green-400">knowledge</span> = <span className="text-purple-400">learn</span><span className="text-gray-300">(</span><span className="text-yellow-300">'programming'</span><span className="text-gray-300">);</span></div>
+                  <div className="text-gray-300 ml-4 mb-1">const <span className="text-green-400">practice</span> = <span className="text-purple-400">build</span><span className="text-gray-300">(</span><span className="text-yellow-300">'real projects'</span><span className="text-gray-300">);</span></div>
+                  <div className="text-gray-300 ml-4 mb-1">return <span className="text-green-400">student</span> + <span className="text-green-400">knowledge</span> + <span className="text-green-400">practice</span>;</div>
+                  <div className="text-gray-300">{`}`}</div>
+                  <div className="text-gray-500 mt-4">// Nəticə: Professional Developer 🚀</div>
+                </div>
+                
+                {/* Terminal Output */}
+                <div className="bg-black rounded-lg p-4 mt-4">
+                  <div className="text-green-400 text-xs font-mono">
+                    <div>$ npm run build-career</div>
+                    <div className="text-gray-400 mt-1">✓ Skills: HTML, CSS, JavaScript</div>
+                    <div className="text-gray-400">✓ Framework: React, Node.js</div>
+                    <div className="text-gray-400">✓ Database: MongoDB, PostgreSQL</div>
+                    <div className="text-orange-400 mt-2">Success: Ready for job market!</div>
                   </div>
                 </div>
               </div>
