@@ -48,99 +48,86 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-orange-900 to-blue-900 text-white">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-orange-500 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-blue-500 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse delay-500"></div>
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <section className="relative bg-gradient-to-br from-slate-50 to-blue-50 border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center space-y-8">
-            {/* Welcome Badge */}
-            <div className="flex items-center justify-center">
-              <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 text-lg font-medium">
-                🎯 Xoş gəldiniz, {user?.firstName || user?.email?.split('@')[0]}!
-              </Badge>
+            {/* Welcome Message */}
+            <div className="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full">
+              <span className="text-sm font-medium text-blue-700">
+                Xoş gəldiniz, {user?.firstName || user?.email?.split('@')[0]}
+              </span>
             </div>
 
             {/* Main Title */}
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl font-bold">
-                <span className="bg-gradient-to-r from-white via-orange-200 to-orange-400 bg-clip-text text-transparent">
-                  DevCode Academy
-                </span>
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
+                DevCode Academy
               </h1>
-              <p className="text-xl md:text-2xl text-blue-200 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
                 Öyrənmə səyahətinizə davam etməyə hazırsınız? Peşəkar proqramlaşdırma bacarıqlarınızı inkişaf etdirin.
               </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
               <Link href={getDashboardLink()}>
-                <Button size="lg" className="bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300">
-                  <Monitor className="w-6 h-6 mr-3" />
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium">
+                  <Monitor className="w-5 h-5 mr-2" />
                   İdarə Panelinə Keç
-                  <ArrowRight className="w-5 h-5 ml-3" />
                 </Button>
               </Link>
               <Link href="/courses">
-                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm transition-all duration-300">
-                  <BookOpen className="w-6 h-6 mr-3" />
+                <Button size="lg" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3 text-base font-medium">
+                  <BookOpen className="w-5 h-5 mr-2" />
                   Kursları Araşdır
                 </Button>
               </Link>
             </div>
           </div>
         </div>
-
-        {/* Decorative Elements */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
       </section>
 
       {/* Quick Stats Section */}
-      <section className="py-20 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Sizin <span className="text-orange-500">Statistikanız</span>
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              Sizin Statistikanız
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-600 max-w-xl mx-auto">
               Tərəqqinizi izləyin və nailiyyətlərinizi görün
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Role Card */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Rol</CardTitle>
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
-                  <Users className="h-6 w-6 text-white" />
+            <Card className="hover:shadow-lg transition-shadow duration-200 border border-gray-100">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600">Rol</CardTitle>
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Users className="h-4 w-4 text-blue-600" />
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-3xl font-bold text-gray-900 capitalize mb-2">{user?.role}</div>
+                <div className="text-2xl font-bold text-gray-900 capitalize mb-1">{user?.role}</div>
                 <p className="text-sm text-gray-500">Aktiv istifadəçi</p>
               </CardContent>
             </Card>
             
             {/* Courses Card */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Kurslar</CardTitle>
-                <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl">
-                  <BookOpen className="h-6 w-6 text-white" />
+            <Card className="hover:shadow-lg transition-shadow duration-200 border border-gray-100">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600">Kurslar</CardTitle>
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <BookOpen className="h-4 w-4 text-green-600" />
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-3xl font-bold text-gray-900 mb-2">
+                <div className="text-2xl font-bold text-gray-900 mb-1">
                   {user?.role === 'student' ? '3' : user?.role === 'teacher' ? '6' : '24'}
                 </div>
                 <p className="text-sm text-gray-500">
@@ -150,15 +137,15 @@ export default function Home() {
             </Card>
             
             {/* Progress Card */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Tərəqqi</CardTitle>
-                <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
-                  <TrendingUp className="h-6 w-6 text-white" />
+            <Card className="hover:shadow-lg transition-shadow duration-200 border border-gray-100">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600">Tərəqqi</CardTitle>
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <TrendingUp className="h-4 w-4 text-orange-600" />
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-3xl font-bold text-gray-900 mb-2">
+                <div className="text-2xl font-bold text-gray-900 mb-1">
                   {user?.role === 'student' ? '75%' : user?.role === 'teacher' ? '142' : '1,247'}
                 </div>
                 <p className="text-sm text-gray-500">
@@ -168,15 +155,15 @@ export default function Home() {
             </Card>
             
             {/* Achievements Card */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Nailiyyətlər</CardTitle>
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl">
-                  <Award className="h-6 w-6 text-white" />
+            <Card className="hover:shadow-lg transition-shadow duration-200 border border-gray-100">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600">Nailiyyətlər</CardTitle>
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Award className="h-4 w-4 text-purple-600" />
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-3xl font-bold text-gray-900 mb-2">
+                <div className="text-2xl font-bold text-gray-900 mb-1">
                   {user?.role === 'student' ? '2' : user?.role === 'teacher' ? '8' : '892'}
                 </div>
                 <p className="text-sm text-gray-500">
@@ -189,70 +176,70 @@ export default function Home() {
       </section>
 
       {/* Quick Actions Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Tez <span className="text-blue-500">Əməliyyatlar</span>
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              Tez Əməliyyatlar
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-600 max-w-xl mx-auto">
               Ən çox istifadə olunan funksiyalara tez keçid edin
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Link href="/courses">
-              <Card className="group cursor-pointer hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200">
-                <CardContent className="p-8 text-center">
-                  <div className="mb-6">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <BookOpen className="h-8 w-8 text-white" />
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-200 border border-gray-100 bg-white">
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4">
+                    <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                      <BookOpen className="h-6 w-6 text-blue-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Kursları Araşdır</h3>
-                  <p className="text-gray-600">Mövcud kursları görün və qeydiyyatdan keçin</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Kursları Araşdır</h3>
+                  <p className="text-sm text-gray-600">Mövcud kursları görün və qeydiyyatdan keçin</p>
                 </CardContent>
               </Card>
             </Link>
 
             <Link href={getDashboardLink()}>
-              <Card className="group cursor-pointer hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200">
-                <CardContent className="p-8 text-center">
-                  <div className="mb-6">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <TrendingUp className="h-8 w-8 text-white" />
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-200 border border-gray-100 bg-white">
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4">
+                    <div className="mx-auto w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                      <TrendingUp className="h-6 w-6 text-green-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">İdarə Paneli</h3>
-                  <p className="text-gray-600">Ətraflı statistika və idarəetmə alətləri</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">İdarə Paneli</h3>
+                  <p className="text-sm text-gray-600">Ətraflı statistika və idarəetmə alətləri</p>
                 </CardContent>
               </Card>
             </Link>
 
             <Link href="/blog">
-              <Card className="group cursor-pointer hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200">
-                <CardContent className="p-8 text-center">
-                  <div className="mb-6">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Code className="h-8 w-8 text-white" />
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-200 border border-gray-100 bg-white">
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4">
+                    <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                      <Code className="h-6 w-6 text-purple-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Texnoloji Bloq</h3>
-                  <p className="text-gray-600">Ən son texnoloji yeniliklər və məqalələr</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Texnoloji Bloq</h3>
+                  <p className="text-sm text-gray-600">Ən son texnoloji yeniliklər və məqalələr</p>
                 </CardContent>
               </Card>
             </Link>
 
             <Link href="/verify">
-              <Card className="group cursor-pointer hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200">
-                <CardContent className="p-8 text-center">
-                  <div className="mb-6">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Award className="h-8 w-8 text-white" />
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-200 border border-gray-100 bg-white">
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4">
+                    <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                      <Award className="h-6 w-6 text-orange-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Sertifikat Yoxla</h3>
-                  <p className="text-gray-600">Sertifikatların həqiqiliyini təsdiq edin</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Sertifikat Yoxla</h3>
+                  <p className="text-sm text-gray-600">Sertifikatların həqiqiliyini təsdiq edin</p>
                 </CardContent>
               </Card>
             </Link>
@@ -261,24 +248,24 @@ export default function Home() {
       </section>
 
       {/* Motivational Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="space-y-8">
-            <div className="inline-flex items-center justify-center p-4 bg-gradient-to-r from-orange-500 to-blue-500 rounded-2xl">
-              <Zap className="h-12 w-12 text-white" />
+            <div className="inline-flex items-center justify-center p-3 bg-blue-100 rounded-lg">
+              <Zap className="h-8 w-8 text-blue-600" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              <span className="text-orange-500">Proqramlaşdırma</span> gələcəyinizi qurun
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Proqramlaşdırma gələcəyinizi qurun
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Hər gün yeni şeylər öyrənin, praktik layihələr üzərində işləyin və peşəkar inkişafınızı davam etdirin.
             </p>
-            <div className="pt-6">
+            <div className="pt-4">
               <Link href="/courses">
-                <Button size="lg" className="bg-gradient-to-r from-orange-500 to-blue-500 text-white hover:from-orange-600 hover:to-blue-600 px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-xl transition-all duration-300">
-                  <Play className="w-6 h-6 mr-3" />
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium">
+                  <Play className="w-5 h-5 mr-2" />
                   İndi Başla
-                  <ArrowRight className="w-5 h-5 ml-3" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
             </div>
