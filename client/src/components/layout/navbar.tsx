@@ -29,18 +29,17 @@ export default function Navbar() {
   });
 
   const topNavItems = [
-    { href: "/about", label: "Hər kəs üçün" },
-    { href: "/corporate", label: "Korporativ həllər" },
-    { href: "/career", label: "Karyera Mərkəzi" },
-    { href: "/consulting", label: "Məsləhətimiz" },
+    { href: "/about", label: "Haqqımızda" },
+    { href: "/contact", label: "Əlaqə" },
+    { href: "/verify", label: "Sertifikat Yoxla" },
     { href: "/blog", label: "Bloq" },
   ];
 
   const navItems = [
-    { href: "/", label: "Akademiya" },
-    { href: "/courses", label: "Tədris sahələri" },
-    { href: "/programs", label: "Təqşud proqramları" },
-    { href: "/training", label: "Təhsil modelil" },
+    { href: "/", label: "Ana Səhifə" },
+    { href: "/courses", label: "Kurslar" },
+    { href: "/programs", label: "Proqramlar" },
+    { href: "/training", label: "Təlim Modeli" },
   ];
 
   const getDashboardLink = () => {
@@ -191,10 +190,15 @@ export default function Navbar() {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                   <div className="flex flex-col space-y-4 mt-8">
-                    {topNavItems.map((item) => (
+                    {/* Main Navigation */}
+                    {navItems.map((item) => (
                       <Link key={item.href} href={item.href}>
                         <span 
-                          className="block py-2 px-4 text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
+                          className={`block py-3 px-4 text-lg font-medium transition-colors cursor-pointer ${
+                            location === item.href 
+                              ? "text-orange-500 bg-orange-50" 
+                              : "text-gray-700 hover:text-orange-500 hover:bg-orange-50"
+                          } rounded-lg`}
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           {item.label}
@@ -202,15 +206,16 @@ export default function Navbar() {
                       </Link>
                     ))}
                     
-                    <div className="border-t border-gray-200 pt-4"></div>
+                    <div className="border-t border-gray-200 my-4"></div>
                     
-                    {navItems.map((item) => (
+                    {/* Top Navigation Items */}
+                    {topNavItems.map((item) => (
                       <Link key={item.href} href={item.href}>
                         <span 
-                          className={`block py-2 px-4 text-lg transition-colors cursor-pointer ${
+                          className={`block py-2 px-4 text-sm transition-colors cursor-pointer ${
                             location === item.href 
                               ? "text-orange-500" 
-                              : "text-gray-700 hover:text-orange-500"
+                              : "text-gray-600 hover:text-gray-900"
                           }`}
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
