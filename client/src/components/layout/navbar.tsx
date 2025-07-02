@@ -59,13 +59,17 @@ export default function Navbar() {
   return (
     <>
       {/* Top Navigation Bar */}
-      <div className="bg-gray-50 border-b border-gray-200">
+      <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center h-10 text-sm">
-            <div className="hidden md:flex items-center space-x-8">
+          <div className="flex justify-between items-center h-9 text-xs">
+            {/* Left side empty or can add content */}
+            <div></div>
+            
+            {/* Right side navigation */}
+            <div className="hidden md:flex items-center space-x-6">
               {topNavItems.map((item) => (
                 <Link key={item.href} href={item.href}>
-                  <span className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
+                  <span className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer text-xs">
                     {item.label}
                   </span>
                 </Link>
@@ -76,18 +80,18 @@ export default function Navbar() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/">
-              <div className="flex items-center space-x-3 cursor-pointer">
-                <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">D</span>
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <div className="w-10 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">D</span>
                 </div>
-                <div>
-                  <span className="text-xl font-bold text-gray-900">code</span>
-                  <div className="text-xs text-orange-500 font-semibold">academy</div>
+                <div className="flex items-center">
+                  <span className="text-lg font-bold text-gray-900">/ code</span>
+                  <span className="text-lg font-bold text-gray-900 ml-1">academy</span>
                 </div>
               </div>
             </Link>
@@ -96,7 +100,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-8">
               {navItems.map((item) => (
                 <Link key={item.href} href={item.href}>
-                  <span className={`transition-colors cursor-pointer font-medium ${
+                  <span className={`transition-colors cursor-pointer font-medium text-sm ${
                     location === item.href 
                       ? "text-orange-500" 
                       : "text-gray-700 hover:text-orange-500"
@@ -162,15 +166,15 @@ export default function Navbar() {
                   <Button 
                     variant="ghost" 
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="hidden md:flex text-gray-700 hover:text-gray-900"
+                    className="hidden md:flex text-gray-700 hover:text-gray-900 text-sm"
                   >
                     Giriş
                   </Button>
                   <Button 
                     onClick={() => setIsSignupModalOpen(true)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black hidden md:flex font-semibold"
+                    className="bg-yellow-500 hover:bg-yellow-600 text-black hidden md:flex font-semibold text-sm px-6 py-2 rounded-lg"
                   >
-                    Müraciət et
+                    ✉ Müraciət et
                   </Button>
                 </>
               )}
@@ -249,7 +253,7 @@ export default function Navbar() {
                           }}
                           className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
                         >
-                          Müraciət et
+                          ✉ Müraciət et
                         </Button>
                       </div>
                     )}
