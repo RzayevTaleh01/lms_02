@@ -29,18 +29,17 @@ export default function Navbar() {
   });
 
   const topNavItems = [
-    { href: "/about", label: "Hər kəs üçün" },
-    { href: "/corporate", label: "Korporativ həllər" },
-    { href: "/career", label: "Karyera Mərkəzi" },
-    { href: "/consulting", label: "Məsləhətimiz" },
+    { href: "/about", label: "Haqqımızda" },
     { href: "/blog", label: "Bloq" },
+    { href: "/career", label: "Karyera" },
+    { href: "/contact", label: "Əlaqə" },
   ];
 
   const navItems = [
-    { href: "/", label: "Akademiya" },
-    { href: "/courses", label: "Tədris sahələri" },
-    { href: "/programs", label: "Təqşud proqramları" },
-    { href: "/training", label: "Təhsil modelil" },
+    { href: "/", label: "Ana səhifə" },
+    { href: "/courses", label: "Kurslar" },
+    { href: "/verify-certificate", label: "Sertifikat Yoxla" },
+    { href: "/about", label: "Haqqımızda" },
   ];
 
   const getDashboardLink = () => {
