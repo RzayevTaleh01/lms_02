@@ -18,6 +18,8 @@ import {
   BarChart3,
   CheckCircle,
   Play,
+  Code,
+  Smartphone,
   ArrowRight,
   Star,
   Globe,
@@ -38,86 +40,126 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
       
-      {/* Hero Section - Clean & Simple like ATL Academy */}
-      <section className="relative bg-gradient-to-br from-orange-50 to-yellow-50 py-20 lg:py-32">
-        {/* Simple Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 right-20 w-64 h-64 bg-orange-300 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-20 w-48 h-48 bg-yellow-300 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Hero Section - Code.edu.az Style */}
+      <section className="relative bg-gray-50 py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div>
               <div className="mb-8">
-                <img 
-                  src="/attached_assets/devcode_1751391029827.png" 
-                  alt="DevCode Academy" 
-                  className="h-12 w-auto mb-4"
-                />
-                <p className="text-orange-600 text-sm font-medium">Proqramlaşdırma Təhsil Akademiyası</p>
-              </div>
-              
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                Gələcəyini dəyiş
-              </h1>
-              
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                DevCode Academy proqramlaşdırma və texnologiya sahəsində peşəkar karyera qurmaq istəyən 
-                insanlar üçün hazırlanmış mütəxəssis təhsil mərkəzidir. Burada texnologiyanı öyrənmək 
-                təkcə dərs deyil, həm də gələcəyə səfər olmaqdır!
-              </p>
-              
-              <div className="flex gap-4">
-                <Link href="/contact">
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg rounded-lg">
-                    Əlaqə
-                  </Button>
-                </Link>
-                <Link href="/courses">
-                  <Button variant="outline" className="border-orange-500 text-orange-500 hover:bg-orange-50 px-8 py-3 text-lg rounded-lg">
-                    Kurslar
-                  </Button>
-                </Link>
+                <h2 className="text-yellow-500 text-lg font-semibold mb-2">Hər kəs üçün</h2>
+                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-4">
+                  Gələcəyə buradan keç!
+                  <br />
+                  <span className="text-gray-800">#gələcəkburada</span>
+                </h1>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                  DevCode LMS gələcək innovasiyaları bu gündən duyub ona uyğun 
+                  mütəxəssislər hazırlayan təhsil müəssisəsidir.
+                </p>
+                <Button className="bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-4 text-lg font-semibold rounded-lg">
+                  Keçid et
+                </Button>
               </div>
             </div>
             
-            {/* Right Code Visual */}
+            {/* Right Visual */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 shadow-xl overflow-hidden">
-                {/* Code Editor Header */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                  <span className="text-gray-400 text-sm ml-4">app.js</span>
-                </div>
-                
-                {/* Code Content */}
-                <div className="text-sm font-mono">
-                  <div className="text-gray-500 mb-2">// DevCode Academy - Real Kod</div>
-                  <div className="text-orange-400 mb-1">function <span className="text-blue-400">createDeveloper</span><span className="text-gray-300">() {`{`}</span></div>
-                  <div className="text-gray-300 ml-4 mb-1">const <span className="text-green-400">student</span> = <span className="text-yellow-300">'yeni başlayan'</span>;</div>
-                  <div className="text-gray-300 ml-4 mb-1">const <span className="text-green-400">knowledge</span> = <span className="text-purple-400">learn</span><span className="text-gray-300">(</span><span className="text-yellow-300">'programming'</span><span className="text-gray-300">);</span></div>
-                  <div className="text-gray-300 ml-4 mb-1">const <span className="text-green-400">practice</span> = <span className="text-purple-400">build</span><span className="text-gray-300">(</span><span className="text-yellow-300">'real projects'</span><span className="text-gray-300">);</span></div>
-                  <div className="text-gray-300 ml-4 mb-1">return <span className="text-green-400">student</span> + <span className="text-green-400">knowledge</span> + <span className="text-green-400">practice</span>;</div>
-                  <div className="text-gray-300">{`}`}</div>
-                  <div className="text-gray-500 mt-4">// Nəticə: Professional Developer 🚀</div>
-                </div>
-                
-                {/* Terminal Output */}
-                <div className="bg-black rounded-lg p-4 mt-4">
-                  <div className="text-green-400 text-xs font-mono">
-                    <div>$ npm run build-career</div>
-                    <div className="text-gray-400 mt-1">✓ Skills: HTML, CSS, JavaScript</div>
-                    <div className="text-gray-400">✓ Framework: React, Node.js</div>
-                    <div className="text-gray-400">✓ Database: MongoDB, PostgreSQL</div>
-                    <div className="text-orange-400 mt-2">Success: Ready for job market!</div>
+              <div className="bg-white rounded-2xl p-8 shadow-xl">
+                {/* 3D Stack Visual */}
+                <div className="relative h-80 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    {/* Stack of cards with 3D effect */}
+                    <div className="relative">
+                      {/* Back cards */}
+                      <div className="absolute bg-gray-200 w-64 h-40 rounded-lg transform rotate-3 translate-x-4 translate-y-2 shadow-lg"></div>
+                      <div className="absolute bg-gray-300 w-64 h-40 rounded-lg transform rotate-1 translate-x-2 translate-y-1 shadow-lg"></div>
+                      
+                      {/* Front card */}
+                      <div className="relative bg-white w-64 h-40 rounded-lg shadow-xl border border-gray-200 p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="w-8 h-8 bg-orange-500 rounded-full"></div>
+                          <div className="w-6 h-6 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                          <div className="h-3 bg-orange-200 rounded w-2/3"></div>
+                        </div>
+                        <div className="absolute bottom-2 right-2">
+                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Orange flag */}
+                      <div className="absolute -top-8 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[30px] border-b-orange-500"></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Slider Section */}
+      <section className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Peşəkar Karyeranızı Qurun</h2>
+            <p className="text-gray-600 mt-2">Müxtəlif texnologiya sahələrində ekspert olun</p>
+          </div>
+          
+          {/* Slider Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Frontend Development */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                <Monitor className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Frontend Development</h3>
+              <p className="text-gray-600 mb-4">React, Vue.js, Angular və müasir frontend texnologiyaları</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">React</span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">JavaScript</span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">CSS</span>
+              </div>
+            </div>
+
+            {/* Backend Development */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                <Monitor className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Backend Development</h3>
+              <p className="text-gray-600 mb-4">Node.js, Python, Java və server tərəfi proqramlaşdırma</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Node.js</span>
+                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Python</span>
+                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">API</span>
+              </div>
+            </div>
+
+            {/* Mobile Development */}
+            <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-xl p-6 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                <Monitor className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Mobile Development</h3>
+              <p className="text-gray-600 mb-4">React Native, Flutter və hibrid mobil tətbiqlər</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">React Native</span>
+                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">Flutter</span>
+                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">iOS</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Dots */}
+          <div className="flex justify-center mt-8 space-x-2">
+            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+            <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
           </div>
         </div>
       </section>

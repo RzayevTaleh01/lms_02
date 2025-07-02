@@ -62,7 +62,10 @@ export default function Navbar() {
                   alt="DevCode Academy" 
                   className="w-8 h-8"
                 />
-                <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
+                <div>
+                  <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
+                  <div className="text-xs text-gray-500">LMS</div>
+                </div>
               </div>
             </Link>
 
