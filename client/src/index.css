@@ -121,39 +121,36 @@
 
 :root {
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(224, 71%, 4%);
-  --muted: hsl(220, 14%, 96%);
-  --muted-foreground: hsl(220, 9%, 46%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(224, 71%, 4%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(224, 71%, 4%);
-  --border: hsl(220, 13%, 91%);
-  --input: hsl(220, 13%, 91%);
-  --primary: hsl(262, 83%, 58%);
-  --primary-foreground: hsl(210, 20%, 98%);
-  --secondary: hsl(220, 14%, 96%);
-  --secondary-foreground: hsl(220, 9%, 46%);
-  --accent: hsl(220, 14%, 96%);
-  --accent-foreground: hsl(220, 9%, 46%);
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(210, 20%, 98%);
-  --ring: hsl(262, 83%, 58%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(24, 100%, 50%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(24, 100%, 50%);
   --radius: 0.5rem;
   
-  /* DevCode Academy Clean Design Colors */
-  --devcode-purple: hsl(262, 83%, 58%);
-  --devcode-purple-light: hsl(266, 85%, 70%);
-  --devcode-purple-dark: hsl(258, 90%, 48%);
-  --devcode-dark: hsl(224, 71%, 4%);
-  --devcode-gray: hsl(220, 9%, 46%);
-  --devcode-light: hsl(220, 14%, 96%);
-  --devcode-blue: hsl(217, 91%, 60%);
-  --devcode-teal: hsl(174, 83%, 40%);
+  /* DevCode Academy brand colors */
+  --devcode-orange: hsl(24, 100%, 50%);
+  --devcode-orange-light: hsl(24, 100%, 64%);
+  --devcode-dark: hsl(218, 26%, 22%);
   
   /* Sidebar width variables */
   --sidebar-width: 16rem;
   --sidebar-width-collapsed: 4rem;
+  --devcode-gray: hsl(218, 11%, 48%);
+  --devcode-light: hsl(210, 40%, 98%);
 }
 
 .dark {
@@ -190,25 +187,12 @@
 }
 
 @layer utilities {
-  /* Text Colors */
-  .text-devcode-purple {
-    color: var(--devcode-purple);
+  .text-devcode-orange {
+    color: var(--devcode-orange);
   }
   
-  .text-devcode-purple-light {
-    color: var(--devcode-purple-light);
-  }
-  
-  .text-devcode-purple-dark {
-    color: var(--devcode-purple-dark);
-  }
-  
-  .text-devcode-blue {
-    color: var(--devcode-blue);
-  }
-  
-  .text-devcode-teal {
-    color: var(--devcode-teal);
+  .text-devcode-orange-light {
+    color: var(--devcode-orange-light);
   }
   
   .text-devcode-dark {
@@ -219,25 +203,12 @@
     color: var(--devcode-gray);
   }
   
-  /* Background Colors */
-  .bg-devcode-purple {
-    background-color: var(--devcode-purple);
+  .bg-devcode-orange {
+    background-color: var(--devcode-orange);
   }
   
-  .bg-devcode-purple-light {
-    background-color: var(--devcode-purple-light);
-  }
-  
-  .bg-devcode-purple-dark {
-    background-color: var(--devcode-purple-dark);
-  }
-  
-  .bg-devcode-blue {
-    background-color: var(--devcode-blue);
-  }
-  
-  .bg-devcode-teal {
-    background-color: var(--devcode-teal);
+  .bg-devcode-orange-light {
+    background-color: var(--devcode-orange-light);
   }
   
   .bg-devcode-dark {
@@ -252,60 +223,16 @@
     background-color: var(--devcode-light);
   }
   
-  /* Border Colors */
-  .border-devcode-purple {
-    border-color: var(--devcode-purple);
+  .border-devcode-orange {
+    border-color: var(--devcode-orange);
   }
   
-  .border-devcode-blue {
-    border-color: var(--devcode-blue);
+  .hover\:bg-devcode-orange:hover {
+    background-color: var(--devcode-orange);
   }
   
-  .border-devcode-teal {
-    border-color: var(--devcode-teal);
-  }
-  
-  /* Gradients */
-  .bg-gradient-purple {
-    background: linear-gradient(135deg, var(--devcode-purple), var(--devcode-purple-light));
-  }
-  
-  .bg-gradient-blue {
-    background: linear-gradient(135deg, var(--devcode-blue), var(--devcode-purple));
-  }
-  
-  .bg-gradient-teal {
-    background: linear-gradient(135deg, var(--devcode-teal), var(--devcode-blue));
-  }
-  
-  /* Hover States */
-  .hover\:bg-devcode-purple:hover {
-    background-color: var(--devcode-purple);
-  }
-  
-  .hover\:bg-devcode-purple-dark:hover {
-    background-color: var(--devcode-purple-dark);
-  }
-  
-  .hover\:text-devcode-purple:hover {
-    color: var(--devcode-purple);
-  }
-  
-  .hover\:border-devcode-purple:hover {
-    border-color: var(--devcode-purple);
-  }
-  
-  /* Clean Shadows */
-  .shadow-clean {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  }
-  
-  .shadow-clean-lg {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-  
-  .shadow-clean-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  .hover\:text-devcode-orange:hover {
+    color: var(--devcode-orange);
   }
   
   /* React Quill Editor Styles */
