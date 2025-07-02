@@ -28,12 +28,19 @@ export default function Navbar() {
     }
   });
 
-  const navItems = [
-    { href: "/", label: "Ana səhifə" },
-    { href: "/courses", label: "Kurslar" },
+  const topNavItems = [
+    { href: "/about", label: "Hər kəs üçün" },
+    { href: "/corporate", label: "Korporativ həllər" },
+    { href: "/career", label: "Karyera Mərkəzi" },
+    { href: "/consulting", label: "Məsləhətimiz" },
     { href: "/blog", label: "Bloq" },
-    { href: "/verify", label: "Sertifikat yoxla" },
-    { href: "/contact", label: "Əlaqə" },
+  ];
+
+  const navItems = [
+    { href: "/", label: "Akademiya" },
+    { href: "/courses", label: "Tədris sahələri" },
+    { href: "/programs", label: "Təqşud proqramları" },
+    { href: "/training", label: "Təhsil modelil" },
   ];
 
   const getDashboardLink = () => {
@@ -51,20 +58,36 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Top Navigation Bar */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center h-10 text-sm">
+            <div className="hidden md:flex items-center space-x-8">
+              {topNavItems.map((item) => (
+                <Link key={item.href} href={item.href}>
+                  <span className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
+                    {item.label}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Navigation */}
       <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/">
               <div className="flex items-center space-x-3 cursor-pointer">
-                <img 
-                  src="/assets/devcode_1751391029827.png" 
-                  alt="DevCode Academy" 
-                  className="w-8 h-8"
-                />
+                <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">D</span>
+                </div>
                 <div>
-                  <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
-                  <div className="text-xs text-gray-500">LMS</div>
+                  <span className="text-xl font-bold text-gray-900">code</span>
+                  <div className="text-xs text-orange-500 font-semibold">academy</div>
                 </div>
               </div>
             </Link>
@@ -73,10 +96,10 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-8">
               {navItems.map((item) => (
                 <Link key={item.href} href={item.href}>
-                  <span className={`transition-colors cursor-pointer ${
+                  <span className={`transition-colors cursor-pointer font-medium ${
                     location === item.href 
-                      ? "text-devcode-orange" 
-                      : "text-devcode-dark hover:text-devcode-orange"
+                      ? "text-orange-500" 
+                      : "text-gray-700 hover:text-orange-500"
                   }`}>
                     {item.label}
                   </span>
@@ -100,7 +123,7 @@ export default function Navbar() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-devcode-orange text-white">
+                          <AvatarFallback className="bg-orange-500 text-white">
                             {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
@@ -139,15 +162,15 @@ export default function Navbar() {
                   <Button 
                     variant="ghost" 
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="hidden md:flex"
+                    className="hidden md:flex text-gray-700 hover:text-gray-900"
                   >
                     Giriş
                   </Button>
                   <Button 
                     onClick={() => setIsSignupModalOpen(true)}
-                    className="bg-devcode-orange hover:bg-orange-600 hidden md:flex"
+                    className="bg-yellow-500 hover:bg-yellow-600 text-black hidden md:flex font-semibold"
                   >
-                    Qeydiyyat
+                    Müraciət et
                   </Button>
                 </>
               )}
@@ -161,13 +184,26 @@ export default function Navbar() {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                   <div className="flex flex-col space-y-4 mt-8">
+                    {topNavItems.map((item) => (
+                      <Link key={item.href} href={item.href}>
+                        <span 
+                          className="block py-2 px-4 text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {item.label}
+                        </span>
+                      </Link>
+                    ))}
+                    
+                    <div className="border-t border-gray-200 pt-4"></div>
+                    
                     {navItems.map((item) => (
                       <Link key={item.href} href={item.href}>
                         <span 
                           className={`block py-2 px-4 text-lg transition-colors cursor-pointer ${
                             location === item.href 
-                              ? "text-devcode-orange" 
-                              : "text-devcode-dark hover:text-devcode-orange"
+                              ? "text-orange-500" 
+                              : "text-gray-700 hover:text-orange-500"
                           }`}
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
@@ -180,7 +216,7 @@ export default function Navbar() {
                       <>
                         <Link href={getDashboardLink()}>
                           <span 
-                            className="block py-2 px-4 text-lg text-devcode-dark hover:text-devcode-orange cursor-pointer"
+                            className="block py-2 px-4 text-lg text-gray-700 hover:text-orange-500 cursor-pointer"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             İdarə Paneli
@@ -211,9 +247,9 @@ export default function Navbar() {
                             setIsSignupModalOpen(true);
                             setIsMobileMenuOpen(false);
                           }}
-                          className="w-full bg-devcode-orange hover:bg-orange-600"
+                          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
                         >
-                          Qeydiyyat
+                          Müraciət et
                         </Button>
                       </div>
                     )}

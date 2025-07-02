@@ -2,25 +2,27 @@ import { Link } from "wouter";
 
 export default function Footer() {
   return (
-    <footer className="bg-devcode-dark text-white py-16">
+    <footer className="bg-black text-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
-              <img 
-                src="/assets/devcode_1751391029827.png" 
-                alt="DevCode Academy" 
-                className="w-8 h-8"
-              />
-              <span className="text-xl font-bold">DevCode Academy</span>
+              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">D</span>
+              </div>
+              <div>
+                <span className="text-xl font-bold text-white">code</span>
+                <div className="text-xs text-orange-500 font-semibold">academy</div>
+              </div>
             </div>
-            <p className="text-gray-300 mb-6 max-w-md">
-              Empowering the next generation of developers with cutting-edge programming education and hands-on learning experiences.
+            <p className="text-gray-400 mb-6 max-w-md">
+              Gələcək innovasiyaları bu gündən duyub ona uyğun 
+              mütəxəssislər hazırlayan təhsil müəssisəsidir.
             </p>
             <div className="flex space-x-4">
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -29,7 +31,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
                 aria-label="Twitter"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -38,7 +40,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -47,7 +49,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
                 aria-label="YouTube"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -58,52 +60,52 @@ export default function Footer() {
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-3 text-gray-300">
+            <h3 className="text-lg font-semibold mb-4 text-white">Sürətli keçidlər</h3>
+            <ul className="space-y-3 text-gray-400">
               <li>
                 <Link href="/courses">
-                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">All Courses</span>
+                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Tədris sahələri</span>
                 </Link>
               </li>
               <li>
                 <Link href="/blog">
-                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">Blog</span>
+                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Bloq</span>
                 </Link>
               </li>
               <li>
                 <Link href="/verify">
-                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">Verify Certificate</span>
+                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Sertifikat yoxla</span>
                 </Link>
               </li>
               <li>
                 <Link href="/contact">
-                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">Contact Us</span>
+                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Əlaqə</span>
                 </Link>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
-            <ul className="space-y-3 text-gray-300">
+            <h3 className="text-lg font-semibold mb-4 text-white">Dəstək</h3>
+            <ul className="space-y-3 text-gray-400">
               <li>
-                <a href="#" className="hover:text-devcode-orange transition-colors">Help Center</a>
+                <a href="#" className="hover:text-orange-500 transition-colors">Yardım Mərkəzi</a>
               </li>
               <li>
-                <a href="#" className="hover:text-devcode-orange transition-colors">Student Support</a>
+                <a href="#" className="hover:text-orange-500 transition-colors">Tələbə Dəstəyi</a>
               </li>
               <li>
-                <a href="#" className="hover:text-devcode-orange transition-colors">Technical Issues</a>
+                <a href="#" className="hover:text-orange-500 transition-colors">Texniki Problemlər</a>
               </li>
               <li>
-                <a href="#" className="hover:text-devcode-orange transition-colors">Privacy Policy</a>
+                <a href="#" className="hover:text-orange-500 transition-colors">Məxfilik Siyasəti</a>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="border-t border-gray-700 mt-12 pt-8 text-center">
-          <p className="text-gray-300">&copy; 2024 DevCode Academy. All rights reserved.</p>
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+          <p className="text-gray-400">&copy; 2025 DevCode Academy. Bütün hüquqlar qorunur.</p>
         </div>
       </div>
     </footer>

@@ -40,59 +40,89 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
       
-      {/* Hero Section - Code.edu.az Style */}
-      <section className="relative bg-gray-50 py-16 lg:py-24">
+      {/* Hero Section */}
+      <section className="relative bg-gray-50 py-16 lg:py-24 overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-10 left-10 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+          <div className="absolute top-20 right-20 w-3 h-3 bg-orange-400 rounded-full animate-bounce"></div>
+          <div className="absolute bottom-20 left-20 w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+        </div>
+        
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div>
+            <div className="relative z-10">
               <div className="mb-8">
-                <h2 className="text-yellow-500 text-lg font-semibold mb-2">Hər kəs üçün</h2>
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full"></div>
+                  <h2 className="text-yellow-600 text-lg font-semibold">Hər kəs üçün</h2>
+                </div>
+                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">
                   Gələcəyə buradan keç!
                   <br />
                   <span className="text-gray-800">#gələcəkburada</span>
                 </h1>
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                  DevCode LMS gələcək innovasiyaları bu gündən duyub ona uyğun 
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
+                  Code Academy gələcək innovasiyaları bu gündən duyub ona uyğun 
                   mütəxəssislər hazırlayan təhsil müəssisəsidir.
                 </p>
-                <Button className="bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-4 text-lg font-semibold rounded-lg">
+                <Button className="bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-4 text-lg font-semibold rounded-lg shadow-lg">
                   Keçid et
                 </Button>
               </div>
             </div>
             
-            {/* Right Visual */}
-            <div className="relative">
-              <div className="bg-white rounded-2xl p-8 shadow-xl">
-                {/* 3D Stack Visual */}
-                <div className="relative h-80 flex items-center justify-center">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {/* Stack of cards with 3D effect */}
-                    <div className="relative">
-                      {/* Back cards */}
-                      <div className="absolute bg-gray-200 w-64 h-40 rounded-lg transform rotate-3 translate-x-4 translate-y-2 shadow-lg"></div>
-                      <div className="absolute bg-gray-300 w-64 h-40 rounded-lg transform rotate-1 translate-x-2 translate-y-1 shadow-lg"></div>
-                      
-                      {/* Front card */}
-                      <div className="relative bg-white w-64 h-40 rounded-lg shadow-xl border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="w-8 h-8 bg-orange-500 rounded-full"></div>
-                          <div className="w-6 h-6 bg-green-500 rounded-full animate-pulse"></div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                          <div className="h-3 bg-orange-200 rounded w-2/3"></div>
-                        </div>
-                        <div className="absolute bottom-2 right-2">
-                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        </div>
+            {/* Right Visual - 3D Stack */}
+            <div className="relative lg:pl-12">
+              <div className="relative h-96 flex items-center justify-center">
+                {/* Background decorative elements */}
+                <div className="absolute inset-0">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full opacity-60"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-br from-green-200 to-green-300 rounded-full opacity-60"></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-orange-200 to-orange-300 rounded-full opacity-40"></div>
+                </div>
+                
+                {/* Main 3D Stack */}
+                <div className="relative z-10">
+                  {/* Back layers */}
+                  <div className="absolute bg-gray-100 w-64 h-40 rounded-xl transform rotate-3 translate-x-6 translate-y-4 shadow-lg border border-gray-200"></div>
+                  <div className="absolute bg-gray-50 w-64 h-40 rounded-xl transform rotate-1 translate-x-3 translate-y-2 shadow-lg border border-gray-200"></div>
+                  
+                  {/* Front card */}
+                  <div className="relative bg-white w-64 h-40 rounded-xl shadow-2xl border border-gray-200 p-6 transform hover:scale-105 transition-transform duration-300">
+                    {/* Header with status indicators */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                       </div>
-                      
-                      {/* Orange flag */}
-                      <div className="absolute -top-8 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[30px] border-b-orange-500"></div>
+                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                        <Play className="w-3 h-3 text-white" />
+                      </div>
+                    </div>
+                    
+                    {/* Content lines */}
+                    <div className="space-y-3">
+                      <div className="h-3 bg-gradient-to-r from-gray-200 to-gray-100 rounded-full w-4/5"></div>
+                      <div className="h-3 bg-gradient-to-r from-gray-200 to-gray-100 rounded-full w-3/5"></div>
+                      <div className="h-3 bg-gradient-to-r from-orange-200 to-orange-100 rounded-full w-4/5"></div>
+                    </div>
+                    
+                    {/* Progress indicator */}
+                    <div className="absolute bottom-4 left-6 right-6">
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full w-3/4 animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Floating flag */}
+                  <div className="absolute -top-6 -right-4 transform rotate-12">
+                    <div className="relative">
+                      <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[18px] border-b-orange-500"></div>
+                      <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-gray-400"></div>
                     </div>
                   </div>
                 </div>
@@ -102,64 +132,103 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Slider Section */}
-      <section className="bg-white py-12">
+      {/* Tədris proqramları Section */}
+      <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Peşəkar Karyeranızı Qurun</h2>
-            <p className="text-gray-600 mt-2">Müxtəlif texnologiya sahələrində ekspert olun</p>
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Tədris proqramları</h2>
           </div>
           
-          {/* Slider Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Frontend Development */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
-                <Monitor className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Frontend Development</h3>
-              <p className="text-gray-600 mb-4">React, Vue.js, Angular və müasir frontend texnologiyaları</p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">React</span>
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">JavaScript</span>
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">CSS</span>
-              </div>
-            </div>
-
-            {/* Backend Development */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
-                <Monitor className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Backend Development</h3>
-              <p className="text-gray-600 mb-4">Node.js, Python, Java və server tərəfi proqramlaşdırma</p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Node.js</span>
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Python</span>
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">API</span>
+          {/* Course Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Front-end Stack */}
+            <div className="group cursor-pointer">
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="relative">
+                  <div className="h-32 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center">
+                      <Code className="w-8 h-8 text-blue-600" />
+                    </div>
+                  </div>
+                  <div className="absolute top-3 right-3">
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Front-end sosial full stack</h3>
+                  <p className="text-sm text-gray-600">Gələcəyin sosial mədya platformını bu gündən büdrətələyim.</p>
+                </div>
               </div>
             </div>
 
-            {/* Mobile Development */}
-            <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-xl p-6 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
-                <Monitor className="w-6 h-6 text-white" />
+            {/* Back-end Stack */}
+            <div className="group cursor-pointer">
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="relative">
+                  <div className="h-32 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center">
+                      <Monitor className="w-8 h-8 text-green-600" />
+                    </div>
+                  </div>
+                  <div className="absolute top-3 right-3">
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-green-600 transition-colors" />
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Back-end sosial full stack</h3>
+                  <p className="text-sm text-gray-600">Hər üçün güçlü sistem arxitektu san dayəm.</p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Mobile Development</h3>
-              <p className="text-gray-600 mb-4">React Native, Flutter və hibrid mobil tətbiqlər</p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">React Native</span>
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">Flutter</span>
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">iOS</span>
+            </div>
+
+            {/* Grafik Dizayn */}
+            <div className="group cursor-pointer">
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="relative">
+                  <div className="h-32 bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center">
+                      <Briefcase className="w-8 h-8 text-purple-600" />
+                    </div>
+                  </div>
+                  <div className="absolute top-3 right-3">
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Grafik Dizayn və Vizual Ko...</h3>
+                  <p className="text-sm text-gray-600">Gələcəyin qiyafəti etibaryaqlaşmaya bu gündən başla.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* UX/UI Dizayn */}
+            <div className="group cursor-pointer">
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="relative">
+                  <div className="h-32 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center">
+                      <Smartphone className="w-8 h-8 text-orange-600" />
+                    </div>
+                  </div>
+                  <div className="absolute top-3 right-3">
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">UX/UI Dizayn</h3>
+                  <p className="text-sm text-gray-600">Digital səfdirlüm təsdirətünü hər kəsim hər yaxın...</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Navigation Dots */}
-          <div className="flex justify-center mt-8 space-x-2">
-            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-            <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+          <div className="flex justify-center mt-12 space-x-2">
+            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
           </div>
         </div>
       </section>
