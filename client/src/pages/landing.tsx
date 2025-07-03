@@ -632,7 +632,9 @@ export default function Landing() {
 
                 <p className="text-gray-600 mb-6 leading-relaxed">
                   Cross-platform mobile development. iOS və Android üçün app yaradın.
-                </p{/* Course Features */}
+                </p>
+                
+                {/* Course Features */}
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center text-sm text-gray-600">
                     <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
