@@ -602,17 +602,25 @@ export default function CourseManagement() {
                 <CardTitle>Ümumi Davamiyyət</CardTitle>
               </CardHeader>
               <CardContent>
+                <div className="overflow-x-auto max-w-full">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Tələbə</TableHead>
                       {lessonSessions.map((session: any) => (
                         <TableHead key={session.id} className="text-center">
-                          {new Date(session.startedAt).toLocaleDateString('az-AZ', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                          })}
+                          {session.startedAt ? 
+                            new Date(session.startedAt).toLocaleDateString('az-AZ', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            }) :
+                            new Date(session.createdAt || Date.now()).toLocaleDateString('az-AZ', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })
+                          }
                         </TableHead>
                       ))}
                       <TableHead>Davamiyyət %</TableHead>
@@ -668,6 +676,7 @@ export default function CourseManagement() {
                     })}
                   </TableBody>
                 </Table>
+                </div>
               </CardContent>
             </Card>
           </div>
