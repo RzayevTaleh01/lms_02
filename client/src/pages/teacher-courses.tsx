@@ -157,7 +157,7 @@ export default function TeacherCourses() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64 transition-all duration-300">
+      <div className="flex-1 transition-all duration-300">
         {/* Top Navigation */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
