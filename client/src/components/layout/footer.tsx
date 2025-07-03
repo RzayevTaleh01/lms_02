@@ -9,14 +9,14 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-devcode-orange rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">/</span>
+              <div className="w-8 h-8 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">D</span>
               </div>
-              <span className="text-xl font-bold">code academy</span>
+              <span className="text-xl font-bold">DevCode Academy</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Code Academy gələcək innovasiyaları bu gündən duyub ona uyğun 
-              mütəxəssislər hazırlayan tədrəis müəssisəsidir.
+              DevCode Academy - müasir proqramlaşdırma və texnoloji sahələrdə 
+              peşəkar mütəxəssislər hazırlayan rəqəmsal təhsil platforması.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-devcode-orange transition-colors">
@@ -78,22 +78,25 @@ export default function Footer() {
 
           {/* Programs */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Tədris Sahələri</h3>
+            <h3 className="text-lg font-semibold">Proqramlaşdırma Kursları</h3>
             <ul className="space-y-2">
               <li>
-                <span className="text-gray-400">Front-end Proqramlaşdırma</span>
+                <span className="text-gray-400">JavaScript & React</span>
               </li>
               <li>
-                <span className="text-gray-400">Back-end Proqramlaşdırma</span>
+                <span className="text-gray-400">Node.js Backend</span>
               </li>
               <li>
-                <span className="text-gray-400">UX/UI Dizayn</span>
+                <span className="text-gray-400">Full-Stack MERN</span>
               </li>
               <li>
-                <span className="text-gray-400">Digital Marketing</span>
+                <span className="text-gray-400">Python Development</span>
               </li>
               <li>
-                <span className="text-gray-400">Kiber Təhlükəsizlik</span>
+                <span className="text-gray-400">Mobile App Development</span>
+              </li>
+              <li>
+                <span className="text-gray-400">Database & SQL</span>
               </li>
             </ul>
           </div>
@@ -104,17 +107,17 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-devcode-orange" />
-                <span className="text-gray-400">+994 XX XXX XX XX</span>
+                <span className="text-gray-400">+994 12 345 67 89</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-devcode-orange" />
-                <span className="text-gray-400">info@codeacademy.az</span>
+                <span className="text-gray-400">info@devcode.academy</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="w-4 h-4 text-devcode-orange mt-1" />
                 <span className="text-gray-400">
-                  Bakı şəhəri, Nizami rayonu<br />
-                  Code Academy binası
+                  Bakı şəhəri, Nəsimi rayonu<br />
+                  28 May kuçəsi 15, DevCode binası
                 </span>
               </div>
             </div>
@@ -125,7 +128,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm">
-              © 2025 Code Academy. Bütün hüquqlar qorunur.
+              © 2025 DevCode Academy. Bütün hüquqlar qorunur.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link href="/privacy">

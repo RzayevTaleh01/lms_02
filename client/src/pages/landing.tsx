@@ -622,7 +622,7 @@ export default function Landing() {
               Nə üçün DevCode LMS?
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              Müasir təhsil platforması - tələbələr, müəllimlər və administratorlar üçün tam həll
+              Müasir təhsil platforması - tələbələr, müəllimlər üçün asan öyrənmə platforması.
             </p>
           </div>
 
@@ -649,7 +649,7 @@ export default function Landing() {
                   {/* Header */}
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900">Salam, Əli Vəliyev!</h3>
+                      <h3 className="text-xl font-bold text-gray-900">Salam, Əli!</h3>
                       <p className="text-gray-600">Bugün 3 yeni dərsiniz var</p>
                     </div>
                     <div className="w-12 h-12 bg-devcode-orange rounded-full flex items-center justify-center">
@@ -692,7 +692,7 @@ export default function Landing() {
 
                   {/* Recent Activity */}
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-gray-900">Son Aktivlər</h4>
+                    <h4 className="font-semibold text-gray-900">Son Fəaliyyətlər</h4>
                     <div className="flex items-center space-x-3 bg-gray-50 rounded-lg p-3">
                       <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                         <CheckCircle className="w-5 h-5 text-white" />
@@ -708,10 +708,10 @@ export default function Landing() {
 
               {/* Floating badges */}
               <div className="absolute -top-4 -right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg animate-bounce">
-                ✅ Easy to Use
+                ✅ Asan istifadə
               </div>
               <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
-                📱 Mobile Ready
+                📱 Mobil uyğunluq
               </div>
             </div>
 
@@ -735,7 +735,7 @@ export default function Landing() {
                   <div>
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">📺 Video Dərslər</h4>
                     <p className="text-gray-600">
-                      YouTube dərsləri, progress tracking, materiallar - 
+                      Kurs dərsləri, materiallar - 
                       hər dərs üçün videolar və tapşırıqlar!
                     </p>
                   </div>
@@ -749,7 +749,7 @@ export default function Landing() {
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">✍️ Tapşırıqlar</h4>
                     <p className="text-gray-600">
                       Sadə tapşırıq sistemi, fayl yükləmə, 
-                      müəllim feedback və yenidən göndərmə imkanı!
+                      müəllim feedback və tapşırıq göndərmə imkanı!
                     </p>
                   </div>
                 </div>
