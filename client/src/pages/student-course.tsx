@@ -316,7 +316,7 @@ export default function StudentCoursePage() {
     return (
       <div className="flex h-screen">
         <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-        <div className="flex-1 p-8">
+        <div className="flex-1 lg:ml-64 p-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
             <div className="h-4 bg-gray-200 rounded w-2/3"></div>
@@ -330,7 +330,7 @@ export default function StudentCoursePage() {
     <div className="min-h-screen bg-gray-50 flex">
       <StudentSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 lg:ml-64 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
