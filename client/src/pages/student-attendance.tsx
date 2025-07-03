@@ -104,7 +104,7 @@ export default function StudentAttendance() {
       <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="flex-1">
+      <div className="flex-1 lg:ml-64">
         {/* Top Navigation */}
         <div className="bg-white shadow-sm border-b">
           <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
