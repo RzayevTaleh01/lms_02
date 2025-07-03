@@ -582,207 +582,302 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Interactive Platform Preview Section */}
-      <section className="py-20 bg-white">
+      {/* System Architecture Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              İnteraktiv Təhsil Sistemi
+              DevCode LMS Sistem Arxitekturası
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              DevCode LMS ilə canlı kod editoru, real-time kompayler və mentor dəstəyi 
-              bir yerdə. Həqiqi proqramlaşdırma mühitində öyrənin və praktika edin.
+              Müasir texnologiyalar və mikroservis arxitekturasında qurulmuş peşəkar təhsil platforması
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Side - Platform Interface Mockup */}
-            <div className="relative">
-              {/* Browser Frame */}
-              <div className="bg-gray-800 rounded-t-lg p-3">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <div className="ml-4 text-xs text-gray-400">DevCode LMS - Interactive Learning</div>
-                </div>
-              </div>
-
-              {/* Platform Interface */}
-              <div className="bg-gray-900 rounded-b-lg overflow-hidden shadow-2xl">
-                {/* Top Navigation */}
-                <div className="bg-gray-800 p-4 border-b border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-8 h-8 bg-devcode-orange rounded-lg flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">JS</span>
+          {/* Main Architecture Diagram */}
+          <div className="mb-20">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 overflow-hidden">
+              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+                Sistem Komponentləri və Data Flow
+              </h3>
+              
+              {/* Architecture Flow */}
+              <div className="relative">
+                {/* User Layer */}
+                <div className="flex justify-center mb-12">
+                  <div className="grid grid-cols-3 gap-8">
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <Users className="w-10 h-10 text-white" />
                       </div>
-                      <span className="text-white font-medium">JavaScript Əsasları - Dərs 5</span>
+                      <h4 className="font-semibold text-gray-900">Admin</h4>
+                      <p className="text-sm text-gray-600">Sistem idarəçisi</p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span className="text-green-400 text-sm">Canlı</span>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <BookOpen className="w-10 h-10 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900">Müəllim</h4>
+                      <p className="text-sm text-gray-600">Kurs yaradıcısı</p>
                     </div>
-                  </div>
-                </div>
-
-                {/* Code Editor Split View */}
-                <div className="grid grid-cols-2 h-64">
-                  {/* Code Editor */}
-                  <div className="bg-gray-900 p-4 border-r border-gray-700">
-                    <div className="text-xs text-gray-400 mb-2">📝 Kod Editoru</div>
-                    <div className="space-y-2 font-mono text-sm">
-                      <div className="flex">
-                        <span className="text-gray-500 w-6">1</span>
-                        <span className="text-purple-400">function</span>
-                        <span className="text-white ml-2">calculateSum</span>
-                        <span className="text-yellow-400">(</span>
-                        <span className="text-blue-400">a</span>
-                        <span className="text-white">,</span>
-                        <span className="text-blue-400 ml-1">b</span>
-                        <span className="text-yellow-400">)</span>
-                        <span className="text-white ml-1">{"{"}</span>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <Users className="w-10 h-10 text-white" />
                       </div>
-                      <div className="flex">
-                        <span className="text-gray-500 w-6">2</span>
-                        <span className="text-green-400 ml-4">return</span>
-                        <span className="text-blue-400 ml-2">a</span>
-                        <span className="text-white ml-1">+</span>
-                        <span className="text-blue-400 ml-1">b</span>
-                        <span className="text-white">;</span>
-                      </div>
-                      <div className="flex">
-                        <span className="text-gray-500 w-6">3</span>
-                        <span className="text-white">{"}"}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="text-gray-500 w-6">4</span>
-                      </div>
-                      <div className="flex">
-                        <span className="text-gray-500 w-6">5</span>
-                        <span className="text-blue-400">console</span>
-                        <span className="text-white">.</span>
-                        <span className="text-yellow-400">log</span>
-                        <span className="text-white">(</span>
-                        <span className="text-purple-400">calculateSum</span>
-                        <span className="text-white">(</span>
-                        <span className="text-green-400">5</span>
-                        <span className="text-white">,</span>
-                        <span className="text-green-400 ml-1">3</span>
-                        <span className="text-white">));</span>
-                        <div className="w-1 h-4 bg-green-400 animate-pulse ml-1"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Output Console */}
-                  <div className="bg-gray-800 p-4">
-                    <div className="text-xs text-gray-400 mb-2">⚡ Nəticə</div>
-                    <div className="font-mono text-sm space-y-1">
-                      <div className="text-green-400">► Running...</div>
-                      <div className="text-white">8</div>
-                      <div className="text-green-400">✓ Test passed!</div>
-                    </div>
-                    <div className="mt-4 p-2 bg-green-900/30 rounded border border-green-500/30">
-                      <div className="text-green-400 text-xs">💡 Mentor məsləhəti:</div>
-                      <div className="text-green-300 text-xs mt-1">
-                        Çox yaxşı! Function düzgün yaradıldı.
-                      </div>
+                      <h4 className="font-semibold text-gray-900">Tələbə</h4>
+                      <p className="text-sm text-gray-600">Kurs iştirakçısı</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom Activity Bar */}
-                <div className="bg-gray-800 p-3 border-t border-gray-700">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        <span className="text-gray-300">12 tələbə canlı</span>
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex space-x-16">
+                    <div className="w-px h-12 bg-gradient-to-b from-red-500 to-cyan-500"></div>
+                    <div className="w-px h-12 bg-gradient-to-b from-blue-500 to-cyan-500"></div>
+                    <div className="w-px h-12 bg-gradient-to-b from-green-500 to-cyan-500"></div>
+                  </div>
+                </div>
+
+                {/* Frontend Layer */}
+                <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-6 mb-8">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 text-center">Frontend Layer - React SPA</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Monitor className="w-8 h-8 text-white" />
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                        <span className="text-gray-300">Progress: 85%</span>
+                      <h5 className="font-semibold text-gray-900 mb-2">React 18</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• TypeScript</div>
+                        <div>• Functional Components</div>
+                        <div>• Custom Hooks</div>
                       </div>
                     </div>
-                    <button className="bg-devcode-orange px-3 py-1 rounded text-white text-xs hover:bg-devcode-orange/90">
-                      Növbəti Tapşırıq
-                    </button>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Sparkles className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">UI/UX</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• TailwindCSS</div>
+                        <div>• Shadcn/UI</div>
+                        <div>• Framer Motion</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Globe className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">Routing</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• Wouter Router</div>
+                        <div>• Client-side</div>
+                        <div>• Protected Routes</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <BarChart3 className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">State</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• TanStack Query</div>
+                        <div>• Server State</div>
+                        <div>• Caching</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Connection Line */}
+                <div className="flex justify-center mb-8">
+                  <div className="w-px h-12 bg-gradient-to-b from-cyan-500 to-green-500"></div>
+                </div>
+
+                {/* Backend Layer */}
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 mb-8">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 text-center">Backend Layer - Node.js API</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Code className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">Express.js Server</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• TypeScript</div>
+                        <div>• RESTful APIs</div>
+                        <div>• Middleware Stack</div>
+                        <div>• Error Handling</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Users className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">Authentication</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• Replit Auth</div>
+                        <div>• Session Management</div>
+                        <div>• Role-based Access</div>
+                        <div>• Secure Routes</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <BarChart3 className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">Business Logic</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• Course Management</div>
+                        <div>• Assignment System</div>
+                        <div>• Progress Tracking</div>
+                        <div>• Certificate Generation</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Connection Line */}
+                <div className="flex justify-center mb-8">
+                  <div className="w-px h-12 bg-gradient-to-b from-green-500 to-gray-600"></div>
+                </div>
+
+                {/* Database Layer */}
+                <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-6">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 text-center">Database Layer - PostgreSQL</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Database className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">PostgreSQL</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• Neon Database</div>
+                        <div>• Connection Pooling</div>
+                        <div>• ACID Transactions</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <FileText className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">Drizzle ORM</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• Type Safety</div>
+                        <div>• Schema Migrations</div>
+                        <div>• Query Builder</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Award className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">Data Models</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• 15+ Tables</div>
+                        <div>• Relations</div>
+                        <div>• Constraints</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <Globe className="w-8 h-8 text-white" />
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mb-2">Session Store</h5>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>• PostgreSQL Sessions</div>
+                        <div>• Security</div>
+                        <div>• TTL Management</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Right Side - Features */}
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  Niyə DevCode LMS?
-                </h3>
-                
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Code className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Canlı Kod Editoru</h4>
-                      <p className="text-gray-600">
-                        Brauzerdə birbaşa kod yazın, işə salın və real-time nəticə alın. 
-                        Heç nə yükləməyə ehtiyac yoxdur.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Canlı Mentor Dəstəyi</h4>
-                      <p className="text-gray-600">
-                        Hər dərsdə peşəkar mentorlardan instant kömək alın. 
-                        Kod review və şəxsi məsləhətlər.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <TrendingUp className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Progress Tracking</h4>
-                      <p className="text-gray-600">
-                        Öyrənmə prosesini izləyin, testləri keçin və 
-                        real proyektlər üzərində çalışın.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-devcode-orange rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Award className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Sertifikat Sistemi</h4>
-                      <p className="text-gray-600">
-                        Hər modulu tamamladıqdan sonra sənaye tərəfindən 
-                        tanınan sertifikatlar qazanın.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+          {/* System Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <Video className="w-6 h-6 text-blue-600" />
               </div>
+              <h4 className="font-semibold text-gray-900 mb-2">Video Streaming</h4>
+              <p className="text-sm text-gray-600">
+                YouTube entegrasiyası və adaptiv video player sistemi
+              </p>
+            </div>
 
-              <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow p-6 rounded-xl text-white">
-                <h4 className="text-xl font-bold mb-2">İndi Başlayın!</h4>
-                <p className="mb-4 text-white/90">
-                  İlk dərsinizi pulsuz olaraq cəhd edin və fərqi hiss edin.
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900 mb-2">Real-time Progress</h4>
+              <p className="text-sm text-gray-600">
+                Canlı progress tracking və detailed analytics sistemi
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                <PenTool className="w-6 h-6 text-purple-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900 mb-2">Assignment Engine</h4>
+              <p className="text-sm text-gray-600">
+                Avtomatik qiymətləndirmə və rich text editor dəstəyi
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                <Award className="w-6 h-6 text-orange-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900 mb-2">Digital Certificates</h4>
+              <p className="text-sm text-gray-600">
+                Blockchain-ready sertifikat sistemi və doğrulama
+              </p>
+            </div>
+          </div>
+
+          {/* Architecture Benefits */}
+          <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-2xl p-8 text-white">
+            <h3 className="text-2xl font-bold mb-6 text-center">Arxitektura Üstünlükləri</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="font-semibold mb-2">Scalability</h4>
+                <p className="text-sm text-white/90">
+                  Mikroservis arxitekturasında qurulmuş, yüksək load dəstəyi
                 </p>
-                <Button className="bg-white text-devcode-orange hover:bg-gray-100 font-semibold">
-                  Pulsuz Başlayın
-                </Button>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Code className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="font-semibold mb-2">Type Safety</h4>
+                <p className="text-sm text-white/90">
+                  TypeScript ilə tam type safety və development experience
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Globe className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="font-semibold mb-2">Modern Stack</h4>
+                <p className="text-sm text-white/90">
+                  Ən yeni texnologiyalar və best practices istifadəsi
+                </p>
               </div>
             </div>
           </div>
