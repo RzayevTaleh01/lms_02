@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, Settings, LogOut } from "lucide-react";
+import { Menu, User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "@/components/auth/login-modal";
@@ -45,12 +45,26 @@ export default function Navbar() {
     { label: "Bloq", href: "/blog" },
   ];
 
-  // Main navigation items
+  // Main navigation items with dropdowns
   const navItems = [
-    { label: "Akademiya", href: "/about" },
-    { label: "Tədris sahələri", href: "/courses" },
-    { label: "Təlqisal proqramları", href: "/programs" },
-    { label: "Təhsil modeli", href: "/model" },
+    { 
+      label: "Akademiya", 
+      href: "/about",
+      dropdown: [
+        { label: "Haqqımızda", href: "/about" },
+        { label: "Vakansiyalar", href: "/careers" }
+      ]
+    },
+    { 
+      label: "Tədris proqramları", 
+      href: "/courses",
+      dropdown: [
+        { label: "Frontend Proqramlaşdırma", href: "/courses?category=frontend" },
+        { label: "FullStack Proqramlaşdırma", href: "/courses?category=fullstack" }
+      ]
+    },
+    { label: "Təhsil modeli", href: "/education-model" },
+    { label: "Sertifikat yoxla", href: "/verify-certificate" },
   ];
 
   const getDashboardLink = () => {
@@ -112,15 +126,41 @@ export default function Navbar() {
             {/* Desktop Navigation - clean and minimal */}
             <div className="hidden md:flex items-center space-x-8">
               {navItems.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <span className={`transition-colors cursor-pointer font-medium text-sm ${
-                    location === item.href 
-                      ? "text-gray-900 border-b-2 border-devcode-yellow pb-1" 
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}>
-                    {item.label}
-                  </span>
-                </Link>
+                item.dropdown ? (
+                  <DropdownMenu key={item.label}>
+                    <DropdownMenuTrigger asChild>
+                      <button className={`flex items-center transition-colors font-medium text-sm ${
+                        location === item.href 
+                          ? "text-gray-900 border-b-2 border-devcode-yellow pb-1" 
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}>
+                        {item.label}
+                        <ChevronDown className="ml-1 h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      {item.dropdown.map((dropdownItem) => (
+                        <DropdownMenuItem key={dropdownItem.href} asChild>
+                          <Link href={dropdownItem.href}>
+                            <span className="w-full cursor-pointer">
+                              {dropdownItem.label}
+                            </span>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link key={item.href} href={item.href}>
+                    <span className={`transition-colors cursor-pointer font-medium text-sm ${
+                      location === item.href 
+                        ? "text-gray-900 border-b-2 border-devcode-yellow pb-1" 
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}>
+                      {item.label}
+                    </span>
+                  </Link>
+                )
               ))}
             </div>
 
@@ -203,18 +243,44 @@ export default function Navbar() {
                   <div className="flex flex-col space-y-4 mt-8">
                     {/* Main Navigation */}
                     {navItems.map((item) => (
-                      <Link key={item.href} href={item.href}>
-                        <span 
-                          className={`block py-3 px-4 text-lg font-medium transition-colors cursor-pointer ${
-                            location === item.href 
-                              ? "text-devcode-orange bg-orange-50" 
-                              : "text-gray-700 hover:text-devcode-orange hover:bg-orange-50"
-                          } rounded-lg`}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          {item.label}
-                        </span>
-                      </Link>
+                      <div key={item.label}>
+                        {item.dropdown ? (
+                          <div className="space-y-2">
+                            <span className="block py-3 px-4 text-lg font-medium text-gray-700 rounded-lg">
+                              {item.label}
+                            </span>
+                            <div className="ml-4 space-y-1">
+                              {item.dropdown.map((dropdownItem) => (
+                                <Link key={dropdownItem.href} href={dropdownItem.href}>
+                                  <span 
+                                    className={`block py-2 px-4 text-sm transition-colors cursor-pointer ${
+                                      location === dropdownItem.href 
+                                        ? "text-devcode-orange bg-orange-50" 
+                                        : "text-gray-600 hover:text-devcode-orange hover:bg-orange-50"
+                                    } rounded-lg`}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                  >
+                                    {dropdownItem.label}
+                                  </span>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <Link href={item.href}>
+                            <span 
+                              className={`block py-3 px-4 text-lg font-medium transition-colors cursor-pointer ${
+                                location === item.href 
+                                  ? "text-devcode-orange bg-orange-50" 
+                                  : "text-gray-700 hover:text-devcode-orange hover:bg-orange-50"
+                              } rounded-lg`}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              {item.label}
+                            </span>
+                          </Link>
+                        )}
+                      </div>
                     ))}
                     
                     <div className="border-t border-gray-200 my-4"></div>
