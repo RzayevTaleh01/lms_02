@@ -104,7 +104,7 @@ export default function AdminCourses() {
 
   // Fetch enrollments for selected course
   const { data: courseEnrollments = [], isLoading: enrollmentsLoading } = useQuery<Enrollment[]>({
-    queryKey: [`/api/courses/${selectedCourse?.id}/students`],
+    queryKey: [`/api/courses/${selectedCourse?.id}/enrollments`],
     enabled: !!selectedCourse?.id,
     retry: false,
   });
@@ -223,7 +223,7 @@ export default function AdminCourses() {
         title: "Uğur",
         description: "Tələbə uğurla əlavə edildi",
       });
-      queryClient.invalidateQueries({ queryKey: [`/api/courses/${selectedCourse?.id}/students`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${selectedCourse?.id}/enrollments`] });
       setIsAddStudentOpen(false);
     },
     onError: (error: any) => {
