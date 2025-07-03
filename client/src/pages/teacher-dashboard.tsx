@@ -20,6 +20,12 @@ export default function TeacherDashboard() {
     queryKey: ["/api/courses"],
   });
 
+  // Fetch pending submissions for teacher
+  const { data: pendingSubmissions = [] } = useQuery({
+    queryKey: ["/api/teacher/pending-submissions"],
+    enabled: !!user && user.role === 'teacher',
+  });
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       toast({
@@ -127,7 +133,9 @@ export default function TeacherDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-gray-900">12</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {Array.isArray(pendingSubmissions) ? pendingSubmissions.length : 0}
+                </div>
                 <p className="text-xs text-gray-500 mt-1">Qiymətləndirilməyən</p>
               </CardContent>
             </Card>

@@ -855,6 +855,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get pending submissions for teacher
+  app.get('/api/teacher/pending-submissions', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can view pending submissions" });
+      }
+
+      // Get all courses for this teacher
+      const teacherCourses = await storage.getCoursesByInstructor(req.user.id);
+      const courseIds = teacherCourses.map((course: any) => course.id);
+
+      if (courseIds.length === 0) {
+        return res.json([]);
+      }
+
+      // Get all assignments for teacher's courses
+      const allAssignments = [];
+      for (const courseId of courseIds) {
+        const assignments = await storage.getAssignmentsByCourse(courseId);
+        allAssignments.push(...assignments);
+      }
+
+      // Get all submissions for these assignments that are not graded (grade is null)
+      const pendingSubmissions = [];
+      for (const assignment of allAssignments) {
+        const submissions = await storage.getSubmissionsByAssignment(assignment.id);
+        const pending = submissions.filter((sub: any) => sub.grade === null);
+        pendingSubmissions.push(...pending);
+      }
+
+      res.json(pendingSubmissions);
+    } catch (error) {
+      console.error('Error fetching pending submissions:', error);
+      res.status(500).json({ message: 'Failed to fetch pending submissions' });
+    }
+  });
+
   // Lesson progress routes
   app.post('/api/lessons/:lessonId/complete', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {

@@ -377,6 +377,11 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
     * Updated all teacher pages to use responsive classes (lg:ml-64)
     * Fixed mobile layout gaps and spacing issues
     * Ensured proper responsiveness across all teacher interface pages
+  - Fixed teacher dashboard pending assignments display:
+    * Created new API endpoint /api/teacher/pending-submissions for real data
+    * Replaced static "12" with dynamic count of ungraded submissions
+    * Teacher panel now shows actual pending assignment count from database
+    * API fetches all assignments from teacher's courses and filters ungraded submissions
 
 ## User Preferences
 
