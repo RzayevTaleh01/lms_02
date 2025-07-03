@@ -1,335 +1,305 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen, Users, Star, Clock, ArrowRight, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { 
+  Search, 
+  Filter,
+  Clock,
+  Users,
+  Star,
+  ChevronRight,
+  Monitor,
+  Database,
+  Smartphone,
+  PenTool,
+  Award,
+  Video,
+  TrendingUp,
+  Globe
+} from "lucide-react";
+import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+
+interface Course {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  level: string;
+  duration: string;
+  price: number;
+  instructor: string;
+  rating: number;
+  students: number;
+  thumbnail?: string;
+}
 
 export default function Courses() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [levelFilter, setLevelFilter] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedLevel, setSelectedLevel] = useState("all");
 
-  const { data: courses = [], isLoading } = useQuery({
-    queryKey: ["/api/courses"],
+  const { data: courses, isLoading } = useQuery<Course[]>({
+    queryKey: ['/api/courses'],
   });
 
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ["/api/enrollments"],
-    enabled: !!user && user.role === "student",
-  });
-
-  const enrollMutation = useMutation({
-    mutationFn: async (courseId: number) => {
-      const response = await fetch("/api/enrollments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId }),
-      });
-      if (!response.ok) throw new Error("Failed to enroll");
-      return response.json();
+  // Course categories with 3D-style icons - matching landing page
+  const courseCategories = [
+    {
+      id: "frontend",
+      title: "Front-end əsası full stack",
+      description: "Gələcəyin əsasını burada məzun olmuş siz bura müraciət edin",
+      icon: <Monitor className="w-8 h-8 text-blue-500" />,
+      gradient: "from-blue-100 to-purple-100",
+      iconBg: "from-blue-500 to-purple-500",
+      count: 12
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/enrollments"] });
-      toast({ title: "Uğurla qeydiyyatdan keçdiniz!" });
+    {
+      id: "backend",
+      title: "Back-end əsası full stack",
+      description: "Hər yerin layihəsi əlbəttəki ən əsas adım olan dayaq",
+      icon: <Database className="w-8 h-8 text-green-500" />,
+      gradient: "from-green-100 to-emerald-100",
+      iconBg: "from-green-500 to-emerald-500",
+      count: 8
     },
-    onError: () => {
-      toast({ title: "Xəta", description: "Qeydiyyat zamanı xəta baş verdi", variant: "destructive" });
+    {
+      id: "design",
+      title: "Qrafik Dizayn və Vizual Ko...",
+      description: "Gələcəyin dizayn etməyə bu gündən kəçid",
+      icon: <PenTool className="w-8 h-8 text-pink-500" />,
+      gradient: "from-pink-100 to-red-100",
+      iconBg: "from-pink-500 to-red-500",
+      count: 15
+    },
+    {
+      id: "uxui",
+      title: "UX/UI Dizayn",
+      description: "Digital məlumat texriblərini hər kəsə...",
+      icon: <Smartphone className="w-8 h-8 text-orange-500" />,
+      gradient: "from-orange-100 to-yellow-100",
+      iconBg: "from-orange-500 to-yellow-500",
+      count: 10
+    },
+    {
+      id: "3d",
+      title: "Digital Memariq və 3D",
+      description: "Memarlıq və 3D dizaynlər əmin olun ki gələcək",
+      icon: <Award className="w-8 h-8 text-indigo-500" />,
+      gradient: "from-indigo-100 to-purple-100",
+      iconBg: "from-indigo-500 to-purple-500",
+      count: 6
+    },
+    {
+      id: "motion",
+      title: "2D Motion Dizayn",
+      description: "Yaradıcılıq harakətini qarışıq gətirif",
+      icon: <Video className="w-8 h-8 text-yellow-500" />,
+      gradient: "from-yellow-100 to-orange-100",
+      iconBg: "from-yellow-500 to-orange-500",
+      count: 7
+    },
+    {
+      id: "marketing",
+      title: "Digital Marketing Professio...",
+      description: "Digital kampanyanızın avtarları",
+      icon: <TrendingUp className="w-8 h-8 text-purple-500" />,
+      gradient: "from-purple-100 to-pink-100",
+      iconBg: "from-purple-500 to-pink-500",
+      count: 9
+    },
+    {
+      id: "cyber",
+      title: "Kiber Təhlükəsizlik",
+      description: "kiber təhlükəsizlik nədir?",
+      icon: <Globe className="w-8 h-8 text-green-600" />,
+      gradient: "from-green-100 to-teal-100",
+      iconBg: "from-green-600 to-teal-500",
+      count: 4
     }
-  });
+  ];
 
-  const isEnrolled = (courseId: number) => {
-    return enrollments.some((enrollment: any) => enrollment.courseId === courseId);
-  };
-
-  const handleEnroll = (courseId: number) => {
-    if (!user) {
-      toast({ title: "Giriş Tələb Olunur", description: "Kursa qeydiyyat üçün daxil olun", variant: "destructive" });
-      return;
-    }
-    if (user.role !== "student") {
-      toast({ title: "Giriş Rədd Edildi", description: "Yalnız tələbələr kurslara qeydiyyat keçə bilər", variant: "destructive" });
-      return;
-    }
-    enrollMutation.mutate(courseId);
-  };
-
-  const filteredCourses = courses.filter((course: any) => {
+  const filteredCourses = courses?.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || course.category === categoryFilter;
-    const matchesLevel = levelFilter === "all" || course.level === levelFilter;
+                         course.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || course.category === selectedCategory;
+    const matchesLevel = selectedLevel === "all" || course.level === selectedLevel;
     
     return matchesSearch && matchesCategory && matchesLevel;
-  });
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-        <Navbar />
-        <div className="flex items-center justify-center py-32">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  }) || [];
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-devcode-orange via-devcode-yellow to-orange-400 text-white py-20 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-80 h-80 bg-white rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-devcode-orange" />
-            </div>
-            <Badge className="bg-white/20 text-white px-6 py-2 backdrop-blur-sm">
-              DEVCODE LMS Kurs Kataloqu
-            </Badge>
+      <section className="bg-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              Tədris proqramları
+            </h1>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Gələcəyin peşələrində mütəxəssis olmaq üçün lazım olan bütün bilik və bacarıqları əldə edin
+            </p>
           </div>
-          <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-            <span className="block text-white">
-              Proqramlaşdırma
-            </span>
-            <span className="block text-3xl lg:text-4xl text-orange-100">
-              Kursları
-            </span>
-          </h1>
-          <p className="text-xl text-orange-100 max-w-4xl mx-auto leading-relaxed">
-            Müasir texnologiyalarla hazırlanmış peşəkar kurslar. 
-            DEVCODE LMS platformasında öyrənmə səyahətinizə başlayın.
-          </p>
-        </div>
-      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Search and Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-12">
-          <div className="flex items-center gap-4 mb-6">
-            <Filter className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Kursları Filtrləyin</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Search and Filters */}
+          <div className="max-w-2xl mx-auto mb-12">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 placeholder="Kurs axtarın..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12"
+                className="pl-10 pr-4 py-3 text-base rounded-lg border-gray-200 focus:border-devcode-orange focus:ring-devcode-orange"
               />
             </div>
-            
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Kateqoriya" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Bütün Kateqoriyalar</SelectItem>
-                <SelectItem value="Web Development">Web Development</SelectItem>
-                <SelectItem value="Data Science">Data Science</SelectItem>
-                <SelectItem value="Mobile Development">Mobile Development</SelectItem>
-                <SelectItem value="DevOps">DevOps</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select value={levelFilter} onValueChange={setLevelFilter}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Səviyyə" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Bütün Səviyyələr</SelectItem>
-                <SelectItem value="beginner">Başlanğıc</SelectItem>
-                <SelectItem value="intermediate">Orta</SelectItem>
-                <SelectItem value="advanced">İrəli</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
+      </section>
 
-        {/* Results Count */}
-        <div className="flex items-center justify-between mb-8">
-          <p className="text-gray-600">
-            <span className="font-semibold text-gray-900">{filteredCourses.length}</span> kurs tapıldı
-          </p>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <BookOpen className="w-4 h-4" />
-            <span>Ən yaxşı kurslarımız</span>
-          </div>
-        </div>
-
-        {/* Course Grid */}
-        {filteredCourses.length === 0 && courses.length === 0 ? (
-          // Show placeholder courses when no real data
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-blue-500 to-indigo-600 relative">
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-                    <Badge className="bg-white/90 text-blue-900">
-                      Başlanğıc
-                    </Badge>
-                    <div className="flex items-center gap-1 bg-white/90 px-2 py-1 rounded-full">
-                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                      <span className="text-xs font-medium text-gray-900">4.8</span>
+      {/* Course Categories */}
+      <section className="py-16 bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {courseCategories.map((category, index) => (
+              <Card 
+                key={index} 
+                className={`group hover:shadow-xl transition-all duration-300 bg-white border-0 shadow-md overflow-hidden cursor-pointer ${
+                  selectedCategory === category.id ? 'ring-2 ring-devcode-orange' : ''
+                }`}
+                onClick={() => setSelectedCategory(selectedCategory === category.id ? "all" : category.id)}
+              >
+                <div className="p-6">
+                  {/* 3D Icon Container */}
+                  <div className="relative mb-4">
+                    <div className={`w-16 h-16 bg-gradient-to-br ${category.gradient} rounded-xl flex items-center justify-center mb-3 transform group-hover:scale-110 transition-transform duration-300`}>
+                      <div className={`w-12 h-12 bg-gradient-to-br ${category.iconBg} rounded-lg flex items-center justify-center shadow-lg`}>
+                        {category.icon}
+                      </div>
+                    </div>
+                    {/* Course count badge */}
+                    <div className="absolute -top-2 -right-2 bg-devcode-yellow text-black text-xs font-bold px-2 py-1 rounded-full">
+                      {category.count}
                     </div>
                   </div>
-                  <div className="absolute bottom-4 left-4">
-                    <div className="text-white font-bold text-lg">
-                      {index === 0 && "JavaScript Fundamentals"}
-                      {index === 1 && "React Development"}
-                      {index === 2 && "Node.js Backend"}
-                      {index === 3 && "Python Programming"}
-                      {index === 4 && "Vue.js Framework"}
-                      {index === 5 && "Full-Stack Development"}
-                    </div>
-                  </div>
-                </div>
-                
-                <CardContent className="p-6">
-                  <p className="text-gray-600 mb-4 line-clamp-3">
-                    {index === 0 && "JavaScript proqramlaşdırma dilinin əsaslarını öyrənin və müasir web development-ə giriş edin."}
-                    {index === 1 && "React kitabxanası ilə interaktiv və müasir web tətbiqləri hazırlamağı öyrənin."}
-                    {index === 2 && "Node.js ilə güçlü backend sistemləri və API-lər yaratmağı öyrənin."}
-                    {index === 3 && "Python proqramlaşdırma dili ilə data science və web development öyrənin."}
-                    {index === 4 && "Vue.js framework-u ilə progressive web applications yaradın."}
-                    {index === 5 && "Frontend və backend texnologiyaları ilə tam funksional web tətbiqləri yaradın."}
+                  
+                  <h3 className="font-bold text-gray-900 mb-2 text-base leading-tight">
+                    {category.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {category.description}
                   </p>
                   
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Users className="w-4 h-4" />
-                      <span>120+ tələbə</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Clock className="w-4 h-4" />
-                      <span>8 həftə</span>
-                    </div>
+                  {/* Arrow indicator */}
+                  <div className="mt-3 flex justify-end">
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
                   </div>
-                  
-                  <div className="space-y-3">
-                    <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700">
-                      Qeydiyyatdan Keç
-                    </Button>
-                    
-                    <Button variant="outline" className="w-full">
-                      Ətraflı Məlumat
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
-        ) : filteredCourses.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-2">Heç bir kurs tapılmadı</h3>
-            <p className="text-gray-600 mb-6">
-              Axtarış meyarlarınızı dəyişdirə və ya bütün kursları görə bilərsiniz.
-            </p>
-            <Button 
-              onClick={() => {
-                setSearchTerm("");
-                setCategoryFilter("all");
-                setLevelFilter("all");
-              }}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Filtrlər Sıfırla
-            </Button>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map((course: any) => (
-              <Card key={course.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-blue-500 to-indigo-600 relative">
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-                    <Badge className="bg-white/90 text-blue-900">
-                      {course.level === 'beginner' ? 'Başlanğıc' : course.level === 'intermediate' ? 'Orta' : 'İrəli'}
-                    </Badge>
-                    <div className="flex items-center gap-1 bg-white/90 px-2 py-1 rounded-full">
-                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                      <span className="text-xs font-medium text-gray-900">4.8</span>
-                    </div>
+        </div>
+      </section>
+
+      {/* Course List */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-t-lg"></div>
+                  <div className="p-6">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
                   </div>
-                  <div className="absolute bottom-4 left-4">
-                    <div className="text-white font-bold text-lg">
-                      {course.title}
+                </Card>
+              ))}
+            </div>
+          ) : filteredCourses.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCourses.map((course) => (
+                <Card key={course.id} className="group hover:shadow-xl transition-all duration-300 bg-white border-0 shadow-md overflow-hidden">
+                  <div className="relative">
+                    <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                      <div className="text-6xl opacity-20">📚</div>
                     </div>
-                  </div>
-                </div>
-                
-                <CardContent className="p-6">
-                  <p className="text-gray-600 mb-4 line-clamp-3">
-                    {course.shortDescription || course.description || "Bu kursda müasir proqramlaşdırma texnologiyalarını öyrənəcək və real layihələr üzərində işləyəcəksiniz."}
-                  </p>
-                  
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Users className="w-4 h-4" />
-                      <span>{course.enrollmentCount || 120}+ tələbə</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Clock className="w-4 h-4" />
-                      <span>{course.duration || '8 həftə'}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {user && user.role === "student" && !isEnrolled(course.id) && (
-                      <Button
-                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                        onClick={() => handleEnroll(course.id)}
-                        disabled={enrollMutation.isPending}
-                      >
-                        {enrollMutation.isPending ? "Qeydiyyat..." : "Qeydiyyatdan Keç"}
-                      </Button>
-                    )}
-                    
-                    {user && user.role === "student" && isEnrolled(course.id) && (
-                      <Badge className="w-full justify-center py-2 bg-green-100 text-green-800">
-                        ✓ Qeydiyyatdan keçdiniz
+                    <div className="absolute top-4 left-4">
+                      <Badge variant="secondary" className="bg-white/90 text-gray-700">
+                        {course.level}
                       </Badge>
-                    )}
-                    
-                    <Link href={`/course/${course.id}`}>
-                      <Button variant="outline" className="w-full">
-                        Ətraflı Məlumat
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
+                    </div>
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-devcode-yellow text-black">
+                        ₼{course.price}
+                      </Badge>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
-      
-      <Footer />
+                  
+                  <div className="p-6">
+                    <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-devcode-orange transition-colors">
+                      {course.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {course.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{course.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="w-4 h-4" />
+                        <span>{course.students} tələbə</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span>{course.rating}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">
+                        {course.instructor}
+                      </span>
+                      <Link href={`/courses/${course.id}`}>
+                        <Button size="sm" className="bg-devcode-orange hover:bg-devcode-orange/90 text-white">
+                          Ətraflı
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="text-6xl opacity-20 mb-4">🔍</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Heç bir kurs tapılmadı
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Axtarış kriteriyalarınızı dəyişərək yenidən cəhd edin
+              </p>
+              <Button 
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("all");
+                  setSelectedLevel("all");
+                }}
+                variant="outline"
+              >
+                Filtrləri təmizlə
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
