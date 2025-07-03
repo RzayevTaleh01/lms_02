@@ -123,7 +123,7 @@ export default function StudentAssignments() {
     return (
       <div className="min-h-screen bg-gray-50 flex">
         <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="flex-1 lg:ml-64 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <div className="text-center">Yüklənir...</div>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function StudentAssignments() {
       <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
         {/* Top Navigation */}
         <div className="bg-white shadow-sm border-b">
           <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
