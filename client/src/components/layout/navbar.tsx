@@ -57,55 +57,57 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top Navigation Bar */}
-      <div className="bg-white border-b border-gray-100">
+      {/* Modern Navigation */}
+      <nav className="bg-white/90 backdrop-blur-lg shadow-lg border-b border-gray-100/50 sticky top-0 z-50 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-9 text-xs">
-            {/* Left side empty or can add content */}
-            <div></div>
-            
-            {/* Right side navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              {topNavItems.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <span className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer text-xs">
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <Link href="/">
-              <div className="flex items-center space-x-3 cursor-pointer">
-                <div className="w-10 h-10 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-lg">D</span>
+              <div className="flex items-center space-x-4 cursor-pointer group">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-300 group-hover:rotate-6">
+                    <span className="text-white font-bold text-xl">D</span>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition-opacity duration-300"></div>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xl font-bold text-gray-900 leading-none">DEVCODE</span>
-                  <span className="text-xs font-medium text-devcode-orange leading-none">Learning Management System</span>
+                  <span className="text-2xl font-bold text-gray-900 leading-none group-hover:text-devcode-orange transition-colors duration-300">
+                    DEVCODE
+                  </span>
+                  <span className="text-xs font-medium text-devcode-orange leading-none opacity-80">
+                    Learning Management System
+                  </span>
                 </div>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              {navItems.map((item) => (
+            <div className="hidden lg:flex items-center space-x-1">
+              {navItems.map((item, index) => (
                 <Link key={item.href} href={item.href}>
-                  <span className={`transition-colors cursor-pointer font-medium text-sm ${
+                  <div className={`relative px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                     location === item.href 
-                      ? "text-devcode-orange" 
-                      : "text-gray-700 hover:text-devcode-orange"
+                      ? "bg-gradient-to-r from-devcode-orange to-devcode-yellow text-white shadow-lg" 
+                      : "text-gray-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 hover:text-devcode-orange"
                   }`}>
+                    <span className="font-medium text-sm relative z-10">
+                      {item.label}
+                    </span>
+                    {location === item.href && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-xl blur-sm opacity-50"></div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Right Side - Top Navigation as Pills */}
+            <div className="hidden lg:flex items-center space-x-2">
+              {topNavItems.slice(0, 3).map((item) => (
+                <Link key={item.href} href={item.href}>
+                  <div className="px-4 py-2 text-xs text-gray-600 hover:text-devcode-orange transition-colors cursor-pointer rounded-full hover:bg-orange-50">
                     {item.label}
-                  </span>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -116,7 +118,7 @@ export default function Navbar() {
                 <>
                   {/* Dashboard Link for authenticated users */}
                   <Link href={getDashboardLink()}>
-                    <Button variant="ghost" size="sm" className="hidden md:flex">
+                    <Button className="hidden md:flex bg-gradient-to-r from-devcode-orange to-devcode-yellow text-white hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                       İdarə Paneli
                     </Button>
                   </Link>
@@ -124,37 +126,38 @@ export default function Navbar() {
                   {/* User Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-orange-500 text-white">
+                      <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-orange-50 transition-colors">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback className="bg-gradient-to-r from-devcode-orange to-devcode-yellow text-white">
                             {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
-                      <div className="flex flex-col space-y-1 p-2">
-                        <p className="text-sm font-medium leading-none">
+                    <DropdownMenuContent className="w-56 shadow-xl border-0 rounded-2xl p-2" align="end" forceMount>
+                      <div className="flex flex-col space-y-1 p-3 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl mb-2">
+                        <p className="text-sm font-medium leading-none text-gray-900">
                           {user?.firstName} {user?.lastName}
                         </p>
-                        <p className="text-xs leading-none text-muted-foreground">
+                        <p className="text-xs leading-none text-devcode-orange">
                           {user?.email}
                         </p>
                       </div>
-                      <DropdownMenuItem asChild>
+                      <DropdownMenuItem asChild className="rounded-xl hover:bg-orange-50 transition-colors">
                         <Link href={getDashboardLink()}>
-                          <User className="mr-2 h-4 w-4" />
+                          <User className="mr-3 h-4 w-4 text-devcode-orange" />
                           <span>İdarə Paneli</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
+                      <DropdownMenuItem className="rounded-xl hover:bg-orange-50 transition-colors">
+                        <Settings className="mr-3 h-4 w-4 text-devcode-orange" />
                         <span>Ayarlar</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => logoutMutation.mutate()}
+                        className="rounded-xl hover:bg-red-50 transition-colors text-red-600"
                       >
-                        <LogOut className="mr-2 h-4 w-4" />
+                        <LogOut className="mr-3 h-4 w-4" />
                         <span>Çıxış</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -165,15 +168,15 @@ export default function Navbar() {
                   <Button 
                     variant="ghost" 
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="hidden md:flex text-gray-700 hover:text-gray-900 text-sm"
+                    className="hidden md:flex text-gray-700 hover:text-devcode-orange transition-all duration-300 px-6 py-2 rounded-xl hover:bg-orange-50"
                   >
                     Giriş
                   </Button>
                   <Button 
                     onClick={() => setIsSignupModalOpen(true)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black hidden md:flex font-semibold text-sm px-6 py-2 rounded-lg"
+                    className="bg-gradient-to-r from-devcode-orange to-devcode-yellow text-white hover:shadow-lg hidden md:flex font-semibold px-6 py-2 rounded-xl transition-all duration-300 transform hover:scale-105"
                   >
-                    ✉ Müraciət et
+                    Qeydiyyat
                   </Button>
                 </>
               )}

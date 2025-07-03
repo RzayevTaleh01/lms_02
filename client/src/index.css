@@ -34,6 +34,51 @@
   }
 }
 
+@keyframes bounceX {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(-5px);
+  }
+  60% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes bounceSlow {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scaleHover {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 1s ease-out;
 }
@@ -44,6 +89,40 @@
 
 .animate-float {
   animation: floatUp 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatUp 4s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-bounce-x {
+  animation: bounceX 1s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 6s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 3s linear infinite;
+}
+
+.animate-scale-hover {
+  animation: scaleHover 2s ease-in-out infinite;
+}
+
+/* Delay classes */
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
 }
 
 /* Slider Animations */
