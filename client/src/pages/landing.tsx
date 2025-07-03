@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,11 +44,50 @@ interface Course {
 }
 
 export default function Landing() {
+  const [currentSlide, setCurrentSlide] = useState(0);
   const { data: courses, isLoading } = useQuery<Course[]>({
     queryKey: ['/api/courses'],
   });
 
   const featuredCourses = courses?.slice(0, 8) || [];
+
+  // Hero slides data
+  const heroSlides = [
+    {
+      title: "Gələcəyə buradan keç!",
+      subtitle: "#gələcəkburada",
+      description: "Code Academy gələcək innovasiyaları bu gündən duyub ona uyğun mütəxəssislər hazırlayan tədrəis müəssisəsidir.",
+      buttonText: "Keçid et",
+      bgColor: "bg-gray-50"
+    },
+    {
+      title: "Texnologiyanı öyrən!",
+      subtitle: "#texnologiyaburada",
+      description: "Müasir texnologiyalar və praktiki təcrübə ilə gələcəyinizi qurun. Peşəkar mütəxəssislər həmişə yanınızda.",
+      buttonText: "İndi başla",
+      bgColor: "bg-blue-50"
+    },
+    {
+      title: "Karyeranı qur!",
+      subtitle: "#karyeraburada",
+      description: "Real layihələr üzərində çalışın və iş bazarında rəqabət qabiliyyətli mütəxəssis olun. 100% praktiki təhsil.",
+      buttonText: "Qeydiyyat ol",
+      bgColor: "bg-green-50"
+    }
+  ];
+
+  // Auto-advance slider
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
 
   // Course categories with 3D-style icons
   const courseCategories = [
@@ -135,80 +175,112 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div>
-              <div className="flex items-center gap-2 mb-8">
-                <div className="w-2 h-2 bg-devcode-yellow rounded-full"></div>
-                <span className="text-sm text-gray-600 font-medium">Code Academy</span>
-              </div>
-              
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Gələcəyə buradan keç!
-                <br />
-                <span className="text-gray-900">#gələcəkburada</span>
-              </h1>
-              
-              <p className="text-lg text-gray-600 mb-8 max-w-lg leading-relaxed">
-                Code Academy gələcək innovasiyaları bu gündən duyub ona uyğun 
-                mütəxəssislər hazırlayan tədrəis müəssisəsidir.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-devcode-yellow hover:bg-devcode-yellow/90 text-black font-semibold px-8 py-3 rounded-lg text-base"
-                >
-                  Keçid et
-                </Button>
-              </div>
-            </div>
-            
-            {/* Right Illustration */}
-            <div className="relative">
-              <div className="flex items-center justify-center">
-                {/* Simple 3D-style illustration similar to the reference */}
-                <div className="relative w-96 h-80">
-                  {/* Main platform/steps */}
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-                    <div className="w-64 h-8 bg-gray-300 rounded-full opacity-20 blur-sm"></div>
+      {/* Hero Slider Section */}
+      <section className="relative overflow-hidden">
+        {/* Navigation dots - Top Right */}
+        <div className="absolute top-8 right-8 z-20 flex gap-2">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                currentSlide === index 
+                  ? 'bg-devcode-yellow shadow-lg scale-110' 
+                  : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Slides */}
+        <div className="relative h-[600px]">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                index === currentSlide 
+                  ? 'translate-x-0 opacity-100' 
+                  : index < currentSlide 
+                    ? '-translate-x-full opacity-0' 
+                    : 'translate-x-full opacity-0'
+              }`}
+            >
+              <div className={`pt-32 pb-20 h-full ${slide.bgColor}`}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+                  <div className="grid lg:grid-cols-2 gap-16 items-center h-full">
+                    {/* Left Content */}
+                    <div className="transform transition-all duration-700 delay-200">
+                      <div className="flex items-center gap-2 mb-8">
+                        <div className="w-2 h-2 bg-devcode-yellow rounded-full animate-pulse"></div>
+                        <span className="text-sm text-gray-600 font-medium">Code Academy</span>
+                      </div>
+                      
+                      <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                        <span className="inline-block animate-fadeInUp">{slide.title}</span>
+                        <br />
+                        <span className="text-gray-900 inline-block animate-fadeInUp delay-100">{slide.subtitle}</span>
+                      </h1>
+                      
+                      <p className="text-lg text-gray-600 mb-8 max-w-lg leading-relaxed animate-fadeInUp delay-200">
+                        {slide.description}
+                      </p>
+                      
+                      <div className="flex flex-col sm:flex-row gap-4 animate-fadeInUp delay-300">
+                        <Button 
+                          size="lg" 
+                          className="bg-devcode-yellow hover:bg-devcode-yellow/90 text-black font-semibold px-8 py-3 rounded-lg text-base transform hover:scale-105 transition-all duration-200"
+                        >
+                          {slide.buttonText}
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Right Illustration */}
+                    <div className="relative">
+                      <div className="flex items-center justify-center">
+                        {/* Animated 3D-style illustration */}
+                        <div className="relative w-96 h-80 animate-floatSlow">
+                          {/* Main platform/steps */}
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+                            <div className="w-64 h-8 bg-gray-300 rounded-full opacity-20 blur-sm"></div>
+                          </div>
+                          
+                          {/* Animated Steps */}
+                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 -translate-x-16 animate-bounceHorizontal">
+                            <div className="w-32 h-6 bg-gray-200 rounded transform rotate-3 shadow-lg"></div>
+                          </div>
+                          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 -translate-x-8 animate-bounceHorizontal delay-100">
+                            <div className="w-32 h-6 bg-gray-300 rounded transform -rotate-3 shadow-lg"></div>
+                          </div>
+                          <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounceHorizontal delay-200">
+                            <div className="w-32 h-6 bg-gray-400 rounded transform rotate-1 shadow-lg"></div>
+                          </div>
+                          
+                          {/* Animated Flag */}
+                          <div className="absolute top-8 right-16 animate-slowBounce">
+                            <div className="w-1 h-32 bg-gray-400"></div>
+                            <div className="absolute top-0 left-1 w-16 h-12 bg-devcode-orange rounded-r transform origin-left animate-flagWave"></div>
+                          </div>
+                          
+                          {/* Animated Cloud */}
+                          <div className="absolute top-4 left-8 animate-floatSlow delay-300">
+                            <div className="w-24 h-16 bg-green-400 rounded-full shadow-lg"></div>
+                            <div className="absolute -left-4 top-2 w-16 h-12 bg-green-400 rounded-full shadow-lg"></div>
+                            <div className="absolute -right-2 top-4 w-12 h-8 bg-green-400 rounded-full shadow-lg"></div>
+                          </div>
+                          
+                          {/* Animated decorative elements */}
+                          <div className="absolute top-16 right-8 w-4 h-4 bg-devcode-yellow rounded-full animate-pulse shadow-lg"></div>
+                          <div className="absolute bottom-20 left-4 w-3 h-3 bg-blue-400 rounded-full animate-bounce shadow-lg"></div>
+                          <div className="absolute top-32 left-24 w-2 h-2 bg-devcode-orange rounded-full animate-ping shadow-lg"></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  {/* Steps */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 -translate-x-16">
-                    <div className="w-32 h-6 bg-gray-200 rounded transform rotate-3"></div>
-                  </div>
-                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 -translate-x-8">
-                    <div className="w-32 h-6 bg-gray-300 rounded transform -rotate-3"></div>
-                  </div>
-                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
-                    <div className="w-32 h-6 bg-gray-400 rounded transform rotate-1"></div>
-                  </div>
-                  
-                  {/* Flag */}
-                  <div className="absolute top-8 right-16">
-                    <div className="w-1 h-32 bg-gray-400"></div>
-                    <div className="absolute top-0 left-1 w-16 h-12 bg-devcode-orange rounded-r transform origin-left"></div>
-                  </div>
-                  
-                  {/* Cloud */}
-                  <div className="absolute top-4 left-8">
-                    <div className="w-24 h-16 bg-green-400 rounded-full"></div>
-                    <div className="absolute -left-4 top-2 w-16 h-12 bg-green-400 rounded-full"></div>
-                    <div className="absolute -right-2 top-4 w-12 h-8 bg-green-400 rounded-full"></div>
-                  </div>
-                  
-                  {/* Small decorative elements */}
-                  <div className="absolute top-16 right-8 w-4 h-4 bg-devcode-yellow rounded-full"></div>
-                  <div className="absolute bottom-20 left-4 w-3 h-3 bg-blue-400 rounded-full"></div>
-                  <div className="absolute top-32 left-24 w-2 h-2 bg-devcode-orange rounded-full"></div>
                 </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
