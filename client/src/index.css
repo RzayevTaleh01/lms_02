@@ -399,6 +399,34 @@
   .animate-flagWave {
     animation: flagWave 2s ease-in-out infinite;
   }
+
+  @keyframes dotPulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+    }
+    50% {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 8px rgba(251, 191, 36, 0);
+    }
+  }
+
+  @keyframes dotHover {
+    0%, 100% {
+      transform: translateY(0px) scale(1);
+    }
+    50% {
+      transform: translateY(-2px) scale(1.05);
+    }
+  }
+
+  .animate-dotPulse {
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  .animate-dotHover {
+    animation: dotHover 1.5s ease-in-out infinite;
+  }
   
   /* React Quill Editor Styles */
   .ql-toolbar {
