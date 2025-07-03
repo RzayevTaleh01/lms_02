@@ -704,73 +704,86 @@ export default function Landing() {
                   💥 Bu nə qədər güclü sistem!
                 </h3>
                 <p className="text-lg text-gray-600 mb-8">
-                  DevCode LMS - tələbələrin "Vayyyy bu nə qədər zordur!" deyəcəyi, 
-                  amma istifadəsi super asan olan ən müasir təhsil platforması!
+                  DevCode LMS - həqiqi enterprise səviyyəli təhsil platforması! 
+                  20+ fərqli modul, TypeScript və PostgreSQL ilə qurulmuş güclü sistem.
                 </p>
               </div>
 
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Smartphone className="w-6 h-6 text-white" />
+                    <Database className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📱 Mobile App</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🏗️ Enterprise Arxitektura</h4>
                     <p className="text-gray-600">
-                      Mobil telefonda da istifadə oluna bilər! İstər evdə, istər metroda, 
-                      istənilən yerdə öyrənmək mümkündür.
+                      PostgreSQL database, TypeScript backend, React frontend - 
+                      25+ tablo ilə tam relational sistem!
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Video className="w-6 h-6 text-white" />
+                    <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🎥 Live Training Management</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">👥 3 Səviyyəli Rol Sistemi</h4>
                     <p className="text-gray-600">
-                      Canlı dərslər, real-time suallar, instant cavablar! 
-                      Sanki müəllim yanınızda oturub dərs deyir.
+                      Admin, Müəllim, Tələbə - hər rol üçün fərqli interface, 
+                      icazələr və funksionallıq. Enterprise security!
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <BarChart3 className="w-6 h-6 text-white" />
+                    <Video className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🎮 Interactive Training</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🎥 Video Streaming Engine</h4>
                     <p className="text-gray-600">
-                      Oyun kimi əyləncəli! Kod yazanda real-time nəticə, 
-                      hər addımda progress tracking və achievement sistemi.
+                      YouTube integration, progress tracking, lesson materials - 
+                      hər dərs üçün videolar, sənədlər və tapşırıqlar!
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Award className="w-6 h-6 text-white" />
+                    <PenTool className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🏆 Gamification</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📝 Assignment Engine</h4>
                     <p className="text-gray-600">
-                      Hər tapşırıq üçün xal, hər kurs üçün medal, 
-                      leaderboard sistemi - sanki oyun oynayırsınız!
+                      Rich text editor, file upload, GitHub integration, 
+                      avtomatik qiymətləndirmə və resubmission workflow!
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Globe className="w-6 h-6 text-white" />
+                    <BarChart3 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📊 Advanced Reporting</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📊 Real-time Analytics</h4>
                     <p className="text-gray-600">
-                      AI ilə dəqiq analiz! Hansı mövzularda zəifsiniz, 
-                      nələr öyrənməlisiniz - hamısını göstərir.
+                      Attendance tracking, lesson progress, submission statistics - 
+                      hər şey real-time izlənir və analiz edilir!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🎓 Certificate System</h4>
+                    <p className="text-gray-600">
+                      Avtomatik sertifikat generasiyası, unique ID ilə verification, 
+                      blockchain-ready digital certificates!
                     </p>
                   </div>
                 </div>
@@ -803,70 +816,70 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Features Grid - Exactly like in the image */}
+          {/* Real System Features Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            {/* Left Column */}
+            {/* Left Column - Core System */}
             <div className="space-y-6">
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Smartphone className="w-6 h-6 text-blue-600" />
+                  <Database className="w-6 h-6 text-blue-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📱 Mobile App</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">🗄️ Database Engine</h4>
                 <p className="text-sm text-gray-600">
-                  Mobil tətbiq ilə hər yerdə öyrənmək mümkündür
+                  PostgreSQL ilə 25+ tablo, relations və constraints
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200">
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <Video className="w-6 h-6 text-green-600" />
+                  <Users className="w-6 h-6 text-green-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">🎥 Live Training Management</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">👤 User Management</h4>
                 <p className="text-sm text-gray-600">
-                  Canlı dərslər və real-time interaction
+                  3 rol (Admin/Teacher/Student) Replit Auth integration
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200">
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="w-6 h-6 text-purple-600" />
+                  <BookOpen className="w-6 h-6 text-purple-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">🎮 Interactive Training</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">📚 Course Engine</h4>
                 <p className="text-sm text-gray-600">
-                  Interaktiv tapşırıqlar və gamification
+                  Courses, lessons, materials hierarchy sistemi
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-orange-200">
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-orange-600" />
+                  <Video className="w-6 h-6 text-orange-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📝 Exam</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">🎥 Video Streaming</h4>
                 <p className="text-sm text-gray-600">
-                  Online imtahan sistemi və avtomatik qiymətləndirmə
+                  YouTube integration və lesson progress tracking
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-indigo-200">
                 <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                  <TrendingUp className="w-6 h-6 text-indigo-600" />
+                  <Users className="w-6 h-6 text-indigo-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">💰 Course Sale</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">📝 Enrollment System</h4>
                 <p className="text-sm text-gray-600">
-                  Kurs satışı və ödəniş sistemləri
+                  Student enrollment və progress monitoring
                 </p>
               </div>
             </div>
 
-            {/* Right Column */}
+            {/* Right Column - Advanced Features */}
             <div className="space-y-6">
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-cyan-200">
                 <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
-                  <Award className="w-6 h-6 text-cyan-600" />
+                  <PenTool className="w-6 h-6 text-cyan-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">🏆 Gamification</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">📋 Assignment Engine</h4>
                 <p className="text-sm text-gray-600">
-                  Oyun elementləri və mükafat sistemi
+                  Rich text, file upload, GitHub integration
                 </p>
               </div>
 
@@ -874,19 +887,19 @@ export default function Landing() {
                 <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
                   <BarChart3 className="w-6 h-6 text-red-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📊 Reporting</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">📊 Analytics</h4>
                 <p className="text-sm text-gray-600">
-                  Detallı hesabat və analitika
+                  Real-time progress və submission tracking
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-yellow-200">
                 <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
-                  <PenTool className="w-6 h-6 text-yellow-600" />
+                  <CheckCircle className="w-6 h-6 text-yellow-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📋 Assignments</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">✅ Attendance System</h4>
                 <p className="text-sm text-gray-600">
-                  Smart tapşırıq sistemi və tracking
+                  Live session və attendance tracking
                 </p>
               </div>
 
@@ -894,19 +907,19 @@ export default function Landing() {
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                   <Award className="w-6 h-6 text-green-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">🎓 Certification</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">🎓 Certificates</h4>
                 <p className="text-sm text-gray-600">
-                  Rəqəmsal sertifikat və blockchain doğrulama
+                  Avtomatik certificate generation və verification
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200">
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <PlayCircle className="w-6 h-6 text-purple-600" />
+                  <FileText className="w-6 h-6 text-purple-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">⏯️ Watch Again</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">📰 Blog System</h4>
                 <p className="text-sm text-gray-600">
-                  Video təkrar izləmə və bookmark sistemi
+                  Content management və public blog posts
                 </p>
               </div>
             </div>
@@ -920,34 +933,34 @@ export default function Landing() {
             <div className="relative z-10">
               <div className="text-6xl mb-4">🚀</div>
               <h3 className="text-4xl font-bold mb-4">
-                VAYYYY! Bu nə qədər güclü sistemdir! 
+                Enterprise LMS - Həqiqi Güc!
               </h3>
               <p className="text-xl mb-8 text-white/90 max-w-3xl mx-auto">
-                DevCode LMS - Azərbaycanda ən müasir və tam təchiz olunmuş təhsil platforması! 
-                Bütün xüsusiyyətlər bir yerdə, heç nə eksik deyil!
+                25+ database table, React + TypeScript frontend, PostgreSQL backend, 
+                role-based authentication - real enterprise səviyyəli sistem!
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button className="bg-white text-devcode-orange hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200">
-                  🔥 İndi Qoşul - Tamamilə Pulsuz!
+                  🔥 Sistemə Giriş Et!
                 </Button>
                 <div className="text-white/90 text-sm">
-                  ⚡ 30 saniyədə qeydiyyat • 💯 Pulsuz sınaq • 🎯 Dərhal başla
+                  ⚡ Replit Auth • 🔒 Role-based Access • 🎯 Real-time Data
                 </div>
               </div>
               
               <div className="mt-8 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">10,000+</div>
-                  <div className="text-white/80">Məmnun Tələbə</div>
+                  <div className="text-3xl font-bold">25+</div>
+                  <div className="text-white/80">Database Tables</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">500+</div>
-                  <div className="text-white/80">Ekspert Müəllim</div>
+                  <div className="text-3xl font-bold">3</div>
+                  <div className="text-white/80">User Roles</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">50+</div>
-                  <div className="text-white/80">Aktiv Kurs</div>
+                  <div className="text-3xl font-bold">TypeScript</div>
+                  <div className="text-white/80">Full Stack</div>
                 </div>
               </div>
             </div>
