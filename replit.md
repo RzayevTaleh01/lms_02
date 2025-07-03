@@ -392,6 +392,8 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
   - Fixed layout spacing issues that caused gaps in admin dashboard
   - Ensured consistent mobile navigation across all admin pages (dashboard, courses, students)
   - Mobile menu button only shows on mobile devices (lg:hidden) with proper z-index positioning
+  - Removed lg:ml-64 margin classes from all admin pages to eliminate sidebar-content spacing gap
+  - AdminSidebar now uses lg:relative positioning for proper flex layout without margin conflicts
   - Fixed teacher dashboard pending assignments display:
     * Created new API endpoint /api/teacher/pending-submissions for real data
     * Replaced static "12" with dynamic count of ungraded submissions
