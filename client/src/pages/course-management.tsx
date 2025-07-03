@@ -269,7 +269,13 @@ export default function CourseManagement() {
             toast({ title: "Davamiyyət uğurla yadda saxlanıldı" });
             setAttendanceData({});
             setIsAttendanceDisabled(true);
+            // Invalidate multiple related caches
             queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/sessions`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/all-attendance`] });
+            // Also invalidate individual session attendance caches
+            if (activeSession) {
+                queryClient.invalidateQueries({ queryKey: [`/api/sessions/${activeSession.id}/attendance`] });
+            }
         },
         onError: (error) => {
             console.error("Error saving attendance:", error);
