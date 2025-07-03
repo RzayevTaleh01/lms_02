@@ -870,19 +870,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json([]);
       }
 
-      // Get all assignments for teacher's courses
-      const allAssignments = [];
+      // Get all submissions that are not graded (grade is null) for teacher's courses
+      const pendingSubmissions = [];
+      
+      // Get submissions for regular assignments
       for (const courseId of courseIds) {
         const assignments = await storage.getAssignmentsByCourse(courseId);
-        allAssignments.push(...assignments);
+        for (const assignment of assignments) {
+          const submissions = await storage.getSubmissionsByAssignment(assignment.id);
+          const pending = submissions.filter((sub: any) => sub.grade === null);
+          pendingSubmissions.push(...pending);
+        }
       }
 
-      // Get all submissions for these assignments that are not graded (grade is null)
-      const pendingSubmissions = [];
-      for (const assignment of allAssignments) {
-        const submissions = await storage.getSubmissionsByAssignment(assignment.id);
-        const pending = submissions.filter((sub: any) => sub.grade === null);
-        pendingSubmissions.push(...pending);
+      // Get submissions for lesson assignments
+      for (const courseId of courseIds) {
+        const lessons = await storage.getLessonsByCourse(courseId);
+        for (const lesson of lessons) {
+          const lessonAssignments = await storage.getLessonAssignments(lesson.id);
+          for (const lessonAssignment of lessonAssignments) {
+            const submissions = await storage.getSubmissionsByAssignment(lessonAssignment.id);
+            const pending = submissions.filter((sub: any) => sub.grade === null);
+            pendingSubmissions.push(...pending);
+          }
+        }
       }
 
       res.json(pendingSubmissions);
