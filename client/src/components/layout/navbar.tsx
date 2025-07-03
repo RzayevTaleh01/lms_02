@@ -125,11 +125,10 @@ export default function Navbar() {
                 <div className="flex items-center">
                   {/* Logo icon */}
                   <div className="w-8 h-8 bg-devcode-orange rounded-lg flex items-center justify-center mr-2">
-                    <span className="text-white font-bold text-sm">/</span>
+                    <span className="text-white font-bold text-sm">D</span>
                   </div>
-                  <span className="text-xl font-bold text-gray-900">code</span>
+                  <span className="text-xl font-bold text-gray-900">DevCode</span>
                 </div>
-                <span className="text-xl font-normal text-gray-900">academy</span>
               </div>
             </Link>
 
