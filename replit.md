@@ -387,6 +387,10 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
     * Now checks if attendance record already exists for student/session combination
     * Updates existing record or creates new one to prevent duplicate entries
     * Eliminates issue where new attendance overwrites previous attendance calculations
+  - Fixed global active session bar overlapping sidebar:
+    * Added lg:left-64 class to position bar beside sidebar on desktop screens
+    * Reduced z-index from 60 to 45 to prevent overlapping issues
+    * Bar now properly respects sidebar width (256px) and displays correctly
 
 ## User Preferences
 
