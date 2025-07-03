@@ -582,109 +582,207 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* DevCode LMS Information Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800">
+      {/* Interactive Platform Preview Section */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-6">
-              DevCode LMS Haqqında
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              İnteraktiv Təhsil Sistemi
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              DevCode Learning Management System - müasir texnologiyalar əsasında qurulmuş, 
-              proqramlaşdırma təhsili üçün xüsusi hazırlanmış innovativ təhsil platformasıdır.
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+              DevCode LMS ilə canlı kod editoru, real-time kompayler və mentor dəstəyi 
+              bir yerdə. Həqiqi proqramlaşdırma mühitində öyrənin və praktika edin.
             </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div className="space-y-8">
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-devcode-orange rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Code className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Interaktiv Öyrənmə</h3>
-                    <p className="text-gray-300">
-                      Canlı kod redaktorları, real-time practice və instant feedback ilə 
-                      praktiki öyrənmə təcrübəsi.
-                    </p>
+            {/* Left Side - Platform Interface Mockup */}
+            <div className="relative">
+              {/* Browser Frame */}
+              <div className="bg-gray-800 rounded-t-lg p-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="ml-4 text-xs text-gray-400">DevCode LMS - Interactive Learning</div>
+                </div>
+              </div>
+
+              {/* Platform Interface */}
+              <div className="bg-gray-900 rounded-b-lg overflow-hidden shadow-2xl">
+                {/* Top Navigation */}
+                <div className="bg-gray-800 p-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-devcode-orange rounded-lg flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">JS</span>
+                      </div>
+                      <span className="text-white font-medium">JavaScript Əsasları - Dərs 5</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-green-400 text-sm">Canlı</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-devcode-yellow rounded-lg flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-6 h-6 text-black" />
+                {/* Code Editor Split View */}
+                <div className="grid grid-cols-2 h-64">
+                  {/* Code Editor */}
+                  <div className="bg-gray-900 p-4 border-r border-gray-700">
+                    <div className="text-xs text-gray-400 mb-2">📝 Kod Editoru</div>
+                    <div className="space-y-2 font-mono text-sm">
+                      <div className="flex">
+                        <span className="text-gray-500 w-6">1</span>
+                        <span className="text-purple-400">function</span>
+                        <span className="text-white ml-2">calculateSum</span>
+                        <span className="text-yellow-400">(</span>
+                        <span className="text-blue-400">a</span>
+                        <span className="text-white">,</span>
+                        <span className="text-blue-400 ml-1">b</span>
+                        <span className="text-yellow-400">)</span>
+                        <span className="text-white ml-1">{"{"}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-gray-500 w-6">2</span>
+                        <span className="text-green-400 ml-4">return</span>
+                        <span className="text-blue-400 ml-2">a</span>
+                        <span className="text-white ml-1">+</span>
+                        <span className="text-blue-400 ml-1">b</span>
+                        <span className="text-white">;</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-gray-500 w-6">3</span>
+                        <span className="text-white">{"}"}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-gray-500 w-6">4</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-gray-500 w-6">5</span>
+                        <span className="text-blue-400">console</span>
+                        <span className="text-white">.</span>
+                        <span className="text-yellow-400">log</span>
+                        <span className="text-white">(</span>
+                        <span className="text-purple-400">calculateSum</span>
+                        <span className="text-white">(</span>
+                        <span className="text-green-400">5</span>
+                        <span className="text-white">,</span>
+                        <span className="text-green-400 ml-1">3</span>
+                        <span className="text-white">));</span>
+                        <div className="w-1 h-4 bg-green-400 animate-pulse ml-1"></div>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Strukturlu Kurikulum</h3>
-                    <p className="text-gray-300">
-                      Başlanğıcdan professional səviyyəyə qədər pillələrlə düzülmüş 
-                      təhsil proqramları və layihə əsaslı öyrənmə.
-                    </p>
+
+                  {/* Output Console */}
+                  <div className="bg-gray-800 p-4">
+                    <div className="text-xs text-gray-400 mb-2">⚡ Nəticə</div>
+                    <div className="font-mono text-sm space-y-1">
+                      <div className="text-green-400">► Running...</div>
+                      <div className="text-white">8</div>
+                      <div className="text-green-400">✓ Test passed!</div>
+                    </div>
+                    <div className="mt-4 p-2 bg-green-900/30 rounded border border-green-500/30">
+                      <div className="text-green-400 text-xs">💡 Mentor məsləhəti:</div>
+                      <div className="text-green-300 text-xs mt-1">
+                        Çox yaxşı! Function düzgün yaradıldı.
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Mentor Dəstəyi</h3>
-                    <p className="text-gray-300">
-                      Peşəkar mentorlar tərəfindən 24/7 dəstək, kod review və 
-                      karyera məsləhətləri.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Sertifikatlaşdırma</h3>
-                    <p className="text-gray-300">
-                      Sənaye tərəfindən tanınan sertifikatlar və portfolio 
-                      yaradılması dəstəyi.
-                    </p>
+                {/* Bottom Activity Bar */}
+                <div className="bg-gray-800 p-3 border-t border-gray-700">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                        <span className="text-gray-300">12 tələbə canlı</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                        <span className="text-gray-300">Progress: 85%</span>
+                      </div>
+                    </div>
+                    <button className="bg-devcode-orange px-3 py-1 rounded text-white text-xs hover:bg-devcode-orange/90">
+                      Növbəti Tapşırıq
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Stats */}
-            <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700">
-              <h3 className="text-2xl font-bold text-white mb-8 text-center">Platform Statistikaları</h3>
-              
-              <div className="grid grid-cols-2 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-devcode-orange mb-2">5000+</div>
-                  <div className="text-gray-300">Aktiv Tələbə</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-devcode-yellow mb-2">50+</div>
-                  <div className="text-gray-300">Kurs</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-400 mb-2">95%</div>
-                  <div className="text-gray-300">Məzun İşə Düzəlmə</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-400 mb-2">100+</div>
-                  <div className="text-gray-300">Peşəkar Mentor</div>
+            {/* Right Side - Features */}
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                  Niyə DevCode LMS?
+                </h3>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Code className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Canlı Kod Editoru</h4>
+                      <p className="text-gray-600">
+                        Brauzerdə birbaşa kod yazın, işə salın və real-time nəticə alın. 
+                        Heç nə yükləməyə ehtiyac yoxdur.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Canlı Mentor Dəstəyi</h4>
+                      <p className="text-gray-600">
+                        Hər dərsdə peşəkar mentorlardan instant kömək alın. 
+                        Kod review və şəxsi məsləhətlər.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Progress Tracking</h4>
+                      <p className="text-gray-600">
+                        Öyrənmə prosesini izləyin, testləri keçin və 
+                        real proyektlər üzərində çalışın.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-devcode-orange rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Award className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Sertifikat Sistemi</h4>
+                      <p className="text-gray-600">
+                        Hər modulu tamamladıqdan sonra sənaye tərəfindən 
+                        tanınan sertifikatlar qazanın.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-8 p-6 bg-gray-700 rounded-xl">
-                <h4 className="text-lg font-semibold text-white mb-3">Texnologiyalar</h4>
-                <div className="flex flex-wrap gap-2">
-                  {['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Git', 'Docker', 'AWS'].map((tech) => (
-                    <span key={tech} className="px-3 py-1 bg-devcode-orange/20 text-devcode-orange rounded-full text-sm">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+              <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow p-6 rounded-xl text-white">
+                <h4 className="text-xl font-bold mb-2">İndi Başlayın!</h4>
+                <p className="mb-4 text-white/90">
+                  İlk dərsinizi pulsuz olaraq cəhd edin və fərqi hiss edin.
+                </p>
+                <Button className="bg-white text-devcode-orange hover:bg-gray-100 font-semibold">
+                  Pulsuz Başlayın
+                </Button>
               </div>
             </div>
           </div>
