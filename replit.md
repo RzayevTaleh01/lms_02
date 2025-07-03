@@ -359,6 +359,11 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
   - Updated technical descriptions to match actual TypeScript/React/PostgreSQL stack
   - Enhanced with enterprise-level terminology and accurate system specifications
   - Focused on impressing users with real technical capabilities rather than marketing promises
+- July 3, 2025: Fixed color contrast issue in training programs section:
+  - Fixed "Pulsuz məsləhət al" button text visibility issue
+  - Changed from orange text to black text with inline styling
+  - Added shadow and border for better contrast against gradient background
+  - Ensured proper readability and accessibility
 
 ## User Preferences
 

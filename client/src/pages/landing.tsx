@@ -667,7 +667,7 @@ export default function Landing() {
               <p className="text-lg mb-6 text-white/90">
                 Bizim career mentorlarımız sizə ən uyğun kursu seçməkdə kömək edəcək
               </p>
-              <Button className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-3 rounded-xl font-semibold">
+              <Button className="bg-white hover:bg-gray-100 px-8 py-3 rounded-xl font-semibold shadow-lg border-2 border-white" style={{ color: '#000000' }}>
                 Pulsuz məsləhət al
               </Button>
             </div>
