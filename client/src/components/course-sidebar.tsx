@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { 
   BookOpen, 
   Users, 
@@ -8,7 +10,8 @@ import {
   ArrowLeft,
   Play,
   Clock,
-  History
+  History,
+  Menu
 } from "lucide-react";
 
 interface CourseSidebarProps {
@@ -18,6 +21,8 @@ interface CourseSidebarProps {
 }
 
 export default function CourseSidebar({ course, activeTab, onTabChange }: CourseSidebarProps) {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
   const sidebarItems = [
     {
       id: "lessons",
@@ -51,8 +56,8 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
     }
   ];
 
-  return (
-    <div className="fixed left-0 top-0 w-64 h-full bg-white shadow-lg z-30 border-r border-gray-200">
+  const SidebarContent = () => (
+    <>
       {/* Header */}
       <div className="p-6 border-b">
         <Button 
@@ -76,18 +81,23 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
           return (
             <button
               key={item.id}
-              className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors w-full text-left ${
-                isActive 
-                  ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
-                  : "text-gray-700 hover:bg-gray-50"
+              onClick={() => {
+                onTabChange(item.id);
+                setIsMobileOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
+                isActive
+                  ? "bg-devcode-orange text-white"
+                  : "text-gray-700 hover:bg-gray-100"
               }`}
-              onClick={() => onTabChange(item.id)}
             >
-              <Icon className="w-5 h-5" />
-              <span>{item.label}</span>
+              <div className="flex items-center">
+                <Icon className="w-5 h-5 mr-3" />
+                <span className="font-medium">{item.label}</span>
+              </div>
               {item.count !== null && (
-                <span className={`ml-auto text-xs px-2 py-1 rounded-full ${
-                  isActive ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  isActive ? "bg-white text-devcode-orange" : "bg-gray-200 text-gray-600"
                 }`}>
                   {item.count}
                 </span>
@@ -110,6 +120,31 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
           </div>
         </div>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block fixed left-0 top-0 w-64 h-full bg-white shadow-lg z-30 border-r border-gray-200">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Menu Button & Sidebar */}
+      <div className="lg:hidden">
+        <div className="fixed top-4 left-4 z-50">
+          <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="bg-white shadow-md">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0">
+              <SidebarContent />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+    </>
   );
 }
