@@ -61,6 +61,14 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
+        // DevCode Academy brand colors
+        "devcode-orange": "var(--devcode-orange)",
+        "devcode-orange-light": "var(--devcode-orange-light)",
+        "devcode-yellow": "var(--devcode-yellow)",
+        "devcode-yellow-light": "var(--devcode-yellow-light)",
+        "devcode-dark": "var(--devcode-dark)",
+        "devcode-gray": "var(--devcode-gray)",
+        "devcode-light": "var(--devcode-light)",
       },
       keyframes: {
         "accordion-down": {

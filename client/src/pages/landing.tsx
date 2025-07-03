@@ -383,7 +383,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">Pulsuz</span>
+                    <span className="text-2xl font-bold text-gray-900">4</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 px-6 py-2 rounded-xl">
@@ -437,7 +437,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">Əlaqə</span>
+                    <span className="text-2xl font-bold text-gray-900">4</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white hover:from-cyan-500 hover:to-blue-600 px-6 py-2 rounded-xl">
@@ -490,7 +490,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">Müsahibə</span>
+                    <span className="text-2xl font-bold text-gray-900">4</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 px-6 py-2 rounded-xl">
@@ -506,7 +506,7 @@ export default function Landing() {
 
               <div className="relative p-8">
                 {/* Course Badge */}
-                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-devcode-orange to-devcode-yellow text-white mb-4">
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-devcode-orange to-devcode-yellow mb-4">
                   👑 Premium
                 </div>
 
@@ -538,15 +538,13 @@ export default function Landing() {
                     <span>10+ real world layihələr</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                    <span>İş garantisi</span>
                   </div>
                 </div>
 
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">Əlaqə</span>
+                    <span className="text-2xl font-bold text-gray-900">8</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 px-6 py-2 rounded-xl">
@@ -555,60 +553,7 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-
-            {/* Python Course */}
-            <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-              <div className="relative p-8">
-                {/* Course Badge */}
-                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mb-4">
-                  🐍 Beginner Friendly
-                </div>
-
-                {/* Course Icon */}
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-yellow-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <span className="text-white font-bold text-lg">Py</span>
-                </div>
-
-                {/* Course Content */}
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Python Programming
-                </h3>
-
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Data Science, Web Development, Automation. Django, Flask, Pandas və Machine Learning.
-                </p>
-
-                {/* Course Features */}
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                    <span>16 həftə comprehensive</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                    <span>Data Science əsasları</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                    <span>Web scraping & automation</span>
-                  </div>
-                </div>
-
-                {/* Price and CTA */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-2xl font-bold text-gray-900">Dostluq</span>
-                    <span className="text-gray-500 text-sm ml-1">/ay</span>
-                  </div>
-                  <Button className="bg-gradient-to-r from-blue-500 to-yellow-400 text-white hover:from-blue-600 hover:to-yellow-500 px-6 py-2 rounded-xl">
-                    Başla
-                  </Button>
-                </div>
-              </div>
-            </div>
-
+            
             {/* Mobile Development Course */}
             <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -652,7 +597,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">Peşəkarlıq</span>
+                    <span className="text-2xl font-bold text-gray-900">6</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 px-6 py-2 rounded-xl">
