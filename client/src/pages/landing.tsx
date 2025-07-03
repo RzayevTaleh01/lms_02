@@ -60,7 +60,7 @@ export default function Landing() {
     {
       title: "Gələcəyə buradan keç!",
       subtitle: "#gələcəkburada",
-      description: "Code Academy gələcək innovasiyaları bu gündən duyub ona uyğun mütəxəssislər hazırlayan tədrəis müəssisəsidir.",
+      description: "DevCode Akademiya gələcək innovasiyaları bu gündən duyub ona uyğun mütəxəssislər hazırlayan tədrəis müəssisəsidir.",
       buttonText: "Keçid et",
       bgColor: "bg-gray-50"
     },
@@ -198,7 +198,6 @@ export default function Landing() {
                     <div className="transform transition-all duration-700 delay-200">
                       <div className="flex items-center gap-2 mb-8">
                         <div className="w-2 h-2 bg-devcode-yellow rounded-full animate-pulse"></div>
-                        <span className="text-sm text-gray-600 font-medium">Code Academy</span>
                       </div>
 
                       <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
@@ -663,25 +662,7 @@ export default function Landing() {
               </div>
             </div>
           </div>
-
-          {/* CTA Section */}
-          <div className="text-center">
-            <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-2xl p-8 text-white mb-8">
-              <h3 className="text-2xl font-bold mb-4">Hansı kursu seçməli?</h3>
-              <p className="text-lg mb-6 text-white/90">
-                Bizim career mentorlarımız sizə ən uyğun kursu seçməkdə kömək edəcək
-              </p>
-              <Button className="bg-white hover:bg-gray-100 px-8 py-3 rounded-xl font-semibold shadow-lg border-2 border-white" style={{ color: '#000000' }}>
-                Pulsuz məsləhət al
-              </Button>
-            </div>
-
-            <Button 
-              className="bg-gray-900 text-white hover:bg-gray-800 px-8 py-3 rounded-xl"
-            >
-              Bütün kursları gör
-            </Button>
-          </div>
+    
         </div>
       </section>
 
@@ -796,7 +777,7 @@ export default function Landing() {
                   Sizin üçün nələr var?
                 </h3>
                 <p className="text-lg text-gray-600 mb-8">
-                  DevCode LMS tələbələr üçün ən asان və əlverişli öyrənmə platformasıdır. 
+                  DevCode LMS tələbələr üçün ən asan və əlverişli öyrənmə platformasıdır. 
                   Hər şey bir yerdə və çox sadə!
                 </p>
               </div>
@@ -854,18 +835,7 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Smartphone className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📱 Mobil Uyğun</h4>
-                    <p className="text-gray-600">
-                      Telefon, tablet, kompüterdən istifadə edin - 
-                      hər yerdə öyrənin!
-                    </p>
-                  </div>
-                </div>
+            
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
@@ -881,17 +851,6 @@ export default function Landing() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow p-6 rounded-xl text-white shadow-2xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xl font-bold mb-2">🚀 İndi başlayın!</h4>
-                    <p className="mb-4 text-white/90">
-                      Çox sadə və əlverişli öyrənmə təcrübəsi sizi gözləyir!
-                    </p>
-                  </div>
-                  <div className="text-4xl">💪</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
