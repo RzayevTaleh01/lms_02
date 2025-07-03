@@ -385,10 +385,15 @@ export default function CourseManagement() {
   };
 
   const handleAttendanceChange = (studentId: string, status: string) => {
-    setAttendanceData(prev => ({
-      ...prev,
-      [studentId]: status
-    }));
+    console.log("Attendance change:", { studentId, status });
+    setAttendanceData(prev => {
+      const newData = {
+        ...prev,
+        [studentId]: status
+      };
+      console.log("New attendance data:", newData);
+      return newData;
+    });
   };
 
   const handleSaveAttendance = () => {
@@ -400,12 +405,7 @@ export default function CourseManagement() {
         !students.some((student: any) => student.id === user.id)
     ) : [];
 
-    const handleMarkAttendance = (studentId: string, status: "present" | "absent") => {
-        setAttendanceData(prev => ({
-            ...prev,
-            [studentId]: status
-        }));
-    };
+
     const handleRemoveStudentOriginal = (studentId: string) => {
         if (confirm("Bu tələbəni kursdan çıxarmaq istədiyinizə əminsiniz?")) {
             removeStudentMutation.mutate(studentId);
