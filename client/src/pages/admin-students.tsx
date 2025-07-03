@@ -359,21 +359,25 @@ export default function AdminStudents() {
         onClose={() => setIsMobileMenuOpen(false)} 
       />
 
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-4 right-4 z-50">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="bg-white shadow-md"
+        >
+          <Menu className="h-4 w-4" />
+        </Button>
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 p-4 lg:p-8 lg:ml-64">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Tələbə İdarəetməsi</h1>
-              <p className="text-gray-600 text-sm lg:text-base">Tələbələri idarə edin və izləyin</p>
-            </div>
+          <div>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Tələbə İdarəetməsi</h1>
+            <p className="text-gray-600 text-sm lg:text-base">Tələbələri idarə edin və izləyin</p>
           </div>
           <Dialog open={isCreateStudentOpen} onOpenChange={setIsCreateStudentOpen}>
             <DialogTrigger asChild>
