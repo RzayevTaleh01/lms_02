@@ -179,7 +179,7 @@ export default function Landing() {
         </div>
 
         {/* Slides */}
-        <div className="relative h-[500px] sm:h-[600px] lg:h-[650px]">
+        <div className="relative h-[400px] sm:h-[500px] lg:h-[650px]">
           {heroSlides.map((slide, index) => (
             <div
               key={index}
@@ -191,26 +191,26 @@ export default function Landing() {
                     : 'translate-x-full opacity-0'
               }`}
             >
-              <div className={`pt-20 sm:pt-24 md:pt-32 pb-12 sm:pb-16 md:pb-20 h-full ${slide.bgColor}`}>
+              <div className={`pt-8 sm:pt-16 md:pt-24 pb-8 sm:pb-12 md:pb-16 h-full ${slide.bgColor}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-                  <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                  <div className="grid lg:grid-cols-2 gap-6 lg:gap-16 items-center h-full">
                     {/* Left Content */}
                     <div className="transform transition-all duration-700 delay-200">
-                      <div className="flex items-center gap-2 mb-8">
+                      <div className="flex items-center gap-2 mb-4 sm:mb-6">
                         <div className="w-2 h-2 bg-devcode-yellow rounded-full animate-pulse"></div>
                       </div>
 
-                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
+                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-6 leading-tight">
                         <span className="inline-block animate-fadeInUp">{slide.title}</span>
                         <br />
                         <span className="text-gray-900 inline-block animate-fadeInUp delay-100">{slide.subtitle}</span>
                       </h1>
 
-                      <p className="text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed animate-fadeInUp delay-200">
+                      <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-4 sm:mb-6 md:mb-8 max-w-lg leading-relaxed animate-fadeInUp delay-200">
                         {slide.description}
                       </p>
 
-                      <div className="flex flex-col sm:flex-row gap-4 animate-fadeInUp delay-300">
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fadeInUp delay-300">
                         <Button 
                           size="lg" 
                           className="bg-devcode-yellow hover:bg-devcode-yellow/90 text-black font-semibold px-8 py-3 rounded-lg text-base transform hover:scale-105 transition-all duration-200"
