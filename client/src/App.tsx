@@ -5,6 +5,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 // Public pages
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -36,6 +38,19 @@ import StudentAssignments from "@/pages/student-assignments";
 
 import NotFound from "@/pages/not-found";
 
+// Layout Wrapper for Public Pages
+function PublicLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-screen">
+        {children}
+      </main>
+      <Footer />
+    </>
+  );
+}
+
 // Protected Route Component
 function ProtectedRoute({ 
   children, 
@@ -49,7 +64,11 @@ function ProtectedRoute({
   userRole?: string;
 }) {
   if (!isAuthenticated) {
-    return <Landing />;
+    return (
+      <PublicLayout>
+        <Landing />
+      </PublicLayout>
+    );
   }
   
   if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
@@ -74,14 +93,42 @@ function Router() {
     <Switch>
       {/* Public Routes */}
       <Route path="/">
-        {isAuthenticated ? <Home /> : <Landing />}
+        {isAuthenticated ? <Home /> : (
+          <PublicLayout>
+            <Landing />
+          </PublicLayout>
+        )}
       </Route>
-      <Route path="/courses" component={Courses} />
-      <Route path="/course/:id" component={CourseDetail} />
-      <Route path="/courses/:courseId/lessons/:lessonId" component={LessonDetail} />
-      <Route path="/blog" component={Blog} />
-      <Route path="/verify" component={VerifyCertificate} />
-      <Route path="/contact" component={Contact} />
+      <Route path="/courses">
+        <PublicLayout>
+          <Courses />
+        </PublicLayout>
+      </Route>
+      <Route path="/course/:id">
+        <PublicLayout>
+          <CourseDetail />
+        </PublicLayout>
+      </Route>
+      <Route path="/courses/:courseId/lessons/:lessonId">
+        <PublicLayout>
+          <LessonDetail />
+        </PublicLayout>
+      </Route>
+      <Route path="/blog">
+        <PublicLayout>
+          <Blog />
+        </PublicLayout>
+      </Route>
+      <Route path="/verify">
+        <PublicLayout>
+          <VerifyCertificate />
+        </PublicLayout>
+      </Route>
+      <Route path="/contact">
+        <PublicLayout>
+          <Contact />
+        </PublicLayout>
+      </Route>
 
       {/* Admin Routes */}
       <Route path="/admin">

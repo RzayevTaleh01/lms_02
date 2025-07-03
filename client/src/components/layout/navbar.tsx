@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, User, Settings, LogOut } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import LoginModal from "@/components/auth/login-modal";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -180,7 +181,7 @@ export default function Navbar() {
                     onClick={() => setIsLoginModalOpen(true)}
                     className="hidden md:flex text-gray-700 hover:text-gray-900 text-sm"
                   >
-                    Giriş
+                    Daxil ol
                   </Button>
                   <Button 
                     onClick={() => setIsSignupModalOpen(true)}
@@ -246,7 +247,7 @@ export default function Navbar() {
                           variant="outline"
                           className="w-full"
                         >
-                          Giriş
+                          Daxil ol
                         </Button>
                         <Button 
                           onClick={() => {
@@ -266,6 +267,12 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
+      
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
     </>
   );
 }
