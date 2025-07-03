@@ -385,15 +385,10 @@ export default function CourseManagement() {
   };
 
   const handleAttendanceChange = (studentId: string, status: string) => {
-    console.log("Attendance change:", { studentId, status });
-    setAttendanceData(prev => {
-      const newData = {
-        ...prev,
-        [studentId]: status
-      };
-      console.log("New attendance data:", newData);
-      return newData;
-    });
+    setAttendanceData(prev => ({
+      ...prev,
+      [studentId]: status
+    }));
   };
 
   const handleSaveAttendance = () => {
@@ -611,8 +606,14 @@ export default function CourseManagement() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Tələbə</TableHead>
-                      {lessonSessions.map((session: any, index: number) => (
-                        <TableHead key={session.id}>Dərs {index + 1}</TableHead>
+                      {lessonSessions.map((session: any) => (
+                        <TableHead key={session.id} className="text-center">
+                          {new Date(session.startedAt).toLocaleDateString('az-AZ', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
+                        </TableHead>
                       ))}
                       <TableHead>Davamiyyət %</TableHead>
                     </TableRow>
