@@ -325,6 +325,15 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
   - Used professional gradient color schemes and technical iconography
   - Focused on technical audience with detailed component descriptions
   - Removed generic LMS marketing content in favor of technical architecture documentation
+- July 3, 2025: Simplified LMS section for student audience:
+  - Completely removed technical system architecture details (PostgreSQL, TypeScript, etc.)
+  - Redesigned to focus on student benefits and platform usability
+  - Changed from "Sistem Arxitekturası" to "Nə üçün DevCode LMS?"
+  - Added student-focused features: video lessons, assignments, progress tracking, certificates
+  - Used simple, everyday language instead of technical terms
+  - Replaced complex diagrams with student dashboard mockup
+  - Emphasized ease of use, mobile compatibility, and teacher support
+  - Made content accessible and encouraging for non-technical users
 - July 3, 2025: Major LMS showcase redesign with authentic system data:
   - Updated DevCode LMS showcase to reflect actual system capabilities based on database schema analysis
   - Replaced generic features with real implemented functionality:
