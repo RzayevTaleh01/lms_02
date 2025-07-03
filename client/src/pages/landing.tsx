@@ -159,20 +159,20 @@ export default function Landing() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Slider Section */}
       <section className="relative overflow-hidden">
-        {/* Navigation dots - Centered bottom */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex gap-3 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+        {/* Navigation dots - Top Right */}
+        <div className="absolute top-8 right-8 z-20 flex gap-3 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
           {heroSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`relative w-3 h-3 rounded-full transition-all duration-300 ${
+              className={`relative w-4 h-4 rounded-full transition-all duration-300 ${
                 currentSlide === index 
-                  ? 'bg-white' 
-                  : 'bg-white/50 hover:bg-white/70'
+                  ? 'bg-devcode-yellow' 
+                  : 'bg-devcode-yellow/50 hover:bg-devcode-yellow/70'
               }`}
             >
               {currentSlide === index && (
-                <div className="absolute inset-0 rounded-full border-2 border-devcode-yellow animate-fillProgress"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-white animate-fillProgress"></div>
               )}
             </button>
           ))}
