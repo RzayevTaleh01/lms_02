@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import Sidebar from "@/components/layout/sidebar";
+import { TeacherSidebar } from "@/components/teacher-sidebar";
 import GlobalActiveSession from "@/components/global-active-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export default function TeacherStudents() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch all users to find students enrolled in this teacher's courses
   const { data: allUsers = [] } = useQuery({
@@ -167,7 +168,10 @@ export default function TeacherStudents() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <GlobalActiveSession />
-      <Sidebar userRole="teacher" />
+      <TeacherSidebar 
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)} 
+      />
 
       {/* Main Content */}
       <div className="flex-1 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>

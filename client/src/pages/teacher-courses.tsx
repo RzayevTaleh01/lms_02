@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Sidebar from "@/components/layout/sidebar";
+import { TeacherSidebar } from "@/components/teacher-sidebar";
 import CreateCourseDialog from "@/components/create-course-dialog";
 import GlobalActiveSession from "@/components/global-active-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -151,10 +151,9 @@ export default function TeacherCourses() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <GlobalActiveSession />
-      <Sidebar 
-        userRole="teacher" 
-        isMobileOpen={isMobileMenuOpen} 
-        setIsMobileOpen={setIsMobileMenuOpen} 
+      <TeacherSidebar 
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)} 
       />
 
       {/* Main Content */}
