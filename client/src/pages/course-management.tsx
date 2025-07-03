@@ -125,7 +125,7 @@ export default function CourseManagement() {
 
   // Get attendance data for each session
   const { data: allSessionsAttendance = {} } = useQuery({
-    queryKey: [`/api/courses/${id}/all-attendance`],
+    queryKey: [`/api/courses/${id}/all-attendance`, lessonSessions?.length],
     queryFn: async () => {
       const attendanceMap: { [sessionId: number]: any[] } = {};
 
@@ -277,20 +277,27 @@ export default function CourseManagement() {
             toast({ title: "Davamiyyət uğurla yadda saxlanıldı" });
             setAttendanceData({});
             setIsAttendanceDisabled(true);
-            // Invalidate all session-related queries for real-time updates
+            
+            // Immediately invalidate and refetch all attendance-related queries
             queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/sessions`] });
             queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/all-attendance`] });
             
-            // Force refetch all sessions attendance data immediately
+            // Force immediate refetch of all session attendance data
             if (lessonSessions && Array.isArray(lessonSessions)) {
                 lessonSessions.forEach((session: any) => {
                     queryClient.invalidateQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
+                    // Force immediate refetch
+                    queryClient.refetchQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
                 });
             }
+            
+            // Force refetch the main attendance query
+            queryClient.refetchQueries({ queryKey: [`/api/courses/${id}/all-attendance`, lessonSessions?.length] });
             
             // Also invalidate the current active session
             if (activeSession) {
                 queryClient.invalidateQueries({ queryKey: [`/api/sessions/${activeSession.id}/attendance`] });
+                queryClient.refetchQueries({ queryKey: [`/api/sessions/${activeSession.id}/attendance`] });
             }
         },
         onError: (error) => {
