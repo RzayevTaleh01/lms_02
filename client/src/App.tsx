@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 // Public pages
-import Landing from "@/pages/landing";
+import Landing from "@/pages/landing_new";
 import Home from "@/pages/home";
 import Courses from "@/pages/courses";
 import CourseDetail from "@/pages/course-detail";
