@@ -330,6 +330,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get student attendance for admin
+  app.get('/api/attendance/student/:studentId', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user || (req.user.role !== 'teacher' && req.user.role !== 'admin')) {
+        return res.status(403).json({ message: "Only teachers and admins can view student attendance" });
+      }
+
+      const studentId = req.params.studentId;
+      const attendance = await storage.getStudentAttendanceRecords(studentId);
+      res.json(attendance);
+    } catch (error) {
+      console.error("Error fetching student attendance:", error);
+      res.status(500).json({ message: "Failed to fetch student attendance" });
+    }
+  });
+
   app.post('/api/enrollments', isAuthenticated as any, async (req: AuthenticatedRequest, res) => {
     try {
       // If studentId is provided in body (for teachers adding students), use it

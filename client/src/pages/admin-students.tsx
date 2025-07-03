@@ -135,16 +135,25 @@ export default function AdminStudents() {
     retry: false,
   });
 
+  // Fetch all enrollments to calculate counts
+  const { data: allEnrollments = [], isLoading: allEnrollmentsLoading } = useQuery<Enrollment[]>({
+    queryKey: ["/api/enrollments/all"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/enrollments/all`);
+      return response.json();
+    },
+    enabled: !!user && user.role === 'admin',
+    retry: false,
+  });
+
   // Fetch enrollments for selected student
   const { data: studentEnrollments = [], isLoading: enrollmentsLoading } = useQuery<Enrollment[]>({
     queryKey: [`/api/students/${selectedStudent?.id}/enrollments`],
     queryFn: async () => {
       if (!selectedStudent) return [];
-      const response = await apiRequest("GET", `/api/enrollments`);
-      const allEnrollments = await response.json();
       return allEnrollments.filter((e: Enrollment) => e.studentId === selectedStudent.id);
     },
-    enabled: !!selectedStudent?.id,
+    enabled: !!selectedStudent?.id && allEnrollments.length > 0,
     retry: false,
   });
 
@@ -467,7 +476,7 @@ export default function AdminStudents() {
                       </thead>
                       <tbody>
                         {students.map((student: User) => {
-                          const enrollmentCount = studentEnrollments.filter(e => e.studentId === student.id).length;
+                          const enrollmentCount = allEnrollments.filter(e => e.studentId === student.id).length;
                           return (
                             <tr key={student.id} className="border-b border-gray-100">
                               <td className="py-4 px-2">

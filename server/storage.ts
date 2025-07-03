@@ -171,6 +171,8 @@ export interface IStorage {
       completedAssignments: number;
     }>;
   }>;
+
+  getStudentAttendanceRecords(studentId: string): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -793,11 +795,49 @@ export class DatabaseStorage implements IStorage {
 
   async getSessionAttendance(sessionId: number): Promise<(Attendance & { student: User })[]> {
     return await db
-      .select()
+      .select({
+        id: attendance.id,
+        studentId: attendance.studentId,
+        sessionId: attendance.sessionId,
+        isPresent: attendance.isPresent,
+        markedAt: attendance.markedAt,
+        student: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          email: users.email,
+        },
+      })
       .from(attendance)
       .innerJoin(users, eq(attendance.studentId, users.id))
       .where(eq(attendance.sessionId, sessionId))
-      .then(rows => rows.map(row => ({ ...row.attendance, student: row.users })));
+      .orderBy(users.firstName, users.lastName);
+  }
+
+  async getStudentAttendanceRecords(studentId: string) {
+    return await db
+      .select({
+        id: attendance.id,
+        studentId: attendance.studentId,
+        sessionId: attendance.sessionId,
+        isPresent: attendance.isPresent,
+        markedAt: attendance.markedAt,
+        session: {
+          id: lessonSessions.id,
+          sessionName: lessonSessions.sessionName,
+          courseId: lessonSessions.courseId,
+          startTime: lessonSessions.startTime,
+          course: {
+            id: courses.id,
+            title: courses.title,
+          },
+        },
+      })
+      .from(attendance)
+      .innerJoin(lessonSessions, eq(attendance.sessionId, lessonSessions.id))
+      .innerJoin(courses, eq(lessonSessions.courseId, courses.id))
+      .where(eq(attendance.studentId, studentId))
+      .orderBy(desc(lessonSessions.startTime));
   }
 
   async getStudentAttendance(courseId: number, studentId: string): Promise<Attendance[]> {
