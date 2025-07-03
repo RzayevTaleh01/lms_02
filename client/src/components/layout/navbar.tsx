@@ -36,13 +36,15 @@ export default function Navbar() {
     },
   });
 
-  // Top navigation items (minimal)
-  const topNavItems = [
-    { label: "Hər kəs üçün", href: "/about" },
-    { label: "Korporativ hədər", href: "/corporate" },
-    { label: "Karyera Mərkəzi", href: "/career" },
-    { label: "Mütəmadılaz", href: "/partners" },
-    { label: "Bloq", href: "/blog" },
+  // Top navigation items - divided into two sections
+  const topNavLeftItems = [
+    { label: "Hər kəs üçün", href: "/for-everyone" },
+    { label: "DevCode LMS", href: "/lms" },
+  ];
+
+  const topNavRightItems = [
+    { label: "Karyera mərkəzi", href: "/career" },
+    { label: "Əlaqə", href: "/contact" },
   ];
 
   // Main navigation items with dropdowns
@@ -88,12 +90,20 @@ export default function Navbar() {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-10 text-xs">
-            {/* Left side - empty to match reference */}
-            <div></div>
+            {/* Left side navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              {topNavLeftItems.map((item) => (
+                <Link key={item.href} href={item.href}>
+                  <span className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer text-xs">
+                    {item.label}
+                  </span>
+                </Link>
+              ))}
+            </div>
             
             {/* Right side navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              {topNavItems.map((item) => (
+              {topNavRightItems.map((item) => (
                 <Link key={item.href} href={item.href}>
                   <span className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer text-xs">
                     {item.label}
@@ -286,7 +296,7 @@ export default function Navbar() {
                     <div className="border-t border-gray-200 my-4"></div>
                     
                     {/* Top Navigation Items */}
-                    {topNavItems.map((item) => (
+                    {[...topNavLeftItems, ...topNavRightItems].map((item) => (
                       <Link key={item.href} href={item.href}>
                         <span 
                           className={`block py-2 px-4 text-sm transition-colors cursor-pointer ${
