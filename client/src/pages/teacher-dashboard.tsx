@@ -176,6 +176,61 @@ export default function TeacherDashboard() {
               )}
             </CardContent>
           </Card>
+
+          {/* Pending Submissions */}
+          {Array.isArray(pendingSubmissions) && pendingSubmissions.length > 0 && (
+            <Card className="bg-white border border-gray-200 shadow-sm mt-6">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold text-gray-900">Gözləyən Tapşırıqlar</CardTitle>
+                  <div className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
+                    {pendingSubmissions.length} tapşırıq
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {pendingSubmissions.slice(0, 5).map((submission: any) => (
+                  <div 
+                    key={submission.id} 
+                    className="flex items-center space-x-4 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer"
+                    onClick={() => {
+                      // Navigate to course management page with assignments tab
+                      if (submission.assignment?.courseId) {
+                        window.location.href = `/teacher/courses/${submission.assignment.courseId}#assignments`;
+                      }
+                    }}
+                  >
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-orange-100 text-orange-700">
+                      <CheckSquare className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">
+                        {submission.assignment?.title || 'Tapşırıq'}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Tələbə: {submission.student?.firstName} {submission.student?.lastName}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Təqdim tarixi: {new Date(submission.submittedAt).toLocaleDateString('az-AZ')}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
+                        Qiymətləndirilməyib
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {pendingSubmissions.length > 5 && (
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500">
+                      və daha {pendingSubmissions.length - 5} tapşırıq...
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

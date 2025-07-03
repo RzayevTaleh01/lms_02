@@ -89,6 +89,14 @@ export default function CourseManagement() {
   const [selectedLessonForManagement, setSelectedLessonForManagement] = useState<any>(null);
   const [isAttendanceDisabled, setIsAttendanceDisabled] = useState(false);
 
+  // Check URL hash to open specific tab
+  useEffect(() => {
+    const hash = window.location.hash.substring(1);
+    if (hash === 'assignments') {
+      setActiveTab('assignments');
+    }
+  }, []);
+
   // Data fetching
   const { data: course } = useQuery({
     queryKey: [`/api/courses/${id}`],
