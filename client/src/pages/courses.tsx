@@ -235,7 +235,7 @@ export default function Courses() {
                     </div>
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-devcode-yellow text-black">
-                        ₼{course.price}
+                        {course.price}
                       </Badge>
                     </div>
                   </div>

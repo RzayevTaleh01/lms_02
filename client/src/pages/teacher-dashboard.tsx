@@ -160,7 +160,7 @@ export default function TeacherDashboard() {
                       <p className="text-sm text-gray-500">{course.enrollmentCount || 0} tələbə • {course.level}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-sm font-medium text-gray-900">{course.price} AZN</span>
+                      <span className="text-sm font-medium text-gray-900">{course.price}</span>
                       <p className="text-xs text-gray-500">{course.category}</p>
                     </div>
                   </div>

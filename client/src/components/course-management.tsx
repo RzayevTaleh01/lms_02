@@ -283,7 +283,7 @@ export default function CourseManagement() {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="price">Qiymət (AZN)</Label>
+                    <Label htmlFor="price">Qiymət</Label>
                     <Input
                       id="price"
                       type="number"
@@ -336,7 +336,7 @@ export default function CourseManagement() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-semibold text-devcode-orange">{course.price} AZN</div>
+                        <div className="text-lg font-semibold text-devcode-orange">{course.price}</div>
                         <div className="text-sm text-devcode-gray">{course.enrollmentCount || 0} tələbə</div>
                       </div>
                     </div>

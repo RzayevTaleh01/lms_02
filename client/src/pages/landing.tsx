@@ -384,7 +384,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">₼299</span>
+                    <span className="text-2xl font-bold text-gray-900">Pulsuz</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 px-6 py-2 rounded-xl">
@@ -438,7 +438,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">₼399</span>
+                    <span className="text-2xl font-bold text-gray-900">Əlaqə</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white hover:from-cyan-500 hover:to-blue-600 px-6 py-2 rounded-xl">
@@ -491,7 +491,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">₼349</span>
+                    <span className="text-2xl font-bold text-gray-900">Müsahibə</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 px-6 py-2 rounded-xl">
@@ -547,7 +547,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">₼599</span>
+                    <span className="text-2xl font-bold text-gray-900">Əlaqə</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 px-6 py-2 rounded-xl">
@@ -600,7 +600,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">₼279</span>
+                    <span className="text-2xl font-bold text-gray-900">Dostluq</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-blue-500 to-yellow-400 text-white hover:from-blue-600 hover:to-yellow-500 px-6 py-2 rounded-xl">
@@ -653,7 +653,7 @@ export default function Landing() {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">₼449</span>
+                    <span className="text-2xl font-bold text-gray-900">Peşəkarlıq</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
                   <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 px-6 py-2 rounded-xl">

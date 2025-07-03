@@ -658,12 +658,12 @@ export default function CourseManagement() {
           </div>
         )}
 
-        {activeTab === "session-history" && (
+        {activeTab === "sessions" && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Sessiya Tarixi</h2>
             </div>
-            <SessionHistory courseId={parseInt(id!)}/>
+            <SessionHistory courseId={parseInt(courseId)}/>
           </div>
         )}
 

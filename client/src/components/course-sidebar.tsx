@@ -52,93 +52,63 @@ export default function CourseSidebar({ course, activeTab, onTabChange }: Course
   ];
 
   return (
-    <div className="fixed left-0 top-0 w-80 h-full bg-white shadow-lg z-30 border-r border-gray-200">
+    <div className="fixed left-0 top-0 w-64 h-full bg-white shadow-lg z-30 border-r border-gray-200">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b">
         <Button 
           variant="ghost" 
-          className="mb-4 p-0 h-auto font-normal text-devcode-gray hover:text-devcode-dark"
+          className="mb-4 p-0 h-auto font-normal text-gray-600 hover:text-gray-900"
           onClick={() => window.history.back()}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Kurslar
         </Button>
-
-        <div>
-          <h2 className="text-xl font-bold text-devcode-dark mb-2">{course.title}</h2>
-          <div className="space-y-1 text-sm text-devcode-gray">
-            <div className="flex items-center">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-              Aktiv
-            </div>
-            <div className="flex items-center">
-              <Users className="w-3 h-3 mr-2" />
-              {course.enrollmentCount || 0} tələbə
-            </div>
-            <div className="flex items-center">
-              <Clock className="w-3 h-3 mr-2" />
-              {course.duration || "Müddətsi"}
-            </div>
-          </div>
-        </div>
+        <h2 className="text-xl font-bold text-gray-900">{course.title}</h2>
+        <p className="text-sm text-gray-600">Kurs İdarəetməsi</p>
       </div>
 
       {/* Navigation */}
-      <div className="p-6">
-        <nav className="space-y-2">
-          {sidebarItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
+      <nav className="p-4 space-y-2">
+        {sidebarItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
 
-            return (
-              <Button
-                key={item.id}
-                variant={isActive ? "default" : "ghost"}
-                className={`w-full justify-start h-auto p-3 ${
-                  isActive 
-                    ? "bg-devcode-orange text-white hover:bg-orange-600" 
-                    : "text-devcode-gray hover:text-devcode-dark hover:bg-gray-50"
-                }`}
-                onClick={() => onTabChange(item.id)}
-              >
-                <Icon className="w-5 h-5 mr-3" />
-                <span className="flex-1 text-left">{item.label}</span>
-                {item.count !== null && (
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    isActive 
-                      ? "bg-white bg-opacity-20 text-white" 
-                      : "bg-gray-100 text-devcode-gray"
-                  }`}>
-                    {item.count}
-                  </span>
-                )}
-              </Button>
-            );
-          })}
-        </nav>
-      </div>
+          return (
+            <button
+              key={item.id}
+              className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors w-full text-left ${
+                isActive 
+                  ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
+                  : "text-gray-700 hover:bg-gray-50"
+              }`}
+              onClick={() => onTabChange(item.id)}
+            >
+              <Icon className="w-5 h-5" />
+              <span>{item.label}</span>
+              {item.count !== null && (
+                <span className={`ml-auto text-xs px-2 py-1 rounded-full ${
+                  isActive ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
+                }`}>
+                  {item.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
 
-      {/* Course Stats */}
-      <div className="p-6 border-t border-gray-200">
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="font-semibold text-devcode-dark mb-3">Kurs Statistikası</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-devcode-gray">Qiymət:</span>
-                <span className="font-medium">{course.price} AZN</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-devcode-gray">Səviyyə:</span>
-                <span className="font-medium capitalize">{course.level}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-devcode-gray">Reytinq:</span>
-                <span className="font-medium">{course.rating || 0}★</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Simple Course Info */}
+      <div className="p-4 border-t bg-gray-50">
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Səviyyə:</span>
+            <span className="font-medium capitalize">{course.level}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Tələbələr:</span>
+            <span className="font-medium">{course.enrollmentCount || 0}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

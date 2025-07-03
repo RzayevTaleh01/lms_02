@@ -229,7 +229,7 @@ export default function AdminOfflineCourses() {
                 </div>
 
                 <div>
-                  <Label htmlFor="price">Qiymət (AZN)</Label>
+                  <Label htmlFor="price">Qiymət</Label>
                   <Input
                     id="price"
                     type="number"
@@ -392,7 +392,7 @@ export default function AdminOfflineCourses() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Orta Qiymət</p>
-                <p className="text-2xl font-bold">{Math.round(courses.reduce((sum, course) => sum + course.price, 0) / courses.length)} AZN</p>
+                <p className="text-2xl font-bold">{Math.round(courses.reduce((sum, course) => sum + course.price, 0) / courses.length)}</p>
               </div>
             </div>
           </CardContent>
@@ -424,7 +424,7 @@ export default function AdminOfflineCourses() {
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-600">{course.price} AZN</span>
+                  <span className="text-gray-600">{course.price}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-gray-500" />
