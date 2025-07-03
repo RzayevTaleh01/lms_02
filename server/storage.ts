@@ -70,6 +70,7 @@ export interface IStorage {
   enrollStudent(enrollment: InsertEnrollment): Promise<Enrollment>;
   updateEnrollmentProgress(id: number, progress: number): Promise<void>;
   getAllEnrollments(): Promise<Enrollment[]>;
+  getCourseEnrollments(courseId: number): Promise<any[]>;
 
   // Assignment operations
   getAssignmentsByCourse(courseId: number): Promise<Assignment[]>;
@@ -370,6 +371,31 @@ export class DatabaseStorage implements IStorage {
     .innerJoin(users, eq(enrollments.studentId, users.id))
     .innerJoin(courses, eq(enrollments.courseId, courses.id))
     .orderBy(desc(enrollments.enrolledAt));
+  }
+
+  async getCourseEnrollments(courseId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: enrollments.id,
+        studentId: enrollments.studentId,
+        courseId: enrollments.courseId,
+        enrolledAt: enrollments.enrolledAt,
+        progress: enrollments.progress,
+        grade: enrollments.grade,
+        student: {
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          role: users.role,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt
+        }
+      })
+      .from(enrollments)
+      .innerJoin(users, eq(enrollments.studentId, users.id))
+      .where(eq(enrollments.courseId, courseId))
+      .orderBy(users.firstName, users.lastName);
   }
 
   // Assignment operations
