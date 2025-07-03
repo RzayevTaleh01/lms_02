@@ -35,6 +35,7 @@ import StudentProfile from "@/pages/student-profile";
 import CourseManagementPage from "@/pages/course-management";
 import LessonDetail from "@/pages/lesson-detail";
 import StudentAssignments from "@/pages/student-assignments";
+import SessionHistoryPage from "@/pages/session-history-page";
 
 import NotFound from "@/pages/not-found";
 
@@ -206,6 +207,11 @@ function Router() {
       <Route path="/teacher/students/:studentId">
         <ProtectedRoute allowedRoles={['teacher']} isAuthenticated={isAuthenticated} userRole={user?.role}>
           <TeacherStudentDetail />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/session-history">
+        <ProtectedRoute allowedRoles={['teacher', 'admin']} isAuthenticated={isAuthenticated} userRole={user?.role}>
+          <SessionHistoryPage />
         </ProtectedRoute>
       </Route>
 
