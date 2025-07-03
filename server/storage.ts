@@ -734,8 +734,35 @@ export class DatabaseStorage implements IStorage {
 
   // Attendance operations
   async markAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
-    const [newAttendance] = await db.insert(attendance).values(attendanceData).returning();
-    return newAttendance;
+    // Check if attendance record already exists for this student and session
+    const [existingAttendance] = await db
+      .select()
+      .from(attendance)
+      .where(and(
+        eq(attendance.sessionId, attendanceData.sessionId),
+        eq(attendance.studentId, attendanceData.studentId)
+      ));
+
+    if (existingAttendance) {
+      // Update existing attendance record
+      const [updatedAttendance] = await db
+        .update(attendance)
+        .set({
+          status: attendanceData.status,
+          markedAt: new Date(),
+          markedBy: attendanceData.markedBy
+        })
+        .where(and(
+          eq(attendance.sessionId, attendanceData.sessionId),
+          eq(attendance.studentId, attendanceData.studentId)
+        ))
+        .returning();
+      return updatedAttendance;
+    } else {
+      // Create new attendance record
+      const [newAttendance] = await db.insert(attendance).values(attendanceData).returning();
+      return newAttendance;
+    }
   }
 
   async getSessionAttendance(sessionId: number): Promise<(Attendance & { student: User })[]> {

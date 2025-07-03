@@ -382,6 +382,11 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
     * Replaced static "12" with dynamic count of ungraded submissions
     * Teacher panel now shows actual pending assignment count from database
     * API fetches all assignments from teacher's courses and filters ungraded submissions
+  - Fixed attendance system duplicate records issue:
+    * Modified markAttendance function to use upsert logic instead of always inserting new records
+    * Now checks if attendance record already exists for student/session combination
+    * Updates existing record or creates new one to prevent duplicate entries
+    * Eliminates issue where new attendance overwrites previous attendance calculations
 
 ## User Preferences
 
