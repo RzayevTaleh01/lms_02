@@ -215,48 +215,273 @@ export default function Landing() {
       {/* Courses Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-left mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Tədris proqramları
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {courseCategories.map((category, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 bg-white border-0 shadow-lg overflow-hidden">
-                <div className="p-8">
-                  {/* 3D Icon Container */}
-                  <div className="relative mb-6">
-                    <div className={`w-20 h-20 bg-gradient-to-br ${category.gradient} rounded-2xl flex items-center justify-center mb-4 transform group-hover:scale-110 transition-transform duration-300`}>
-                      <div className={`w-16 h-16 bg-gradient-to-br ${category.iconBg} rounded-xl flex items-center justify-center shadow-lg`}>
-                        {category.icon}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {/* Front-end Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* 3D Illustration matching reference */}
+                  <div className="relative">
+                    {/* Main card/screen */}
+                    <div className="w-24 h-16 bg-white rounded-lg shadow-lg transform rotate-12 relative">
+                      <div className="p-2">
+                        <div className="w-4 h-4 bg-blue-400 rounded mb-1"></div>
+                        <div className="space-y-1">
+                          <div className="h-1 bg-gray-200 rounded w-full"></div>
+                          <div className="h-1 bg-gray-200 rounded w-3/4"></div>
+                        </div>
                       </div>
                     </div>
-                    {/* Floating decorative elements */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-devcode-yellow rounded-full opacity-80"></div>
-                    <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-blue-400 rounded-full opacity-60"></div>
-                  </div>
-                  
-                  <h3 className="font-bold text-gray-900 mb-3 text-lg leading-tight">
-                    {category.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {category.description}
-                  </p>
-                  
-                  {/* Arrow indicator */}
-                  <div className="mt-4 flex justify-end">
-                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                    {/* Code symbols */}
+                    <div className="absolute -top-3 -left-3 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">&lt;/&gt;</span>
+                    </div>
+                    <div className="absolute -bottom-2 right-2 w-4 h-4 bg-blue-500 rounded-full"></div>
+                    <div className="absolute top-0 right-4 w-3 h-3 bg-purple-400 rounded-full"></div>
                   </div>
                 </div>
-              </Card>
-            ))}
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    Front-end əsası full stack
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Gələcəyin əsasını burada məzun olmuş müxtəssis.
+                </p>
+              </div>
+            </div>
+
+            {/* Back-end Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* Server/Database illustration */}
+                  <div className="relative">
+                    {/* Server cylinder */}
+                    <div className="w-16 h-20 bg-blue-600 rounded-xl relative shadow-lg">
+                      <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-blue-300 rounded-full"></div>
+                      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-blue-300 rounded"></div>
+                      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-blue-300 rounded"></div>
+                    </div>
+                    {/* Decorative elements */}
+                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-purple-500 rounded-full"></div>
+                    <div className="absolute -bottom-1 -left-2 w-3 h-3 bg-green-400 rounded-full"></div>
+                    <div className="absolute top-4 right-4 w-2 h-2 bg-pink-400 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    Back-end əsası full stack
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Hər yerin layihəsi əlbəttəki ən əsas adım olan dayaq.
+                </p>
+              </div>
+            </div>
+
+            {/* Graphic Design Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* Design tools illustration */}
+                  <div className="relative">
+                    {/* Monitor/screen */}
+                    <div className="w-20 h-14 bg-white rounded-lg shadow-lg relative">
+                      <div className="w-full h-full bg-gradient-to-br from-yellow-200 to-orange-200 rounded-lg p-2">
+                        <div className="w-4 h-4 bg-yellow-500 rounded-full mb-1"></div>
+                        <div className="space-y-1">
+                          <div className="h-1 bg-orange-300 rounded w-full"></div>
+                          <div className="h-1 bg-orange-300 rounded w-2/3"></div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Design elements */}
+                    <div className="absolute -top-2 -right-1 w-4 h-4 bg-orange-500 rounded-full"></div>
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-red-400 rounded-full"></div>
+                    <div className="absolute top-2 right-6 w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    Qrafik Dizayn və Vizual Ko...
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Gələcəyin dizayn etməyə bu gündən kəçid.
+                </p>
+              </div>
+            </div>
+
+            {/* UX/UI Design Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* Mobile/UI illustration */}
+                  <div className="relative">
+                    {/* Mobile frame */}
+                    <div className="w-14 h-24 bg-white rounded-xl shadow-lg relative border-2 border-gray-200">
+                      <div className="p-2 space-y-2">
+                        <div className="h-1 bg-gray-300 rounded w-full"></div>
+                        <div className="h-4 bg-orange-200 rounded w-full"></div>
+                        <div className="h-1 bg-gray-300 rounded w-3/4"></div>
+                        <div className="h-1 bg-gray-300 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                    {/* UI elements */}
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"></div>
+                    <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-yellow-500 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    UX/UI Dizayn
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Digital məlumat texriblərini hər kəsə...
+                </p>
+              </div>
+            </div>
+
+            {/* Digital Marketing Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* 3D Building illustration */}
+                  <div className="relative">
+                    {/* Building base */}
+                    <div className="w-16 h-16 bg-gray-300 rounded-lg relative shadow-lg">
+                      <div className="absolute top-2 left-2 w-3 h-3 bg-yellow-500 rounded"></div>
+                      <div className="absolute top-2 right-2 w-3 h-3 bg-yellow-500 rounded"></div>
+                      <div className="absolute bottom-2 left-2 w-3 h-3 bg-yellow-500 rounded"></div>
+                      <div className="absolute bottom-2 right-2 w-3 h-3 bg-yellow-500 rounded"></div>
+                    </div>
+                    {/* Roof */}
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-6 border-transparent border-b-yellow-500"></div>
+                    {/* Decorative elements */}
+                    <div className="absolute -top-1 -right-2 w-3 h-3 bg-orange-500 rounded-full"></div>
+                    <div className="absolute -bottom-1 -left-2 w-4 h-4 bg-red-400 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    Digital Memariq və 3D
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Memarlıq və 3D dizaynlər əmin olun ki gələcək.
+                </p>
+              </div>
+            </div>
+
+            {/* 2D Motion Design Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* Music/Motion illustration */}
+                  <div className="relative">
+                    {/* Speaker/audio */}
+                    <div className="w-16 h-20 bg-gray-700 rounded-xl relative shadow-lg">
+                      <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gray-400 rounded-full"></div>
+                      <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gray-500 rounded-full"></div>
+                    </div>
+                    {/* Music note */}
+                    <div className="absolute -top-1 right-2 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs">♪</span>
+                    </div>
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-400 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    2D Motion Dizayn
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Yaradıcılıq harakətini qarışıq gətirif.
+                </p>
+              </div>
+            </div>
+
+            {/* Digital Marketing Professional Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* Marketing/Analytics illustration */}
+                  <div className="relative">
+                    {/* Computer screen with chart */}
+                    <div className="w-20 h-14 bg-white rounded-lg shadow-lg relative">
+                      <div className="p-2">
+                        <div className="w-full h-8 bg-gradient-to-r from-purple-200 to-pink-200 rounded flex items-end space-x-1">
+                          <div className="w-2 h-4 bg-purple-500 rounded-t"></div>
+                          <div className="w-2 h-6 bg-pink-500 rounded-t"></div>
+                          <div className="w-2 h-3 bg-purple-400 rounded-t"></div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Floating elements */}
+                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-pink-500 rounded-full"></div>
+                    <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-purple-400 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    Digital Marketing Professio...
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Digital kampanyanızın avtarları.
+                </p>
+              </div>
+            </div>
+
+            {/* Cyber Security Course */}
+            <div className="group cursor-pointer">
+              <div className="relative mb-4">
+                <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  {/* Security/Network illustration */}
+                  <div className="relative">
+                    {/* Shield/network */}
+                    <div className="w-16 h-16 bg-green-500 rounded-lg relative shadow-lg transform rotate-45">
+                      <div className="absolute inset-2 border-2 border-green-300 rounded"></div>
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                    {/* Network nodes */}
+                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-green-300 rounded-full"></div>
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-300 rounded-full"></div>
+                    <div className="absolute top-2 right-4 w-2 h-2 bg-green-400 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-base">
+                    Kiber Təhlükəsizlik
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  kiber təhlükəsizlik nədir?
+                </p>
+              </div>
+            </div>
           </div>
           
           <div className="text-center">
             <Button 
-              variant="outline"
-              className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-3 rounded-full"
+              className="bg-gray-900 text-white hover:bg-gray-800 px-8 py-3 rounded-full"
             >
               Daha çox
             </Button>
