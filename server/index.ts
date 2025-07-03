@@ -2,12 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { createDefaultUsers } from "./storage";
-import dotenv from "dotenv";
-
-// Load environment variables from .env file in development
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config();
-}
+import { loadEnvironment, validateRequiredEnvironment } from "./env";
 
 const app = express();
 app.use(express.json());
@@ -44,6 +39,10 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Load and validate environment variables before starting
+  loadEnvironment();
+  validateRequiredEnvironment();
+  
   await createDefaultUsers();
   const server = await registerRoutes(app);
 
@@ -67,12 +66,22 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = 5000;
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
   server.listen({
     port,
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`✅ Server successfully started on port ${port}`);
+    log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+    log(`📊 Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
   });
-})();
+})().catch((error) => {
+  console.error('🚨 Failed to start server:', error);
+  console.error('\n📝 Common solutions:');
+  console.error('   1. Check that DATABASE_URL is set correctly');
+  console.error('   2. Verify database is accessible and running');
+  console.error('   3. Ensure port 5000 is available');
+  console.error('   4. Check for any missing environment variables');
+  process.exit(1);
+});
