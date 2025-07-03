@@ -2,27 +2,27 @@ import { Link } from "wouter";
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-white py-16">
+    <footer className="bg-gray-900 text-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg">D</span>
               </div>
-              <div>
-                <span className="text-xl font-bold text-white">code</span>
-                <div className="text-xs text-orange-500 font-semibold">academy</div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-white leading-none">DEVCODE</span>
+                <span className="text-xs font-medium text-devcode-orange leading-none">Learning Management System</span>
               </div>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Gələcək innovasiyaları bu gündən duyub ona uyğun 
-              mütəxəssislər hazırlayan təhsil müəssisəsidir.
+              Müasir texnologiyalarla proqramlaşdırma təhsilində yeni dövr. 
+              Peşəkar karyeranızı DEVCODE LMS platforması ilə qurun.
             </p>
             <div className="flex space-x-4">
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -31,7 +31,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
                 aria-label="Twitter"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-devcode-orange transition-colors"
                 aria-label="YouTube"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -64,22 +64,22 @@ export default function Footer() {
             <ul className="space-y-3 text-gray-400">
               <li>
                 <Link href="/courses">
-                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Tədris sahələri</span>
+                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">Tədris sahələri</span>
                 </Link>
               </li>
               <li>
                 <Link href="/blog">
-                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Bloq</span>
+                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">Bloq</span>
                 </Link>
               </li>
               <li>
                 <Link href="/verify">
-                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Sertifikat yoxla</span>
+                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">Sertifikat yoxla</span>
                 </Link>
               </li>
               <li>
                 <Link href="/contact">
-                  <span className="hover:text-orange-500 transition-colors cursor-pointer">Əlaqə</span>
+                  <span className="hover:text-devcode-orange transition-colors cursor-pointer">Əlaqə</span>
                 </Link>
               </li>
             </ul>
@@ -89,16 +89,16 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4 text-white">Dəstək</h3>
             <ul className="space-y-3 text-gray-400">
               <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">Yardım Mərkəzi</a>
+                <a href="#" className="hover:text-devcode-orange transition-colors">Yardım Mərkəzi</a>
               </li>
               <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">Tələbə Dəstəyi</a>
+                <a href="#" className="hover:text-devcode-orange transition-colors">Tələbə Dəstəyi</a>
               </li>
               <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">Texniki Problemlər</a>
+                <a href="#" className="hover:text-devcode-orange transition-colors">Texniki Problemlər</a>
               </li>
               <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">Məxfilik Siyasəti</a>
+                <a href="#" className="hover:text-devcode-orange transition-colors">Məxfilik Siyasəti</a>
               </li>
             </ul>
           </div>

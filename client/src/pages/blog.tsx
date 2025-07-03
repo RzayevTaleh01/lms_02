@@ -92,40 +92,37 @@ export default function Blog() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-gray-900 via-orange-900 to-blue-900 text-white py-20 relative overflow-hidden">
+      <section className="bg-gradient-to-br from-devcode-orange via-devcode-yellow to-orange-400 text-white py-20 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-white rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <img 
-              src="/assets/devcode_1751389375943.png" 
-              alt="DevCode Academy" 
-              className="w-12 h-12"
-            />
-            <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2">
-              📝 Texnoloji Bloq
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-devcode-orange" />
+            </div>
+            <Badge className="bg-white/20 text-white px-6 py-2 backdrop-blur-sm">
+              DEVCODE Texnoloji Bloq
             </Badge>
           </div>
           <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-white via-orange-200 to-orange-400 bg-clip-text text-transparent">
-              DevCode
+            <span className="block text-white">
+              Texnoloji
             </span>
-            <br />
-            <span className="text-3xl lg:text-4xl text-blue-200">
-              Texnoloji Bloq
+            <span className="block text-3xl lg:text-4xl text-orange-100">
+              Bloq
             </span>
           </h1>
-          <p className="text-xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
-            Proqramlaşdırma trendləri, <strong className="text-orange-300">hibrid təhsil metodları</strong> və 
-            <strong className="text-blue-300">rəqəmsal texnologiyalar</strong> haqqında ekspert təhlilləri və tutorial-lar.
+          <p className="text-xl text-orange-100 max-w-4xl mx-auto leading-relaxed">
+            Proqramlaşdırma trendləri, müasir texnologiyalar və DEVCODE LMS 
+            platforması haqqında ekspert məqalələri və tutorial-lar.
           </p>
         </div>
       </section>

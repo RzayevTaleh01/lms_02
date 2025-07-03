@@ -84,16 +84,13 @@ export default function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/">
-              <div className="flex items-center space-x-2 cursor-pointer">
-                <div className="flex items-center">
-                  <div className="w-8 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded flex items-center justify-center mr-1">
-                    <span className="text-white font-bold text-sm">D</span>
-                  </div>
-                  <span className="text-lg font-bold text-gray-900">/</span>
+              <div className="flex items-center space-x-3 cursor-pointer">
+                <div className="w-10 h-10 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-lg">D</span>
                 </div>
-                <div className="flex flex-col -ml-1">
-                  <span className="text-lg font-bold text-gray-900 leading-none">code</span>
-                  <span className="text-sm font-bold text-gray-900 leading-none">academy</span>
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold text-gray-900 leading-none">DEVCODE</span>
+                  <span className="text-xs font-medium text-devcode-orange leading-none">Learning Management System</span>
                 </div>
               </div>
             </Link>
@@ -104,8 +101,8 @@ export default function Navbar() {
                 <Link key={item.href} href={item.href}>
                   <span className={`transition-colors cursor-pointer font-medium text-sm ${
                     location === item.href 
-                      ? "text-orange-500" 
-                      : "text-gray-700 hover:text-orange-500"
+                      ? "text-devcode-orange" 
+                      : "text-gray-700 hover:text-devcode-orange"
                   }`}>
                     {item.label}
                   </span>

@@ -144,6 +144,8 @@
   /* DevCode Academy brand colors */
   --devcode-orange: hsl(24, 100%, 50%);
   --devcode-orange-light: hsl(24, 100%, 64%);
+  --devcode-yellow: hsl(45, 100%, 51%);
+  --devcode-yellow-light: hsl(45, 100%, 67%);
   --devcode-dark: hsl(218, 26%, 22%);
   
   /* Sidebar width variables */
@@ -209,6 +211,22 @@
   
   .bg-devcode-orange-light {
     background-color: var(--devcode-orange-light);
+  }
+  
+  .bg-devcode-yellow {
+    background-color: var(--devcode-yellow);
+  }
+  
+  .bg-devcode-yellow-light {
+    background-color: var(--devcode-yellow-light);
+  }
+  
+  .text-devcode-yellow {
+    color: var(--devcode-yellow);
+  }
+  
+  .text-devcode-yellow-light {
+    color: var(--devcode-yellow-light);
   }
   
   .bg-devcode-dark {
