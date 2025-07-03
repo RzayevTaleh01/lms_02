@@ -249,91 +249,10 @@ export default function Navbar() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                  <div className="flex flex-col space-y-4 mt-8">
-                    {/* Top Priority Items - Always visible */}
-                    <div className="space-y-2 mb-4">
-                      {topNavLeftItems.map((item) => (
-                        <Link key={item.href} href={item.href}>
-                          <span 
-                            className={`block py-3 px-4 text-lg font-semibold transition-colors cursor-pointer ${
-                              location === item.href 
-                                ? "text-devcode-orange bg-orange-50" 
-                                : "text-gray-800 hover:text-devcode-orange hover:bg-orange-50"
-                            } rounded-lg border border-orange-200`}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            {item.label}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                    
-                    <div className="border-t border-gray-200 my-4"></div>
-                    
-                    {/* Main Navigation */}
-                    {navItems.map((item) => (
-                      <div key={item.label}>
-                        {item.dropdown ? (
-                          <div className="space-y-2">
-                            <span className="block py-3 px-4 text-lg font-medium text-gray-700 rounded-lg">
-                              {item.label}
-                            </span>
-                            <div className="ml-4 space-y-1">
-                              {item.dropdown.map((dropdownItem) => (
-                                <Link key={dropdownItem.href} href={dropdownItem.href}>
-                                  <span 
-                                    className={`block py-2 px-4 text-sm transition-colors cursor-pointer ${
-                                      location === dropdownItem.href 
-                                        ? "text-devcode-orange bg-orange-50" 
-                                        : "text-gray-600 hover:text-devcode-orange hover:bg-orange-50"
-                                    } rounded-lg`}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                  >
-                                    {dropdownItem.label}
-                                  </span>
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <Link href={item.href}>
-                            <span 
-                              className={`block py-3 px-4 text-lg font-medium transition-colors cursor-pointer ${
-                                location === item.href 
-                                  ? "text-devcode-orange bg-orange-50" 
-                                  : "text-gray-700 hover:text-devcode-orange hover:bg-orange-50"
-                              } rounded-lg`}
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                              {item.label}
-                            </span>
-                          </Link>
-                        )}
-                      </div>
-                    ))}
-                    
-                    <div className="border-t border-gray-200 my-4"></div>
-                    
-                    {/* Right Top Navigation Items */}
-                    {topNavRightItems.map((item) => (
-                      <Link key={item.href} href={item.href}>
-                        <span 
-                          className={`block py-2 px-4 text-sm transition-colors cursor-pointer ${
-                            location === item.href 
-                              ? "text-devcode-orange" 
-                              : "text-gray-600 hover:text-gray-900"
-                          }`}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          {item.label}
-                        </span>
-                      </Link>
-                    ))}
-                    
-                    {/* Mobile Auth */}
+                  <div className="flex flex-col h-full">
+                    {/* Auth Section at Top */}
                     {!isAuthenticated && (
-                      <>
-                        <div className="border-t border-gray-200 my-4"></div>
+                      <div className="space-y-3 mt-8 mb-6">
                         <Button 
                           onClick={() => {
                             setIsLoginModalOpen(true);
@@ -353,8 +272,54 @@ export default function Navbar() {
                         >
                           Müraciət et
                         </Button>
-                      </>
+                      </div>
                     )}
+                    
+                    <div className="border-t border-gray-200 my-4"></div>
+                    
+                    {/* Main Navigation */}
+                    <div className="flex-1 space-y-2">
+                      {navItems.map((item) => (
+                        <div key={item.label}>
+                          {item.dropdown ? (
+                            <div className="space-y-2">
+                              <span className="block py-3 px-4 text-lg font-medium text-gray-700 rounded-lg">
+                                {item.label}
+                              </span>
+                              <div className="ml-4 space-y-1">
+                                {item.dropdown.map((dropdownItem) => (
+                                  <Link key={dropdownItem.href} href={dropdownItem.href}>
+                                    <span 
+                                      className={`block py-2 px-4 text-sm transition-colors cursor-pointer ${
+                                        location === dropdownItem.href 
+                                          ? "text-devcode-orange bg-orange-50" 
+                                          : "text-gray-600 hover:text-devcode-orange hover:bg-orange-50"
+                                      } rounded-lg`}
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      {dropdownItem.label}
+                                    </span>
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <Link href={item.href}>
+                              <span 
+                                className={`block py-3 px-4 text-lg font-medium transition-colors cursor-pointer ${
+                                  location === item.href 
+                                    ? "text-devcode-orange bg-orange-50" 
+                                    : "text-gray-700 hover:text-devcode-orange hover:bg-orange-50"
+                                } rounded-lg`}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                {item.label}
+                              </span>
+                            </Link>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
