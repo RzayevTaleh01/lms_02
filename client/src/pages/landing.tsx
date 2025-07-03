@@ -28,7 +28,9 @@ import {
   Server,
   User,
   Zap,
-  Shield
+  Shield,
+  Settings,
+  Target
 } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
