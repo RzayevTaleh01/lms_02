@@ -24,18 +24,55 @@ For the application to start successfully, the following environment variables m
 
 ### Replit Deployment
 
-1. **Configure Secrets**
-   - Go to your repl's "Secrets" tab
-   - Add `DATABASE_URL` with your PostgreSQL connection string
-   - Example: `postgresql://username:password@host:port/database?sslmode=require`
+#### Step 1: Database Setup
 
-2. **Deploy**
-   - Click the "Deploy" button in your repl
-   - The application will automatically build and start
+1. **Provision PostgreSQL Database** (if not already done)
+   - In your Replit project, click the "Database" tab in the left sidebar
+   - Select "PostgreSQL" and click "Create Database"
+   - Note the DATABASE_URL provided after creation
 
-3. **Verify Deployment**
-   - Check the deployment logs for successful startup messages
-   - Look for: "✅ Server successfully started on port 5000"
+2. **Run Database Migrations**
+   - In your Replit terminal, run:
+     ```bash
+     npm run db:push
+     ```
+   - Verify success with message: `[✓] Changes applied`
+
+#### Step 2: Configure Deployment Secrets
+
+1. **Add DATABASE_URL Secret**
+   - Go to your repl's "Secrets" tab in the left sidebar
+   - Click "Add new secret"
+   - Name: `DATABASE_URL`
+   - Value: Copy the DATABASE_URL from your Database tab
+   - Click "Add secret"
+
+2. **Optional Production Secrets** (recommended)
+   - `SESSION_SECRET`: A secure random string (e.g., generated with `openssl rand -base64 32`)
+   - `NODE_ENV`: Set to `production`
+
+#### Step 3: Deploy
+
+1. **Click the "Deploy" button** in your repl
+2. **Choose deployment option:**
+   - Reserved VM (recommended for production)
+   - Autoscale (for variable loads)
+3. **Wait for build and deployment to complete**
+
+#### Step 4: Verify Deployment
+
+1. **Check deployment logs** for successful startup:
+   ```
+   ✅ Server successfully started on port 5000
+   📊 Database: Connected
+   ```
+
+2. **Test your deployed application:**
+   - Access the provided deployment URL
+   - Log in with demo accounts:
+     - Admin: admin@devcode.az / admin123
+     - Teacher: teacher@devcode.az / teacher123
+     - Student: student@devcode.az / student123
 
 ### Other Platforms
 
