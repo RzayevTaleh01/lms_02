@@ -364,6 +364,15 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
   - Changed from orange text to black text with inline styling
   - Added shadow and border for better contrast against gradient background
   - Ensured proper readability and accessibility
+- July 3, 2025: Redesigned admin panel sidebar to match teacher panel design:
+  - Created AdminSidebar component following TeacherSidebar design patterns
+  - Updated admin dashboard, admin-courses, admin-teachers, and admin-students pages
+  - Replaced old complex Sidebar component with new clean AdminSidebar
+  - Admin sidebar features: Azerbaijani navigation (Ana Panel, Kurslar, Müəllimlər, Tələbələr, Parametrlər)
+  - Consistent white background design matching teacher and student panels
+  - Blue accent colors for admin panel (bg-blue-500, bg-blue-50, text-blue-700) vs orange for teacher
+  - Mobile responsive design with backdrop overlay and transform animations
+  - Fixed responsive layout issues across all admin pages (lg:ml-64 for desktop)
 - July 3, 2025: Redesigned teacher panel sidebar to match student panel format:
   - Updated teacher sidebar with Azerbaijani language navigation
   - Changed from complex gradient design to clean white background matching student sidebar
