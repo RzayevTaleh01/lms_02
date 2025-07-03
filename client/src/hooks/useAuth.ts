@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -26,6 +27,21 @@ interface RegisterData {
 export function useAuth() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+
+  // Helper function to get dashboard route based on user role
+  const getDashboardRoute = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return '/admin';
+      case 'teacher':
+        return '/teacher';
+      case 'student':
+        return '/student';
+      default:
+        return '/';
+    }
+  };
 
   const { data: user, isLoading, error } = useQuery<User | null>({
     queryKey: ['/api/auth/user'],
@@ -54,6 +70,11 @@ export function useAuth() {
         title: "Uğurla giriş edildi",
         description: "Xoş gəlmisiniz!",
       });
+      // Automatically redirect to dashboard based on user role
+      if (userData?.role) {
+        const dashboardRoute = getDashboardRoute(userData.role);
+        setLocation(dashboardRoute);
+      }
     },
     onError: (error: any) => {
       toast({

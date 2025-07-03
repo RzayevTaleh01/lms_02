@@ -78,6 +78,35 @@ function ProtectedRoute({
   return <>{children}</>;
 }
 
+// Component to handle dashboard redirection
+function DashboardRedirect() {
+  const { isAuthenticated, user } = useAuth();
+  
+  if (isAuthenticated && user?.role) {
+    // Render the appropriate dashboard component directly
+    switch (user.role) {
+      case 'admin':
+        return <AdminDashboard />;
+      case 'teacher':
+        return <TeacherDashboard />;
+      case 'student':
+        return <StudentDashboard />;
+      default:
+        return (
+          <PublicLayout>
+            <Landing />
+          </PublicLayout>
+        );
+    }
+  }
+  
+  return (
+    <PublicLayout>
+      <Landing />
+    </PublicLayout>
+  );
+}
+
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
@@ -93,11 +122,7 @@ function Router() {
     <Switch>
       {/* Public Routes */}
       <Route path="/">
-        {isAuthenticated ? <Home /> : (
-          <PublicLayout>
-            <Landing />
-          </PublicLayout>
-        )}
+        <DashboardRedirect />
       </Route>
       <Route path="/courses">
         <PublicLayout>
