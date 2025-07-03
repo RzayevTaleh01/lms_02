@@ -24,7 +24,11 @@ import {
   Monitor,
   Database,
   Smartphone,
-  PenTool
+  PenTool,
+  Server,
+  User,
+  Zap,
+  Shield
 } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -582,392 +586,299 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* DevCode LMS Platform Showcase */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+      {/* DevCode LMS System Architecture */}
+      <section className="py-20 bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <span className="bg-gradient-to-r from-devcode-orange to-devcode-yellow bg-clip-text text-transparent text-lg font-semibold mb-4 block">
+              Müasir Texnologiyalar
+            </span>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              DevCode LMS - Hər şey Bir Yerdə!
+              DevCode LMS Sistem Arxitekturası
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              Təhsil dünyasının ən güclü və müasir platforması. Tələbələr, müəllimlər və administratorlar üçün tam həll.
+              Enterprise səviyyəli təhsil platforması - TypeScript, React, PostgreSQL və müasir DevOps ilə qurulmuş
             </p>
           </div>
 
-          {/* Platform Showcase with Mockup */}
-          <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-            {/* Left Side - Platform Mockup */}
-            <div className="relative">
-              {/* Main Dashboard Mockup */}
-              <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
-                {/* Browser Header */}
-                <div className="bg-gray-100 px-4 py-3 flex items-center space-x-2 border-b">
-                  <div className="flex space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  </div>
-                  <div className="flex-1 bg-white rounded px-3 py-1 text-sm text-gray-600">
-                    devcode.az/dashboard
-                  </div>
+          {/* Architecture Layers */}
+          <div className="grid lg:grid-cols-4 gap-8 mb-20">
+            {/* User Layer */}
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">User Layer</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Admin Panel</span>
                 </div>
-
-                {/* Dashboard Content */}
-                <div className="p-6">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Salam, Əli Vəliyev!</h3>
-                      <p className="text-gray-600">Bugün 3 yeni dərsiniz var</p>
-                    </div>
-                    <div className="w-12 h-12 bg-devcode-orange rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">A</span>
-                    </div>
-                  </div>
-
-                  {/* Stats Cards */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="w-8 h-8 bg-blue-500 rounded-lg mb-2"></div>
-                      <p className="text-2xl font-bold text-blue-600">12</p>
-                      <p className="text-sm text-gray-600">Aktiv Kurs</p>
-                    </div>
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <div className="w-8 h-8 bg-green-500 rounded-lg mb-2"></div>
-                      <p className="text-2xl font-bold text-green-600">85%</p>
-                      <p className="text-sm text-gray-600">Progress</p>
-                    </div>
-                    <div className="bg-purple-50 rounded-lg p-4">
-                      <div className="w-8 h-8 bg-purple-500 rounded-lg mb-2"></div>
-                      <p className="text-2xl font-bold text-purple-600">7</p>
-                      <p className="text-sm text-gray-600">Sertifikat</p>
-                    </div>
-                  </div>
-
-                  {/* Current Course */}
-                  <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-lg p-4 text-white mb-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold">React Development</h4>
-                        <p className="text-sm opacity-90">Dərs 8: State Management</p>
-                        <div className="mt-2 bg-white/20 rounded-full h-2 w-32">
-                          <div className="bg-white rounded-full h-2 w-24"></div>
-                        </div>
-                      </div>
-                      <PlayCircle className="w-12 h-12 text-white" />
-                    </div>
-                  </div>
-
-                  {/* Recent Activity */}
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-gray-900">Son Aktivlər</h4>
-                    <div className="flex items-center space-x-3 bg-gray-50 rounded-lg p-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">JavaScript Tapşırığı tamamlandı</p>
-                        <p className="text-xs text-gray-500">2 saat əvvəl</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 bg-gray-50 rounded-lg p-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <Video className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">React Hooks videosu izləndi</p>
-                        <p className="text-xs text-gray-500">Dünən</p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Teacher Dashboard</span>
                 </div>
-              </div>
-
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg animate-bounce">
-                🎯 95% Dəqiqlik
-              </div>
-              
-              <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
-                ⚡ Real-time
-              </div>
-
-              <div className="absolute top-1/2 -right-8 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg transform rotate-12">
-                🏆 Pro Level
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Student Interface</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Public Pages</span>
+                </div>
               </div>
             </div>
 
-            {/* Right Side - Features */}
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  💥 Bu nə qədər güclü sistem!
-                </h3>
-                <p className="text-lg text-gray-600 mb-8">
-                  DevCode LMS - həqiqi enterprise səviyyəli təhsil platforması! 
-                  20+ fərqli modul, TypeScript və PostgreSQL ilə qurulmuş güclü sistem.
-                </p>
+            {/* Frontend Layer */}
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+              <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Monitor className="w-8 h-8 text-white" />
               </div>
-
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Database className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🏗️ Enterprise Arxitektura</h4>
-                    <p className="text-gray-600">
-                      PostgreSQL database, TypeScript backend, React frontend - 
-                      25+ tablo ilə tam relational sistem!
-                    </p>
-                  </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Frontend</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">React 18 + TypeScript</span>
                 </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">👥 3 Səviyyəli Rol Sistemi</h4>
-                    <p className="text-gray-600">
-                      Admin, Müəllim, Tələbə - hər rol üçün fərqli interface, 
-                      icazələr və funksionallıq. Enterprise security!
-                    </p>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">TailwindCSS + Shadcn</span>
                 </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Video className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🎥 Video Streaming Engine</h4>
-                    <p className="text-gray-600">
-                      YouTube integration, progress tracking, lesson materials - 
-                      hər dərs üçün videolar, sənədlər və tapşırıqlar!
-                    </p>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">TanStack Query</span>
                 </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <PenTool className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📝 Assignment Engine</h4>
-                    <p className="text-gray-600">
-                      Rich text editor, file upload, GitHub integration, 
-                      avtomatik qiymətləndirmə və resubmission workflow!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <BarChart3 className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📊 Real-time Analytics</h4>
-                    <p className="text-gray-600">
-                      Attendance tracking, lesson progress, submission statistics - 
-                      hər şey real-time izlənir və analiz edilir!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🎓 Certificate System</h4>
-                    <p className="text-gray-600">
-                      Avtomatik sertifikat generasiyası, unique ID ilə verification, 
-                      blockchain-ready digital certificates!
-                    </p>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Vite Build System</span>
                 </div>
               </div>
+            </div>
 
-              <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow p-6 rounded-xl text-white shadow-2xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xl font-bold mb-2">🚀 İndi siz də qoşulun!</h4>
-                    <p className="mb-4 text-white/90">
-                      Bu qədər güclü sistem ilə öyrənməyə başlayın və fərqi hiss edin!
-                    </p>
-                  </div>
-                  <div className="text-6xl">🔥</div>
+            {/* Backend Layer */}
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Server className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Backend</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Node.js + Express</span>
                 </div>
-                <Button className="bg-white text-devcode-orange hover:bg-gray-100 font-semibold w-full mt-4">
-                  Dərhal Başla - Pulsuz!
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">TypeScript ESM</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">RESTful APIs</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Replit Auth</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Database Layer */}
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Database className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Database</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">PostgreSQL 15</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Drizzle ORM</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">25+ Data Tables</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">Session Store</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* All Features Section */}
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              🔥 Hər şey bir yerdə - heç nə eksik deyil!
-            </h3>
-            <p className="text-xl text-gray-600">
-              Şəkildə gördüyünüz kimi - bütün xüsusiyyətlər bir platformada birləşib!
-            </p>
-          </div>
-
-          {/* Real System Features Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            {/* Left Column - Core System */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Database className="w-6 h-6 text-blue-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">🗄️ Database Engine</h4>
-                <p className="text-sm text-gray-600">
-                  PostgreSQL ilə 25+ tablo, relations və constraints
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-green-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">👤 User Management</h4>
-                <p className="text-sm text-gray-600">
-                  3 rol (Admin/Teacher/Student) Replit Auth integration
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="w-6 h-6 text-purple-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📚 Course Engine</h4>
-                <p className="text-sm text-gray-600">
-                  Courses, lessons, materials hierarchy sistemi
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-orange-200">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                  <Video className="w-6 h-6 text-orange-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">🎥 Video Streaming</h4>
-                <p className="text-sm text-gray-600">
-                  YouTube integration və lesson progress tracking
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-indigo-200">
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-indigo-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📝 Enrollment System</h4>
-                <p className="text-sm text-gray-600">
-                  Student enrollment və progress monitoring
-                </p>
-              </div>
-            </div>
-
-            {/* Right Column - Advanced Features */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-cyan-200">
-                <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
-                  <PenTool className="w-6 h-6 text-cyan-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📋 Assignment Engine</h4>
-                <p className="text-sm text-gray-600">
-                  Rich text, file upload, GitHub integration
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-red-200">
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="w-6 h-6 text-red-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📊 Analytics</h4>
-                <p className="text-sm text-gray-600">
-                  Real-time progress və submission tracking
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-yellow-200">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
-                  <CheckCircle className="w-6 h-6 text-yellow-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">✅ Attendance System</h4>
-                <p className="text-sm text-gray-600">
-                  Live session və attendance tracking
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <Award className="w-6 h-6 text-green-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">🎓 Certificates</h4>
-                <p className="text-sm text-gray-600">
-                  Avtomatik certificate generation və verification
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-purple-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">📰 Blog System</h4>
-                <p className="text-sm text-gray-600">
-                  Content management və public blog posts
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Call to Action - Super Impressive */}
-          <div className="bg-gradient-to-r from-devcode-orange via-red-500 to-devcode-yellow rounded-2xl p-12 text-white text-center shadow-2xl relative overflow-hidden">
-            {/* Background Animation */}
-            <div className="absolute inset-0 bg-gradient-to-r from-devcode-orange via-red-500 to-devcode-yellow opacity-75 animate-pulse"></div>
+          {/* Data Flow Diagram */}
+          <div className="bg-white rounded-3xl p-8 shadow-2xl border border-gray-100 mb-20">
+            <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Sistem Data Flow Diaqramı</h3>
             
-            <div className="relative z-10">
-              <div className="text-6xl mb-4">🚀</div>
-              <h3 className="text-4xl font-bold mb-4">
-                Enterprise LMS - Həqiqi Güc!
-              </h3>
-              <p className="text-xl mb-8 text-white/90 max-w-3xl mx-auto">
-                25+ database table, React + TypeScript frontend, PostgreSQL backend, 
-                role-based authentication - real enterprise səviyyəli sistem!
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button className="bg-white text-devcode-orange hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200">
-                  🔥 Sistemə Giriş Et!
-                </Button>
-                <div className="text-white/90 text-sm">
-                  ⚡ Replit Auth • 🔒 Role-based Access • 🎯 Real-time Data
+            <div className="flex items-center justify-between max-w-5xl mx-auto">
+              {/* User */}
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <User className="w-10 h-10 text-white" />
+                </div>
+                <p className="text-sm font-medium text-gray-900">İstifadəçi</p>
+                <p className="text-xs text-gray-500">React UI</p>
+              </div>
+
+              {/* Arrow 1 */}
+              <div className="flex items-center">
+                <div className="w-16 h-0.5 bg-gradient-to-r from-blue-500 to-green-500"></div>
+                <ChevronRight className="w-6 h-6 text-green-500" />
+              </div>
+
+              {/* API */}
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Zap className="w-10 h-10 text-white" />
+                </div>
+                <p className="text-sm font-medium text-gray-900">REST API</p>
+                <p className="text-xs text-gray-500">Express.js</p>
+              </div>
+
+              {/* Arrow 2 */}
+              <div className="flex items-center">
+                <div className="w-16 h-0.5 bg-gradient-to-r from-green-500 to-orange-500"></div>
+                <ChevronRight className="w-6 h-6 text-orange-500" />
+              </div>
+
+              {/* Database */}
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Database className="w-10 h-10 text-white" />
+                </div>
+                <p className="text-sm font-medium text-gray-900">PostgreSQL</p>
+                <p className="text-xs text-gray-500">Drizzle ORM</p>
+              </div>
+
+              {/* Arrow 3 */}
+              <div className="flex items-center">
+                <div className="w-16 h-0.5 bg-gradient-to-r from-orange-500 to-purple-500"></div>
+                <ChevronRight className="w-6 h-6 text-purple-500" />
+              </div>
+
+              {/* Response */}
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <BarChart3 className="w-10 h-10 text-white" />
+                </div>
+                <p className="text-sm font-medium text-gray-900">Real-time</p>
+                <p className="text-xs text-gray-500">Data Sync</p>
+              </div>
+            </div>
+          </div>
+
+          {/* System Features Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 group hover:shadow-2xl transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Video className="w-7 h-7 text-white" />
+              </div>
+              <h4 className="text-lg font-bold text-gray-900 mb-3">Video Streaming</h4>
+              <p className="text-gray-600 text-sm mb-4">YouTube integration, progress tracking, lesson materials və assignment engine</p>
+              <div className="flex items-center text-devcode-orange text-sm font-medium">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Production Ready
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 group hover:shadow-2xl transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <BarChart3 className="w-7 h-7 text-white" />
+              </div>
+              <h4 className="text-lg font-bold text-gray-900 mb-3">Analytics Engine</h4>
+              <p className="text-gray-600 text-sm mb-4">Real-time progress tracking, attendance monitoring və submission analytics</p>
+              <div className="flex items-center text-devcode-orange text-sm font-medium">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Enterprise Level
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 group hover:shadow-2xl transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <PenTool className="w-7 h-7 text-white" />
+              </div>
+              <h4 className="text-lg font-bold text-gray-900 mb-3">Assignment Engine</h4>
+              <p className="text-gray-600 text-sm mb-4">Rich text editor, file upload, GitHub integration və automated grading</p>
+              <div className="flex items-center text-devcode-orange text-sm font-medium">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                AI Powered
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 group hover:shadow-2xl transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Award className="w-7 h-7 text-white" />
+              </div>
+              <h4 className="text-lg font-bold text-gray-900 mb-3">Certificate System</h4>
+              <p className="text-gray-600 text-sm mb-4">Automated certificate generation unique ID verification və blockchain ready</p>
+              <div className="flex items-center text-devcode-orange text-sm font-medium">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Blockchain Ready
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 group hover:shadow-2xl transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Shield className="w-7 h-7 text-white" />
+              </div>
+              <h4 className="text-lg font-bold text-gray-900 mb-3">Security & Auth</h4>
+              <p className="text-gray-600 text-sm mb-4">OpenID Connect, role-based access control və session management</p>
+              <div className="flex items-center text-devcode-orange text-sm font-medium">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Enterprise Security
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 group hover:shadow-2xl transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Zap className="w-7 h-7 text-white" />
+              </div>
+              <h4 className="text-lg font-bold text-gray-900 mb-3">Live Sessions</h4>
+              <p className="text-gray-600 text-sm mb-4">Real-time class management, attendance tracking və interactive learning</p>
+              <div className="flex items-center text-devcode-orange text-sm font-medium">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Real-time
+              </div>
+            </div>
+          </div>
+
+          {/* Architecture Benefits */}
+          <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-3xl p-8 text-white">
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="text-3xl font-bold mb-6">Sistem Üstünlükləri</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-6 h-6 text-white flex-shrink-0" />
+                    <span className="text-lg">Scalable Architecture - Minlərlə istifadəçi</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-6 h-6 text-white flex-shrink-0" />
+                    <span className="text-lg">Type Safety - 100% TypeScript coverage</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-6 h-6 text-white flex-shrink-0" />
+                    <span className="text-lg">Modern Stack - Industry standards</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-6 h-6 text-white flex-shrink-0" />
+                    <span className="text-lg">Cloud Native - Production ready</span>
+                  </div>
                 </div>
               </div>
-              
-              <div className="mt-8 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-                <div className="text-center">
-                  <div className="text-3xl font-bold">25+</div>
-                  <div className="text-white/80">Database Tables</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">3</div>
-                  <div className="text-white/80">User Roles</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">TypeScript</div>
-                  <div className="text-white/80">Full Stack</div>
-                </div>
+              <div className="text-center lg:text-right">
+                <div className="text-6xl mb-4">🚀</div>
+                <h4 className="text-2xl font-bold mb-4">Texnologiyanın Gələcəyi</h4>
+                <p className="text-white/90 text-lg">
+                  DevCode LMS - education technology sahəsində yeni standart!
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
-
 
     </div>
   );
