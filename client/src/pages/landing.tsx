@@ -179,7 +179,7 @@ export default function Landing() {
         </div>
 
         {/* Slides */}
-        <div className="relative h-[400px] sm:h-[500px] lg:h-[650px]">
+        <div className="relative h-[400px] sm:h-[450px] lg:h-[550px]">
           {heroSlides.map((slide, index) => (
             <div
               key={index}
@@ -191,7 +191,7 @@ export default function Landing() {
                     : 'translate-x-full opacity-0'
               }`}
             >
-              <div className={`pt-8 sm:pt-16 md:pt-24 pb-8 sm:pb-12 md:pb-16 h-full ${slide.bgColor}`}>
+              <div className={`pt-6 sm:pt-12 md:pt-16 lg:pt-20 pb-6 sm:pb-10 md:pb-12 lg:pb-16 h-full ${slide.bgColor}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
                   <div className="grid lg:grid-cols-2 gap-6 lg:gap-16 items-center h-full">
                     {/* Left Content */}
