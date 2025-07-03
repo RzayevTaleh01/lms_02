@@ -87,9 +87,10 @@ export default function Sidebar({
         ];
       case 'teacher':
         return [
-          { href: '/teacher', label: 'Dashboard', icon: LayoutDashboard },
-          { href: '/teacher/courses', label: 'Courses', icon: BookOpen },
-          { href: '/teacher/students', label: 'Students', icon: Users },
+          { href: '/teacher', label: 'Ana Panel', icon: LayoutDashboard },
+          { href: '/teacher/courses', label: 'Kurslarım', icon: BookOpen },
+          { href: '/teacher/students', label: 'Tələbələrim', icon: Users },
+          { href: '/session-history', label: 'Dərs Tarixçəsi', icon: History },
         ];
       case 'student':
         return [
@@ -115,9 +116,9 @@ export default function Sidebar({
         };
       case 'teacher':
         return {
-          name: user?.firstName || 'Teacher',
-          role: 'Mathematics Teacher',
-          avatar: user?.firstName?.charAt(0) || 'T'
+          name: user?.firstName || 'Müəllim',
+          role: 'DevCode Müəllimi',
+          avatar: user?.firstName?.charAt(0) || 'M'
         };
       case 'student':
         return {
@@ -158,7 +159,7 @@ export default function Sidebar({
       
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 h-full bg-white shadow-sm border-r border-gray-200 z-40 transition-all duration-300",
+        "fixed left-0 top-0 h-full bg-gradient-to-b from-devcode-yellow to-devcode-yellow-light shadow-lg border-r border-devcode-yellow/20 z-40 transition-all duration-300",
         // Desktop behavior
         "lg:translate-x-0",
         isCollapsed ? "lg:w-16" : "lg:w-64",
@@ -169,12 +170,12 @@ export default function Sidebar({
         <div className={cn("p-6", isCollapsed && "lg:p-3")}>
           {/* Mobile Toggle Button (only visible on mobile) */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
-            <span className="text-lg font-semibold">Menu</span>
+            <span className="text-lg font-semibold text-white">Menyu</span>
             <button
               onClick={() => setIsMobileOpen(false)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
-              <X className="w-5 h-5 text-gray-600" />
+              <X className="w-5 h-5 text-white" />
             </button>
           </div>
 
@@ -182,12 +183,12 @@ export default function Sidebar({
           <div className="hidden lg:flex justify-end mb-4">
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               {isCollapsed ? (
-                <Menu className="w-5 h-5 text-gray-600" />
+                <Menu className="w-5 h-5 text-white" />
               ) : (
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
+                <ChevronLeft className="w-5 h-5 text-white" />
               )}
             </button>
           </div>
@@ -198,11 +199,11 @@ export default function Sidebar({
               "flex items-center mb-8 cursor-pointer",
               isCollapsed ? "lg:justify-center" : "space-x-3"
             )}>
-              <div className="w-8 h-8 bg-devcode-orange rounded transform rotate-45 relative flex-shrink-0">
-                <div className="absolute inset-1 bg-white rounded transform -rotate-45"></div>
+              <div className="w-10 h-10 bg-white rounded-lg shadow-md relative flex-shrink-0 flex items-center justify-center">
+                <span className="text-devcode-yellow font-bold text-lg">DC</span>
               </div>
               {(!isCollapsed || window.innerWidth < 1024) && (
-                <span className="text-xl font-bold text-devcode-dark">DevCode Academy</span>
+                <span className="text-xl font-bold text-white">DevCode</span>
               )}
             </div>
           </Link>
@@ -210,18 +211,18 @@ export default function Sidebar({
           {/* User Profile */}
           <div className="mb-6">
             <div className={cn(
-              "flex items-center p-3 bg-gray-50 rounded-lg",
+              "flex items-center p-4 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30",
               isCollapsed ? "lg:justify-center" : "space-x-3"
             )}>
-              <Avatar className="w-10 h-10 flex-shrink-0">
-                <AvatarFallback className="bg-devcode-orange text-white">
+              <Avatar className="w-12 h-12 flex-shrink-0 ring-2 ring-white/50">
+                <AvatarFallback className="bg-white text-devcode-yellow font-bold">
                   {userInfo.avatar}
                 </AvatarFallback>
               </Avatar>
               {(!isCollapsed || window.innerWidth < 1024) && (
                 <div>
-                  <div className="font-medium text-devcode-dark">{userInfo.name}</div>
-                  <div className="text-sm text-devcode-gray">{userInfo.role}</div>
+                  <div className="font-semibold text-white">{userInfo.name}</div>
+                  <div className="text-sm text-white/80">{userInfo.role}</div>
                 </div>
               )}
             </div>
@@ -236,10 +237,10 @@ export default function Sidebar({
               return (
                 <Link key={item.href} href={item.href}>
                   <div className={cn(
-                    "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer relative group",
+                    "flex items-center px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer relative group",
                     isActive 
-                      ? "bg-devcode-dark text-white" 
-                      : "text-devcode-gray hover:text-devcode-dark hover:bg-gray-50",
+                      ? "bg-white text-devcode-yellow shadow-lg" 
+                      : "text-white/90 hover:text-white hover:bg-white/10 hover:shadow-md",
                     isCollapsed ? "lg:justify-center" : "space-x-3"
                   )}>
                     <IconComponent className="w-5 h-5 flex-shrink-0" />
@@ -247,7 +248,7 @@ export default function Sidebar({
                     
                     {/* Tooltip for collapsed state on desktop */}
                     {isCollapsed && window.innerWidth >= 1024 && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                      <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-lg">
                         {item.label}
                       </div>
                     )}
@@ -258,18 +259,18 @@ export default function Sidebar({
             
             <div
               className={cn(
-                "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer text-devcode-gray hover:text-devcode-dark hover:bg-gray-50 relative group",
+                "flex items-center px-4 py-3 mt-4 rounded-xl transition-all duration-200 cursor-pointer text-white/90 hover:text-white hover:bg-red-500/20 hover:shadow-md relative group border border-white/20",
                 isCollapsed ? "lg:justify-center" : "space-x-3"
               )}
               onClick={handleLogout}
             >
               <Clock className="w-5 h-5 flex-shrink-0" />
-              {(!isCollapsed || window.innerWidth < 1024) && <span>Logout</span>}
+              {(!isCollapsed || window.innerWidth < 1024) && <span>Çıxış</span>}
               
               {/* Tooltip for collapsed state on desktop */}
               {isCollapsed && window.innerWidth >= 1024 && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                  Logout
+                <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-lg">
+                  Çıxış
                 </div>
               )}
             </div>
