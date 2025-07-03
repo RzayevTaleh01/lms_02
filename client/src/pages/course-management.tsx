@@ -277,10 +277,18 @@ export default function CourseManagement() {
             toast({ title: "Davamiyyət uğurla yadda saxlanıldı" });
             setAttendanceData({});
             setIsAttendanceDisabled(true);
-            // Invalidate multiple related caches
+            // Invalidate all session-related queries for real-time updates
             queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/sessions`] });
             queryClient.invalidateQueries({ queryKey: [`/api/courses/${id}/all-attendance`] });
-            // Also invalidate individual session attendance caches
+            
+            // Force refetch all sessions attendance data immediately
+            if (lessonSessions && Array.isArray(lessonSessions)) {
+                lessonSessions.forEach((session: any) => {
+                    queryClient.invalidateQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
+                });
+            }
+            
+            // Also invalidate the current active session
             if (activeSession) {
                 queryClient.invalidateQueries({ queryKey: [`/api/sessions/${activeSession.id}/attendance`] });
             }
@@ -602,8 +610,8 @@ export default function CourseManagement() {
                 <CardTitle>Ümumi Davamiyyət</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto max-w-full">
-                <Table>
+                <div className="overflow-x-auto border rounded-lg">
+                <Table className="min-w-[800px]">
                   <TableHeader>
                     <TableRow>
                       <TableHead>Tələbə</TableHead>
