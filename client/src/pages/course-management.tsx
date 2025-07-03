@@ -417,7 +417,7 @@ export default function CourseManagement() {
       {activeSession && <ActiveSessionBar session={activeSession} onEndSession={handleEndSession} />}
 
       {/* Main Content */}
-      <div className="flex-1 p-8 ml-80" style={{ paddingTop: activeSession ? '100px' : '32px' }}>
+      <div className="flex-1 p-4 lg:p-8 lg:ml-80" style={{ paddingTop: activeSession ? '100px' : '32px' }}>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
