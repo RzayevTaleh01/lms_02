@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -66,7 +67,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               <DialogTitle className="text-2xl font-bold text-gray-900">
                 DevCode LMS
               </DialogTitle>
-              <p className="text-sm text-gray-600">Sistemə daxil olun</p>
+              <DialogDescription className="text-sm text-gray-600">
+                Sistemə daxil olun
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>

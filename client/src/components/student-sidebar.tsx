@@ -35,8 +35,10 @@ export const StudentSidebar = ({ isOpen, onClose }: StudentSidebarProps) => {
       {/* Sidebar */}
       <div className={cn(
         "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
-        isOpen ? "translate-x-0" : "-translate-x-full",
-        "lg:translate-x-0 lg:fixed lg:z-50"
+        // Mobile behavior
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        // Desktop behavior - always visible
+        "lg:relative lg:transform-none lg:shadow-none lg:z-auto"
       )}>
         {/* Header */}
         <div className="p-6 border-b">
@@ -85,7 +87,10 @@ export const StudentSidebar = ({ isOpen, onClose }: StudentSidebarProps) => {
         {/* Logout */}
         <div className="p-4 border-t">
           <button
-            onClick={logout}
+            onClick={(e) => {
+              e.preventDefault();
+              logout();
+            }}
             className="flex items-center space-x-3 px-3 py-2 w-full text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           >
             <LogOut className="h-5 w-5" />

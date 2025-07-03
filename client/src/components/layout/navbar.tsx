@@ -90,8 +90,8 @@ export default function Navbar() {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-10 text-xs">
-            {/* Left side navigation */}
-            <div className="hidden md:flex items-center space-x-6">
+            {/* Left side navigation - always show for mobile */}
+            <div className="flex items-center space-x-4 md:space-x-6">
               {topNavLeftItems.map((item) => (
                 <Link key={item.href} href={item.href}>
                   <span className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer text-xs">
@@ -250,6 +250,26 @@ export default function Navbar() {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                   <div className="flex flex-col space-y-4 mt-8">
+                    {/* Top Priority Items - Always visible */}
+                    <div className="space-y-2 mb-4">
+                      {topNavLeftItems.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <span 
+                            className={`block py-3 px-4 text-lg font-semibold transition-colors cursor-pointer ${
+                              location === item.href 
+                                ? "text-devcode-orange bg-orange-50" 
+                                : "text-gray-800 hover:text-devcode-orange hover:bg-orange-50"
+                            } rounded-lg border border-orange-200`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {item.label}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                    
+                    <div className="border-t border-gray-200 my-4"></div>
+                    
                     {/* Main Navigation */}
                     {navItems.map((item) => (
                       <div key={item.label}>
@@ -294,8 +314,8 @@ export default function Navbar() {
                     
                     <div className="border-t border-gray-200 my-4"></div>
                     
-                    {/* Top Navigation Items */}
-                    {[...topNavLeftItems, ...topNavRightItems].map((item) => (
+                    {/* Right Top Navigation Items */}
+                    {topNavRightItems.map((item) => (
                       <Link key={item.href} href={item.href}>
                         <span 
                           className={`block py-2 px-4 text-sm transition-colors cursor-pointer ${
