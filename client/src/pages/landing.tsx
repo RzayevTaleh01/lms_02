@@ -320,267 +320,362 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Courses Section */}
-      <section className="py-20 bg-white">
+      {/* Programming Courses */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16">
+            <span className="bg-gradient-to-r from-devcode-orange to-devcode-yellow bg-clip-text text-transparent text-lg font-semibold mb-4 block">
+              Proqramlaşdırma Kursları
+            </span>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Tədris proqramları
             </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Sıfırdan professional səviyyəyə qədər. Real layihələr və təcrübəli mentorlar ilə öyrənin.
+            </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {/* JavaScript Fundamentals */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* JS Logo */}
-                    <div className="w-20 h-20 bg-yellow-400 rounded-lg shadow-lg flex items-center justify-center relative">
-                      <span className="text-black font-bold text-2xl">JS</span>
-                    </div>
-                    {/* Code brackets */}
-                    <div className="absolute -top-2 -left-2 w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center">
-                      <span className="text-yellow-400 text-xs font-bold">{"{"}</span>
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center">
-                      <span className="text-yellow-400 text-xs font-bold">{"}"}</span>
-                    </div>
-                    <div className="absolute top-2 right-6 w-3 h-3 bg-green-500 rounded-full"></div>
+          {/* Courses Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {/* JavaScript Course */}
+            <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative p-8">
+                {/* Course Badge */}
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mb-4">
+                  ⭐ Populyar
+                </div>
+                
+                {/* Course Icon */}
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <span className="text-white font-bold text-xl">JS</span>
+                </div>
+                
+                {/* Course Content */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  JavaScript Fundamentals
+                </h3>
+                
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Web development üçün ən vacib dil. DOM manipulation, ES6+, Async/Await və daha çox.
+                </p>
+                
+                {/* Course Features */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>12 həftə intensiv proqram</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>5+ real layihə</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>Portfolio yaradılması</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    JavaScript Əsasları
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-gray-900">₼299</span>
+                    <span className="text-gray-500 text-sm ml-1">/ay</span>
+                  </div>
+                  <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 px-6 py-2 rounded-xl">
+                    Başla
+                  </Button>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Müasir web development üçün JavaScript əsaslarını öyrənin.
-                </p>
               </div>
             </div>
 
-            {/* React Development */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-blue-50 to-cyan-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* React Logo */}
-                    <div className="w-20 h-20 bg-cyan-400 rounded-full shadow-lg flex items-center justify-center relative">
-                      <div className="w-8 h-8 border-2 border-white rounded-full relative">
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
-                    {/* Orbital rings */}
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-8 border-2 border-cyan-300 rounded-full rotate-45"></div>
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-8 border-2 border-cyan-300 rounded-full -rotate-45"></div>
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full"></div>
+            {/* React Course */}
+            <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative p-8">
+                {/* Course Badge */}
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-4">
+                  🚀 Advanced
+                </div>
+                
+                {/* Course Icon */}
+                <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative">
+                  <span className="text-white font-bold text-lg">React</span>
+                  <div className="absolute inset-0 border-2 border-cyan-300 rounded-2xl opacity-60 animate-pulse"></div>
+                </div>
+                
+                {/* Course Content */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  React Development
+                </h3>
+                
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Modern frontend framework. Components, Hooks, Context API, Redux və React Router.
+                </p>
+                
+                {/* Course Features */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>10 həftə intensive bootcamp</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>3+ SPA layihələri</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>Redux & State management</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    React Development
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-gray-900">₼399</span>
+                    <span className="text-gray-500 text-sm ml-1">/ay</span>
+                  </div>
+                  <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white hover:from-cyan-500 hover:to-blue-600 px-6 py-2 rounded-xl">
+                    Başla
+                  </Button>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Modern interaktiv UI yaratmaq üçün React framework.
-                </p>
               </div>
             </div>
 
-            {/* Node.js Backend */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* Node.js Logo */}
-                    <div className="w-20 h-20 bg-green-500 rounded-lg shadow-lg flex items-center justify-center relative">
-                      <span className="text-white font-bold text-lg">NODE</span>
-                    </div>
-                    {/* Server connections */}
-                    <div className="absolute -top-2 -left-2 w-6 h-6 bg-emerald-400 rounded-full"></div>
-                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-600 rounded-full"></div>
-                    <div className="absolute top-2 right-6 w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <div className="absolute bottom-4 left-6 w-2 h-2 bg-blue-400 rounded-full"></div>
+            {/* Node.js Course */}
+            <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 to-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative p-8">
+                {/* Course Badge */}
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mb-4">
+                  🔥 Backend
+                </div>
+                
+                {/* Course Icon */}
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <span className="text-white font-bold text-sm">NODE</span>
+                </div>
+                
+                {/* Course Content */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Node.js Backend
+                </h3>
+                
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Server-side JavaScript. Express.js, MongoDB, PostgreSQL, RESTful APIs və Authentication.
+                </p>
+                
+                {/* Course Features */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>14 həftə backend mastery</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>API development</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>Database integration</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    Node.js Backend
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-gray-900">₼349</span>
+                    <span className="text-gray-500 text-sm ml-1">/ay</span>
+                  </div>
+                  <Button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 px-6 py-2 rounded-xl">
+                    Başla
+                  </Button>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Server tərəfi proqramlaşdırma və API yaradılması.
-                </p>
               </div>
             </div>
 
-            {/* Full-Stack Development */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-purple-50 to-pink-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* Full-Stack Symbol */}
-                    <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-lg flex items-center justify-center relative">
-                      <div className="text-white font-bold text-sm">
-                        <div className="text-center">
-                          <div>FULL</div>
-                          <div>STACK</div>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Frontend/Backend indicators */}
-                    <div className="absolute -top-2 -left-2 w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">F</span>
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">B</span>
-                    </div>
-                    <div className="absolute top-2 right-6 w-3 h-3 bg-orange-400 rounded-full"></div>
+            {/* Full-Stack Course */}
+            <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-2 border-transparent hover:border-orange-200">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative p-8">
+                {/* Course Badge */}
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-devcode-orange to-devcode-yellow text-white mb-4">
+                  👑 Premium
+                </div>
+                
+                {/* Course Icon */}
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="text-white font-bold text-xs text-center">
+                    <div>FULL</div>
+                    <div>STACK</div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    Full-Stack Development
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Frontend və backend birləşərək tam web development.
+                
+                {/* Course Content */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Full-Stack MERN
+                </h3>
+                
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  MongoDB, Express, React, Node.js - tam stack development. 0-dan Senior səviyyəyə.
                 </p>
+                
+                {/* Course Features */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>24 həftə complete program</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>10+ real world layihələr</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>İş garantisi</span>
+                  </div>
+                </div>
+                
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-gray-900">₼599</span>
+                    <span className="text-gray-500 text-sm ml-1">/ay</span>
+                  </div>
+                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 px-6 py-2 rounded-xl">
+                    Başla
+                  </Button>
+                </div>
               </div>
             </div>
 
-            {/* Python Programming */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-blue-50 to-yellow-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* Python Logo */}
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-yellow-400 rounded-lg shadow-lg flex items-center justify-center relative">
-                      <span className="text-white font-bold text-lg">PY</span>
-                    </div>
-                    {/* Snake-like elements */}
-                    <div className="absolute -top-2 -left-2 w-6 h-6 bg-blue-600 rounded-full"></div>
-                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full"></div>
-                    <div className="absolute top-2 right-6 w-3 h-3 bg-green-500 rounded-full"></div>
+            {/* Python Course */}
+            <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative p-8">
+                {/* Course Badge */}
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mb-4">
+                  🐍 Beginner Friendly
+                </div>
+                
+                {/* Course Icon */}
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-yellow-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <span className="text-white font-bold text-lg">Py</span>
+                </div>
+                
+                {/* Course Content */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Python Programming
+                </h3>
+                
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Data Science, Web Development, Automation. Django, Flask, Pandas və Machine Learning.
+                </p>
+                
+                {/* Course Features */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>16 həftə comprehensive</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>Data Science əsasları</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>Web scraping & automation</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    Python Proqramlaşdırma
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
+                
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-gray-900">₼279</span>
+                    <span className="text-gray-500 text-sm ml-1">/ay</span>
+                  </div>
+                  <Button className="bg-gradient-to-r from-blue-500 to-yellow-400 text-white hover:from-blue-600 hover:to-yellow-500 px-6 py-2 rounded-xl">
+                    Başla
+                  </Button>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Sadə və güclü Python dili ilə proqramlaşdırma öyrənin.
-                </p>
               </div>
             </div>
 
-            {/* Database & SQL */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-gray-50 to-blue-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* Database cylinder */}
-                    <div className="w-16 h-20 bg-gray-600 rounded-xl relative shadow-lg">
-                      <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-12 h-3 bg-gray-400 rounded-full"></div>
-                      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-10 h-1 bg-gray-400 rounded"></div>
-                      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gray-400 rounded"></div>
-                      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-10 h-1 bg-gray-400 rounded"></div>
-                    </div>
-                    {/* SQL elements */}
-                    <div className="absolute -top-2 -right-2 w-8 h-6 bg-blue-500 rounded flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">SQL</span>
-                    </div>
-                    <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-green-400 rounded-full"></div>
+            {/* Mobile Development Course */}
+            <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative p-8">
+                {/* Course Badge */}
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mb-4">
+                  📱 Mobile
+                </div>
+                
+                {/* Course Icon */}
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Smartphone className="w-8 h-8 text-white" />
+                </div>
+                
+                {/* Course Content */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  React Native & Flutter
+                </h3>
+                
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Cross-platform mobile development. iOS və Android üçün app yaradın.
+                </p>
+                
+                {/* Course Features */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>18 həftə mobil mastery</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>App Store deployment</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                    <span>Native module integration</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    Database və SQL
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Verilənlər bazası idarəetməsi və SQL sorğuları.
-                </p>
-              </div>
-            </div>
-
-            {/* Mobile App Development */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-indigo-50 to-purple-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* Mobile phones */}
-                    <div className="w-12 h-20 bg-gray-800 rounded-xl shadow-lg relative border-2 border-gray-600">
-                      <div className="w-full h-16 bg-gradient-to-b from-indigo-400 to-purple-500 rounded-lg m-1">
-                        <div className="p-2 space-y-1">
-                          <div className="h-1 bg-white/70 rounded w-full"></div>
-                          <div className="h-2 bg-white/70 rounded w-3/4"></div>
-                          <div className="h-1 bg-white/70 rounded w-1/2"></div>
-                        </div>
-                      </div>
-                    </div>
-                    {/* App icons */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs">📱</span>
-                    </div>
-                    <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-purple-500 rounded-full"></div>
+                
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-gray-900">₼449</span>
+                    <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
+                  <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 px-6 py-2 rounded-xl">
+                    Başla
+                  </Button>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    Mobile App Development
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
-                </div>
-                <p className="text-gray-600 text-sm">
-                  iOS və Android üçün mobil tətbiq yaradılması.
-                </p>
-              </div>
-            </div>
-
-            {/* DevOps & Cloud */}
-            <div className="group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="h-48 bg-gradient-to-br from-orange-50 to-red-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="relative">
-                    {/* Cloud/Server cluster */}
-                    <div className="w-20 h-16 bg-gray-700 rounded-lg shadow-lg relative">
-                      <div className="absolute top-2 left-2 w-3 h-3 bg-green-400 rounded-full"></div>
-                      <div className="absolute top-2 right-2 w-3 h-3 bg-green-400 rounded-full"></div>
-                      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-2 bg-orange-400 rounded"></div>
-                    </div>
-                    {/* Cloud elements */}
-                    <div className="absolute -top-2 -right-2 w-8 h-6 bg-orange-500 rounded-full"></div>
-                    <div className="absolute -top-1 -right-4 w-6 h-4 bg-orange-400 rounded-full"></div>
-                    <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-red-400 rounded-full"></div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    DevOps və Cloud
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-devcode-orange transition-colors" />
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Server idarəetmə, deploy və cloud texnologiyaları.
-                </p>
               </div>
             </div>
           </div>
-          
+
+          {/* CTA Section */}
           <div className="text-center">
+            <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-2xl p-8 text-white mb-8">
+              <h3 className="text-2xl font-bold mb-4">Hansı kursu seçməli?</h3>
+              <p className="text-lg mb-6 text-white/90">
+                Bizim career mentorlarımız sizə ən uyğun kursu seçməkdə kömək edəcək
+              </p>
+              <Button className="bg-white text-devcode-orange hover:bg-gray-100 px-8 py-3 rounded-xl font-semibold">
+                Pulsuz məsləhət al
+              </Button>
+            </div>
+            
             <Button 
-              className="bg-gray-900 text-white hover:bg-gray-800 px-8 py-3 rounded-full"
+              className="bg-gray-900 text-white hover:bg-gray-800 px-8 py-3 rounded-xl"
             >
-              Daha çox
+              Bütün kursları gör
             </Button>
           </div>
         </div>
@@ -697,7 +792,7 @@ export default function Landing() {
                   Sizin üçün nələr var?
                 </h3>
                 <p className="text-lg text-gray-600 mb-8">
-                  DevCode LMS tələbələr üçün ən asан və əlverişli öyrənmə platformasıdır. 
+                  DevCode LMS tələbələr üçün ən asان və əlverişli öyrənmə platformasıdır. 
                   Hər şey bir yerdə və çox sadə!
                 </p>
               </div>
@@ -801,3 +896,4 @@ export default function Landing() {
     </div>
   );
 }
+

@@ -334,6 +334,16 @@ DevCode Academy is a comprehensive learning management system (LMS) built for pr
   - Replaced complex diagrams with student dashboard mockup
   - Emphasized ease of use, mobile compatibility, and teacher support
   - Made content accessible and encouraging for non-technical users
+- July 3, 2025: Complete redesign of Tədris proqramları (Training Programs) section:
+  - Completely replaced old simple course cards with modern, professional course cards
+  - Changed from 4-column grid to 3-column grid for better space utilization
+  - Added detailed course information including: badges, pricing, duration, features
+  - Implemented hover effects and animations (scale, shadow, translate)
+  - Added course pricing in Azerbaijani Manat (₼) with monthly billing
+  - Created distinct course categories: JavaScript (Popular), React (Advanced), Node.js (Backend), Full-Stack (Premium), Python (Beginner Friendly), Mobile (React Native & Flutter)
+  - Enhanced with professional course features lists and call-to-action buttons
+  - Added comprehensive CTA section with career consultation offer
+  - Maintained student-focused language while adding professional appeal
 - July 3, 2025: Major LMS showcase redesign with authentic system data:
   - Updated DevCode LMS showcase to reflect actual system capabilities based on database schema analysis
   - Replaced generic features with real implemented functionality:
