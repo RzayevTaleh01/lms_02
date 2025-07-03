@@ -18,7 +18,7 @@ export function StaticSidebar() {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 z-40 w-64 h-screen bg-white border-r border-gray-200 flex flex-col">
+    <aside className="fixed left-0 top-0 z-40 w-64 h-full bg-white border-r border-gray-200 flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">

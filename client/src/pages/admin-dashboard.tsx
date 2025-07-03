@@ -251,7 +251,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 lg:p-8">
+      <div className="flex-1 p-4 lg:p-8 lg:ml-64">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

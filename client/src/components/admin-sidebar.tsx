@@ -32,11 +32,11 @@ export const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
+        "fixed left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col",
         // Mobile behavior
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-        // Desktop behavior - always visible
-        "lg:relative lg:transform-none lg:shadow-none lg:z-auto"
+        // Desktop behavior - always visible and fixed
+        "lg:fixed lg:transform-none lg:shadow-lg lg:z-auto"
       )}>
         {/* Header */}
         <div className="p-6 border-b">
