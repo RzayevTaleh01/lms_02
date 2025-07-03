@@ -682,7 +682,7 @@ export default function Landing() {
       </section>
 
       {/* DevCode LMS Platform Features */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="bg-gradient-to-r from-devcode-orange to-devcode-yellow bg-clip-text text-transparent text-lg font-semibold mb-4 block">
@@ -692,201 +692,222 @@ export default function Landing() {
               Nə üçün DevCode LMS?
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              Müasir təhsil platforması - tələbələr, müəllimlər və administratorlar üçün tam həll
+              Azərbaycanın ən müasir və effektiv proqramlaşdırma təhsil platforması
             </p>
           </div>
 
-          {/* Main Platform Preview */}
-          <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-            {/* Left Side - Platform Mockup */}
-            <div className="relative">
-              {/* Dashboard Mockup */}
-              <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
-                {/* Browser Header */}
-                <div className="bg-gray-100 px-4 py-3 flex items-center space-x-2 border-b">
-                  <div className="flex space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  </div>
-                  <div className="flex-1 bg-white rounded px-3 py-1 text-sm text-gray-600">
-                    devcode.az/student
-                  </div>
-                </div>
-
-                {/* Dashboard Content */}
-                <div className="p-6">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Salam, Əli Vəliyev!</h3>
-                      <p className="text-gray-600">Bugün 3 yeni dərsiniz var</p>
-                    </div>
-                    <div className="w-12 h-12 bg-devcode-orange rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">A</span>
-                    </div>
-                  </div>
-
-                  {/* Progress Cards */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="w-8 h-8 bg-blue-500 rounded-lg mb-2"></div>
-                      <p className="text-2xl font-bold text-blue-600">5</p>
-                      <p className="text-sm text-gray-600">Aktiv Kurs</p>
-                    </div>
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <div className="w-8 h-8 bg-green-500 rounded-lg mb-2"></div>
-                      <p className="text-2xl font-bold text-green-600">78%</p>
-                      <p className="text-sm text-gray-600">Progress</p>
-                    </div>
-                    <div className="bg-purple-50 rounded-lg p-4">
-                      <div className="w-8 h-8 bg-purple-500 rounded-lg mb-2"></div>
-                      <p className="text-2xl font-bold text-purple-600">12</p>
-                      <p className="text-sm text-gray-600">Tapşırıq</p>
-                    </div>
-                  </div>
-
-                  {/* Current Course */}
-                  <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-lg p-4 text-white mb-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold">JavaScript Əsasları</h4>
-                        <p className="text-sm opacity-90">Dərs 5: Functions və Scope</p>
-                        <div className="mt-2 bg-white/20 rounded-full h-2 w-32">
-                          <div className="bg-white rounded-full h-2 w-20"></div>
-                        </div>
-                      </div>
-                      <PlayCircle className="w-12 h-12 text-white" />
-                    </div>
-                  </div>
-
-                  {/* Recent Activity */}
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-gray-900">Son Aktivlər</h4>
-                    <div className="flex items-center space-x-3 bg-gray-50 rounded-lg p-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">HTML Tapşırığı tamamlandı</p>
-                        <p className="text-xs text-gray-500">1 saat əvvəl</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {/* Stats Section */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                <Users className="w-10 h-10 text-white" />
               </div>
-
-              {/* Floating badges */}
-              <div className="absolute -top-4 -right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg animate-bounce">
-                ✅ Easy to Use
+              <div className="text-3xl font-bold text-gray-900 mb-2">500+</div>
+              <div className="text-gray-600">Aktiv Tələbə</div>
+            </div>
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center">
+                <BookOpen className="w-10 h-10 text-white" />
               </div>
-              <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
-                📱 Mobile Ready
+              <div className="text-3xl font-bold text-gray-900 mb-2">15+</div>
+              <div className="text-gray-600">Təhsil Kursu</div>
+            </div>
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-full flex items-center justify-center">
+                <Award className="w-10 h-10 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-2">95%</div>
+              <div className="text-gray-600">Məmnunluq</div>
+            </div>
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                <TrendingUp className="w-10 h-10 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-2">85%</div>
+              <div className="text-gray-600">İş Tapma</div>
+            </div>
+          </div>
+
+          {/* Main Advantages Grid */}
+          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+            {/* Interactive Learning */}
+            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                <Monitor className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">İnteraktiv Öyrənmə</h3>
+              <div className="space-y-3 text-gray-600">
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>Real-time kod yazma təcrübəsi</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>Canlı müəllim feedback</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>Praktik layihələr</span>
+                </div>
               </div>
             </div>
 
-            {/* Right Side - Benefits */}
-            <div className="space-y-8">
+            {/* Comprehensive System */}
+            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center">
+                <Settings className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Tam Sistem</h3>
+              <div className="space-y-3 text-gray-600">
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>Video dərslər və materiallar</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>Tapşırıq və qiymətləndirmə</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>Progress tracking</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Career Support */}
+            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-2xl flex items-center justify-center">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Karyera Dəstəyi</h3>
+              <div className="space-y-3 text-gray-600">
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>CV hazırlama kömək</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>İş müsahibə hazırlığı</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>Şirkətlərlə əlaqə</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Platform Preview */}
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 lg:p-12 text-white">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Sizin üçün nələr var?
+                <h3 className="text-3xl font-bold mb-6">
+                  Müasir Öyrənmə Platforması
                 </h3>
-                <p className="text-lg text-gray-600 mb-8">
-                  DevCode LMS tələbələr üçün ən asان və əlverişli öyrənmə platformasıdır. 
-                  Hər şey bir yerdə və çox sadə!
+                <p className="text-xl text-gray-300 mb-8">
+                  DevCode LMS-də hər şey sizin rahatlığınız üçün dizayn edilib
                 </p>
-              </div>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Smartphone className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold mb-2">📱 Mobil Uyğun</h4>
+                      <p className="text-gray-300">
+                        Telefon, tablet və kompüterdən istifadə edin
+                      </p>
+                    </div>
+                  </div>
 
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Video className="w-6 h-6 text-white" />
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold mb-2">⏰ 24/7 Giriş</h4>
+                      <p className="text-gray-300">
+                        İstədiyiniz vaxt öyrənin, məhdudiyyət yoxdur
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📺 Video Dərslər</h4>
-                    <p className="text-gray-600">
-                      YouTube dərsləri, progress tracking, materiallar - 
-                      hər dərs üçün videolar və tapşırıqlar!
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <PenTool className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">✍️ Tapşırıqlar</h4>
-                    <p className="text-gray-600">
-                      Sadə tapşırıq sistemi, fayl yükləmə, 
-                      müəllim feedback və yenidən göndərmə imkanı!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <BarChart3 className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📊 Progress İzləmə</h4>
-                    <p className="text-gray-600">
-                      Hansı dərsləri bitirdiyinizi, qiymətlərinizi və 
-                      ümumi proqresinizi izləyin!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">🏆 Sertifikatlar</h4>
-                    <p className="text-gray-600">
-                      Kursu bitirdikdə avtomatik sertifikat alın və 
-                      CV-yə əlavə edin!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Smartphone className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">📱 Mobil Uyğun</h4>
-                    <p className="text-gray-600">
-                      Telefon, tablet, kompüterdən istifadə edin - 
-                      hər yerdə öyrənin!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">👨‍🏫 Müəllim Dəstəyi</h4>
-                    <p className="text-gray-600">
-                      Müəllimlər sizinlə bilavasitə əlaqədə - 
-                      suallarınıza cavab və kömək!
-                    </p>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Shield className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold mb-2">🔒 Təhlükəsiz</h4>
+                      <p className="text-gray-300">
+                        Məlumatlarınız tam təhlükəsizlik altındadır
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow p-6 rounded-xl text-white shadow-2xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xl font-bold mb-2">🚀 İndi başlayın!</h4>
-                    <p className="mb-4 text-white/90">
-                      Çox sadə və əlverişli öyrənmə təcrübəsi sizi gözləyir!
-                    </p>
+              <div className="relative">
+                {/* Dashboard Preview */}
+                <div className="bg-white rounded-2xl p-6 shadow-2xl">
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="text-xl font-bold text-gray-900">Tələbə Paneli</h4>
+                    <div className="w-10 h-10 bg-devcode-orange rounded-full flex items-center justify-center">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
                   </div>
-                  <div className="text-4xl">💪</div>
+                  
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="bg-blue-50 rounded-lg p-3 text-center">
+                      <div className="text-2xl font-bold text-blue-600">8</div>
+                      <div className="text-sm text-gray-600">Kurs</div>
+                    </div>
+                    <div className="bg-green-50 rounded-lg p-3 text-center">
+                      <div className="text-2xl font-bold text-green-600">92%</div>
+                      <div className="text-sm text-gray-600">Tamamlanma</div>
+                    </div>
+                    <div className="bg-purple-50 rounded-lg p-3 text-center">
+                      <div className="text-2xl font-bold text-purple-600">A</div>
+                      <div className="text-sm text-gray-600">Orta Bal</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-lg p-4 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h5 className="font-semibold">React Native</h5>
+                        <p className="text-sm opacity-90">Dərs 12: Components</p>
+                      </div>
+                      <PlayCircle className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
                 </div>
+
+                {/* Floating Elements */}
+                <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg animate-pulse">
+                  ✅ Aktiv
+                </div>
+                <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+                  📚 Öyrənmə
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="text-center mt-16">
+            <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-2xl p-8 text-white">
+              <h3 className="text-3xl font-bold mb-4">Proqramlaşdırma karyeranız burada başlayır!</h3>
+              <p className="text-xl mb-8 text-white/90">
+                Azərbaycanın ən yaxşı proqramlaşdırma təhsil platformasında yerini ayırt
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button className="bg-white hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold text-lg" style={{ color: '#000000' }}>
+                  Pulsuz məsləhət al
+                </Button>
+                <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-devcode-orange px-8 py-4 rounded-xl font-semibold text-lg">
+                  Kursları gör
+                </Button>
               </div>
             </div>
           </div>
