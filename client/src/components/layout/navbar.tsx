@@ -66,7 +66,7 @@ export default function Navbar() {
       ]
     },
     { label: "Təhsil modeli", href: "/education-model" },
-    { label: "Sertifikat yoxla", href: "/verify-certificate" },
+    { label: "Sertifikat yoxla", href: "/verify" },
   ];
 
   const getDashboardLink = () => {

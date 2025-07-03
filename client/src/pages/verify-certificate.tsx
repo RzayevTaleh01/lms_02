@@ -45,35 +45,35 @@ export default function VerifyCertificate() {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-devcode-dark mb-4">Certificate Verification</h1>
-          <p className="text-lg text-devcode-gray">
-            Verify the authenticity of DevCode Academy certificates using the unique certificate ID.
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Sertifikat Yoxlanması</h1>
+          <p className="text-lg text-gray-600">
+            DevCode Academy sertifikatlarının həqiqiliyini unikal sertifikat ID-si ilə yoxlayın.
           </p>
         </div>
 
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
-            <CardTitle>Verify Certificate</CardTitle>
+            <CardTitle>Sertifikat Yoxla</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleVerify} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="certificateId">Certificate ID</Label>
+                <Label htmlFor="certificateId">Sertifikat ID-si</Label>
                 <Input
                   id="certificateId"
                   value={certificateId}
                   onChange={(e) => setCertificateId(e.target.value)}
-                  placeholder="Enter certificate ID (e.g., DCA-2024-001234)"
+                  placeholder="Sertifikat ID-sini daxil edin (məsələn: DCA-2024-001234)"
                   className="text-center"
                 />
               </div>
               
               <Button 
                 type="submit" 
-                className="w-full bg-devcode-orange hover:bg-orange-600"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                 disabled={verifyMutation.isPending || !certificateId.trim()}
               >
-                {verifyMutation.isPending ? "Verifying..." : "Verify Certificate"}
+                {verifyMutation.isPending ? "Yoxlanılır..." : "Sertifikatı Yoxla"}
               </Button>
             </form>
 
@@ -86,29 +86,29 @@ export default function VerifyCertificate() {
                     <AlertDescription>
                       <div className="space-y-3">
                         <div className="flex items-center space-x-2">
-                          <span className="font-semibold text-green-800">Certificate Verified ✓</span>
+                          <span className="font-semibold text-green-800">Sertifikat Təsdiqləndi ✓</span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                           <div>
-                            <span className="font-medium">Student:</span>{" "}
+                            <span className="font-medium">Tələbə:</span>{" "}
                             {verificationResult.data.student.firstName} {verificationResult.data.student.lastName}
                           </div>
                           <div>
-                            <span className="font-medium">Course:</span>{" "}
+                            <span className="font-medium">Kurs:</span>{" "}
                             {verificationResult.data.course.title}
                           </div>
                           <div>
-                            <span className="font-medium">Completion Date:</span>{" "}
-                            {new Date(verificationResult.data.issuedAt).toLocaleDateString()}
+                            <span className="font-medium">Bitirmə Tarixi:</span>{" "}
+                            {new Date(verificationResult.data.issuedAt).toLocaleDateString('az-AZ')}
                           </div>
                           <div>
-                            <span className="font-medium">Grade:</span>{" "}
-                            {verificationResult.data.grade ? `${verificationResult.data.grade}%` : "Pass"}
+                            <span className="font-medium">Qiymət:</span>{" "}
+                            {verificationResult.data.grade ? `${verificationResult.data.grade}%` : "Keçdi"}
                           </div>
                         </div>
                         <div className="mt-4">
                           <Badge className="bg-green-100 text-green-800">
-                            Valid Certificate
+                            Etibarlı Sertifikat
                           </Badge>
                         </div>
                       </div>
@@ -118,9 +118,9 @@ export default function VerifyCertificate() {
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      <div className="font-semibold">Certificate Not Found</div>
+                      <div className="font-semibold">Sertifikat Tapılmadı</div>
                       <div className="mt-1">
-                        The certificate ID you entered could not be verified. Please check the ID and try again.
+                        Daxil etdiyiniz sertifikat ID-si təsdiqlənə bilmədi. ID-ni yoxlayın və yenidən cəhd edin.
                       </div>
                     </AlertDescription>
                   </Alert>
@@ -130,12 +130,12 @@ export default function VerifyCertificate() {
 
             {/* Instructions */}
             <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">How to find your Certificate ID:</h3>
+              <h3 className="font-semibold text-blue-900 mb-2">Sertifikat ID-ni necə tapmaq olar:</h3>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Certificate IDs follow the format: DCA-YYYY-XXXXXX</li>
-                <li>• You can find it on your digital certificate</li>
-                <li>• Check your email for the certificate delivery notification</li>
-                <li>• Log in to your student dashboard to view all certificates</li>
+                <li>• Sertifikat ID-ləri belə formatdadır: DCA-YYYY-XXXXXX</li>
+                <li>• Rəqəmsal sertifikatınızda tapa bilərsiniz</li>
+                <li>• Sertifikat çatdırılması bildirişi üçün e-poçtunuzu yoxlayın</li>
+                <li>• Bütün sertifikatları görmək üçün tələbə panelinizə daxil olun</li>
               </ul>
             </div>
           </CardContent>
