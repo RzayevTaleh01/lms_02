@@ -248,11 +248,11 @@ export default function Navbar() {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                  <div className="flex flex-col h-full">
+                <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto">
+                  <div className="flex flex-col min-h-full py-4">
                     {/* Auth Section at Top */}
                     {!isAuthenticated && (
-                      <div className="space-y-3 mt-8 mb-6">
+                      <div className="space-y-3 mb-6">
                         <Button 
                           onClick={() => {
                             setIsLoginModalOpen(true);
@@ -277,8 +277,8 @@ export default function Navbar() {
                     
                     <div className="border-t border-gray-200 my-4"></div>
                     
-                    {/* Main Navigation */}
-                    <div className="flex-1 space-y-2">
+                    {/* Main Navigation - Scrollable */}
+                    <div className="flex-1 space-y-2 overflow-y-auto">
                       {navItems.map((item) => (
                         <div key={item.label}>
                           {item.dropdown ? (
