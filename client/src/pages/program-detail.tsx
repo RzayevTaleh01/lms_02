@@ -1,10 +1,9 @@
-
 import { useParams, Link } from "wouter";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
-import { Plus, Download, User, Calendar, Book, Clock, MessageSquare, Star, Users, ChevronDown, CheckCircle, ArrowLeft } from "lucide-react";
+import { Plus, Download, User, Calendar, Book, Clock, MessageSquare, Star, Users, ChevronDown, CheckCircle, ArrowLeft, FileText, BookOpen } from "lucide-react";
 
 export default function ProgramDetail() {
   const { id } = useParams();
@@ -159,7 +158,7 @@ export default function ProgramDetail() {
             </div>
           </div>
         );
-      
+
       case 'certificate':
         return (
           <div className="bg-white rounded-lg shadow-sm p-8">
@@ -317,7 +316,7 @@ export default function ProgramDetail() {
                   </div>
                 </div>
               </div>
-              
+
               <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <Input
@@ -431,76 +430,72 @@ export default function ProgramDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
-        {/* Sidebar */}
-        <div className="w-80 bg-white shadow-lg h-screen overflow-y-auto sticky top-0">
-          <div className="p-6">
-            {/* Back Button */}
-            <Link href="/courses">
-              <Button variant="ghost" className="mb-4 p-2 hover:bg-gray-100">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Kurslara qayıt
-              </Button>
+        {/* Sidebar - Fixed and properly positioned */}
+        <div className="fixed left-0 top-0 w-64 bg-white shadow-lg border-r border-gray-200 h-full z-40 overflow-y-auto">
+          <div className="p-4">
+            <Link href="/courses" className="flex items-center text-gray-600 hover:text-gray-900 mb-6">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Kurslara qayıt
             </Link>
 
-            {/* Course Header */}
-            <div className="mb-8">
-              <h1 className="text-xl font-bold text-gray-900 mb-2">Grafik Dizayn</h1>
-              <p className="text-sm text-gray-600">Professional qrafik dizayn təlimi</p>
-              <div className="mt-4 flex items-center space-x-4 text-sm text-gray-600">
-                <span className="flex items-center">
-                  <Clock className="w-4 h-4 mr-1" />
-                  24 həftə
-                </span>
-                <span className="flex items-center">
-                  <Users className="w-4 h-4 mr-1" />
-                  12 nəfər
-                </span>
-              </div>
-            </div>
+            <div className="space-y-1">
+              <div className="text-sm font-medium text-gray-900 mb-4">Tədris Proqramı</div>
 
-            {/* Navigation Menu */}
-            <div className="space-y-2 mb-8">
-              {sidebarItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveSection(item.id)}
-                    className={`flex items-center space-x-3 w-full p-3 text-left rounded-lg transition-colors ${
-                      activeSection === item.id 
-                        ? 'bg-devcode-orange text-white' 
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Next Group Section */}
-            <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-lg p-4 text-white">
-              <h3 className="text-sm font-medium mb-2">Növbəti qrup: 4 Avqust 2025</h3>
-              <p className="text-xs opacity-90 mb-4">
-                Bu məlumat qrupa yazılmaq üçün qeydiyyatdan keçin
-              </p>
               <div className="space-y-2">
-                <Button size="sm" className="w-full bg-white text-gray-900 hover:bg-gray-100">
-                  <Download className="w-4 h-4 mr-2" />
-                  Broşuru yüklə
-                </Button>
-                <Button size="sm" className="w-full bg-transparent border border-white text-white hover:bg-white/10">
-                  Müraciət et
-                </Button>
+                <div className="flex items-center p-2 bg-orange-50 rounded-lg">
+                  <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs font-medium text-orange-600 mr-3">
+                    G
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium">Grafik Dizayn</div>
+                    <div className="text-xs text-gray-500">Müasir dizayn əsasları</div>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pl-4">
+                  <div className="flex items-center text-sm text-gray-600 py-1 hover:text-gray-900 cursor-pointer">
+                    <User className="w-4 h-4 mr-2" />
+                    Kursun tələbləri
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 py-1 hover:text-gray-900 cursor-pointer">
+                    <FileText className="w-4 h-4 mr-2" />
+                    Təlim nəticələri və sertifikat
+                  </div>
+                  <div className="flex items-center text-sm text-orange-600 py-1 font-medium bg-orange-50 rounded px-2 -mx-2">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Tədris proqramı
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 py-1 hover:text-gray-900 cursor-pointer">
+                    <Users className="w-4 h-4 mr-2" />
+                    Müraciət formu
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 py-1 hover:text-gray-900 cursor-pointer">
+                    <Star className="w-4 h-4 mr-2" />
+                    Təlimçilər
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 py-1 hover:text-gray-900 cursor-pointer">
+                    <Clock className="w-4 h-4 mr-2" />
+                    Tələbələr üçün
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div className="mt-8 p-4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg text-white">
+              <div className="text-sm font-medium mb-2">Növbəti qrup: 5 Avqust 2024</div>
+              <div className="text-xs mb-3">
+                Qeydiyyat açıq / 12 nəfər yazılıb
+              </div>
+              <button className="w-full bg-white text-orange-600 py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                Müraciət et
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 p-8">
-          <div className="max-w-4xl">
+        {/* Main Content - Added left margin for sidebar */}
+        <div className="flex-1 ml-64 p-8">
+          <div className="max-w-4xl mx-auto">
             {renderContent()}
           </div>
         </div>
