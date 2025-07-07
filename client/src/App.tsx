@@ -16,6 +16,7 @@ import Blog from "@/pages/blog";
 import VerifyCertificate from "@/pages/verify-certificate";
 import Contact from "@/pages/contact";
 import DevCodeLMS from "@/pages/devcode-lms";
+import ProgramDetail from "@/pages/program-detail";
 
 // Dashboard pages
 import AdminDashboard from "@/pages/admin-dashboard";
@@ -159,6 +160,11 @@ function Router() {
       <Route path="/lms">
         <PublicLayout>
           <DevCodeLMS />
+        </PublicLayout>
+      </Route>
+      <Route path="/program/:id">
+        <PublicLayout>
+          <ProgramDetail />
         </PublicLayout>
       </Route>
 
