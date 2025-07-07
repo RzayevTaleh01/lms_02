@@ -9,7 +9,7 @@ import { Plus, Download, User, Calendar, Book, Clock, MessageSquare, Star, Users
 export default function ProgramDetail() {
   const { id } = useParams();
   const [openSections, setOpenSections] = useState<{ [key: number]: boolean }>({});
-  const [activeSection, setActiveSection] = useState('program');
+  const [activeSection, setActiveSection] = useState('advantages');
   const [contactForm, setContactForm] = useState({
     firstName: '',
     lastName: '',
@@ -94,13 +94,13 @@ export default function ProgramDetail() {
   ];
 
   const sidebarItems = [
-    { id: 'advantages', label: 'Kursun üstünlükləri', icon: User },
-    { id: 'certificate', label: 'Təhsil nazirliyi sertifikatı', icon: Calendar },
-    { id: 'program', label: 'Tədris proqramı', icon: Book },
-    { id: 'schedule', label: 'Dərs saatları', icon: Clock },
-    { id: 'contact', label: 'Müraciət formu', icon: MessageSquare },
-    { id: 'instructors', label: 'Təlimçilərimiz', icon: Star },
-    { id: 'students', label: 'Tələbələr üçün', icon: Users }
+    { id: 'advantages', label: 'Üstünlüklər səni çağırır!' },
+    { id: 'certificate', label: 'Təhsil nazirliyi' },
+    { id: 'program', label: 'Tədris proqramı' },
+    { id: 'schedule', label: 'Dərs saatları' },
+    { id: 'contact', label: 'Müraciət formu' },
+    { id: 'instructors', label: 'İnstruktorlarımız' },
+    { id: 'students', label: 'Tələbələrin işləri' }
   ];
 
   const renderContent = () => {
@@ -128,15 +128,6 @@ export default function ProgramDetail() {
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-gray-900">Portfolio Hazırlığı</h3>
-                    <p className="text-gray-600">Kurs sonunda professional portfolio hazırlığı</p>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
-                  <div>
                     <h3 className="font-semibold text-gray-900">Karyera Dəstəyi</h3>
                     <p className="text-gray-600">İş tapmada kömək və karyera məsləhətləri</p>
                   </div>
@@ -146,6 +137,29 @@ export default function ProgramDetail() {
                   <div>
                     <h3 className="font-semibold text-gray-900">Kiçik Qruplar</h3>
                     <p className="text-gray-600">Maksimum 12 nəfərlik qruplarda fərdi yanaşma</p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Portfolio Hazırlığı</h3>
+                    <p className="text-gray-600">Kurs sonunda professional portfolio hazırlığı</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Real Layihələr</h3>
+                    <p className="text-gray-600">Həqiqi müştəri layihələri üzərində praktiki təcrübə</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Ömürboyu Dəstək</h3>
+                    <p className="text-gray-600">Kurs bitdikdən sonra da davamlı təlimçi dəstəyi</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -228,7 +242,7 @@ export default function ProgramDetail() {
       case 'instructors':
         return (
           <div className="bg-white rounded-lg shadow-sm p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Təlimçilərimiz</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">İnstruktorlarımız</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex items-center space-x-4 mb-4">
@@ -265,7 +279,7 @@ export default function ProgramDetail() {
       case 'students':
         return (
           <div className="bg-white rounded-lg shadow-sm p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Tələbələr üçün Məlumat</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Tələbələrin İşləri</h2>
             <div className="space-y-6">
               <div className="bg-blue-50 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Tələbə Resursları</h3>
@@ -431,66 +445,62 @@ export default function ProgramDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
-        {/* Sidebar */}
-        <div className="w-80 bg-white shadow-lg h-screen overflow-y-auto sticky top-0">
-          <div className="p-6">
+        {/* Sidebar - Reference şəkil kimi */}
+        <div className="w-80 bg-white h-screen overflow-y-auto sticky top-0 border-r border-gray-200">
+          <div className="p-4">
             {/* Back Button */}
             <Link href="/courses">
-              <Button variant="ghost" className="mb-4 p-2 hover:bg-gray-100">
+              <Button variant="ghost" className="mb-4 p-2 hover:bg-gray-100 text-gray-600">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Kurslara qayıt
               </Button>
             </Link>
 
             {/* Course Header */}
-            <div className="mb-8">
+            <div className="mb-6">
               <h1 className="text-xl font-bold text-gray-900 mb-2">Grafik Dizayn</h1>
               <p className="text-sm text-gray-600">Professional qrafik dizayn təlimi</p>
-              <div className="mt-4 flex items-center space-x-4 text-sm text-gray-600">
+              <div className="mt-3 flex items-center space-x-4 text-xs text-gray-500">
                 <span className="flex items-center">
-                  <Clock className="w-4 h-4 mr-1" />
+                  <Clock className="w-3 h-3 mr-1" />
                   24 həftə
                 </span>
                 <span className="flex items-center">
-                  <Users className="w-4 h-4 mr-1" />
+                  <Users className="w-3 h-3 mr-1" />
                   12 nəfər
                 </span>
               </div>
             </div>
 
-            {/* Navigation Menu */}
-            <div className="space-y-2 mb-8">
-              {sidebarItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveSection(item.id)}
-                    className={`flex items-center space-x-3 w-full p-3 text-left rounded-lg transition-colors ${
-                      activeSection === item.id 
-                        ? 'bg-devcode-orange text-white' 
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </button>
-                );
-              })}
+            {/* Navigation Menu - Reference şəkildəki kimi */}
+            <div className="space-y-1 mb-8">
+              {sidebarItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`w-full p-3 text-left text-sm rounded-lg transition-colors ${
+                    activeSection === item.id 
+                      ? 'bg-devcode-orange text-white font-medium' 
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
 
             {/* Next Group Section */}
-            <div className="bg-gradient-to-r from-devcode-orange to-devcode-yellow rounded-lg p-4 text-white">
-              <h3 className="text-sm font-medium mb-2">Növbəti qrup: 4 Avqust 2025</h3>
-              <p className="text-xs opacity-90 mb-4">
+            <div className="bg-gray-100 rounded-lg p-4 mb-4">
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Növbəti qrup: 4 Avqust 2025</h3>
+              <p className="text-xs text-gray-600 mb-4">
                 Bu məlumat qrupa yazılmaq üçün qeydiyyatdan keçin
               </p>
               <div className="space-y-2">
-                <Button size="sm" className="w-full bg-white text-gray-900 hover:bg-gray-100">
-                  <Download className="w-4 h-4 mr-2" />
+                <Button size="sm" className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs">
+                  <Download className="w-3 h-3 mr-2" />
                   Broşuru yüklə
                 </Button>
-                <Button size="sm" className="w-full bg-transparent border border-white text-white hover:bg-white/10">
+                <Button size="sm" className="w-full bg-devcode-yellow text-black hover:bg-yellow-500 text-xs font-medium">
                   Müraciət et
                 </Button>
               </div>
