@@ -430,9 +430,8 @@ export default function ProgramDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex">
         {/* Sidebar */}
-        <div className="w-80 bg-white shadow-lg h-screen overflow-y-auto sticky top-0">
+        <div className="w-80 bg-white shadow-lg h-screen overflow-y-auto fixed top-0 left-0 z-10">
           <div className="p-6">
             {/* Back Button */}
             <Link href="/courses">
@@ -499,12 +498,11 @@ export default function ProgramDetail() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-8 ml-80">
           <div className="max-w-4xl">
             {renderContent()}
           </div>
         </div>
-      </div>
     </div>
   );
 }
