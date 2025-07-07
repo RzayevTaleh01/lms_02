@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "wouter";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -159,7 +158,7 @@ export default function ProgramDetail() {
             </div>
           </div>
         );
-      
+
       case 'certificate':
         return (
           <div className="bg-white rounded-lg shadow-sm p-8">
@@ -317,7 +316,7 @@ export default function ProgramDetail() {
                   </div>
                 </div>
               </div>
-              
+
               <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <Input
@@ -430,8 +429,9 @@ export default function ProgramDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <div className="flex">
         {/* Sidebar */}
-        <div className="w-80 bg-white shadow-lg h-screen overflow-y-auto fixed top-0 left-0 z-10">
+        <div className="w-80 bg-white shadow-lg h-[calc(100vh-4rem)] overflow-y-auto sticky top-16">
           <div className="p-6">
             {/* Back Button */}
             <Link href="/courses">
@@ -503,6 +503,7 @@ export default function ProgramDetail() {
             {renderContent()}
           </div>
         </div>
+      </div>
     </div>
   );
 }
