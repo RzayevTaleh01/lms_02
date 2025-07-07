@@ -28,7 +28,11 @@ import {
   Calendar,
   Mail,
   Phone,
-  MapPin
+  MapPin,
+  PenTool,
+  Video,
+  BarChart3,
+  PlayCircle
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
