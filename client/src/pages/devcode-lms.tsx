@@ -34,24 +34,24 @@ export default function DevCodeLMS() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6">
-              <Shield className="w-4 h-4 mr-2" />
-              Enterprise-level LMS Solution
+              <BookOpen className="w-4 h-4 mr-2" />
+              Təhsil Platforması
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
               DevCode LMS
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
-              Təhsil müəssisələri üçün tam avtomatlaşdırılmış, modern və scalable 
-              Öyrənmə İdarəetmə Sistemi
+              Təhsil müəssisələri üçün hazır həll. 
+              Kurslar yaradın, tələbələri idarə edin və hər şeyi bir yerdə izləyin!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-xl">
                 <Play className="w-5 h-5 mr-2" />
-                Canlı Demo
+                Demo İzlə
               </Button>
               <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg rounded-xl">
                 <Download className="w-5 h-5 mr-2" />
-                Texniki Sənədlər
+                Məlumat Al
               </Button>
             </div>
           </div>
@@ -62,8 +62,8 @@ export default function DevCodeLMS() {
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Database className="w-6 h-6 text-blue-600" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">25+</p>
-              <p className="text-gray-600">Məlumat Cədvəli</p>
+              <p className="text-3xl font-bold text-gray-900">∞</p>
+              <p className="text-gray-600">Kurs Sayı</p>
             </div>
             <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -76,15 +76,15 @@ export default function DevCodeLMS() {
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-6 h-6 text-purple-600" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">∞</p>
-              <p className="text-gray-600">Kurs Limiti</p>
+              <p className="text-3xl font-bold text-gray-900">24/7</p>
+              <p className="text-gray-600">Giriş İmkanı</p>
             </div>
             <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
               <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-6 h-6 text-orange-600" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">99.9%</p>
-              <p className="text-gray-600">Uptime</p>
+              <p className="text-3xl font-bold text-gray-900">✓</p>
+              <p className="text-gray-600">Mobil Dəstək</p>
             </div>
           </div>
         </div>
@@ -95,164 +95,88 @@ export default function DevCodeLMS() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Modern Texnologiya Yığını
+              Nə üçün DevCode LMS?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Ən son texnologiyalar və best practice-lər ilə qurulmuş, 
-              enterprise səviyyəli performans və təhlükəsizlik
+              Təhsil müəssisənizi rəqəmsallaşdırmaq üçün ən sadə və effektiv həll. 
+              Hər şey düşünülmüş və hazır!
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Tech Stack Left */}
-            <div className="space-y-8">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mr-4">
-                    <Monitor className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Frontend</h3>
-                    <p className="text-gray-600">Modern UI/UX təcrübəsi</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-blue-600">React 18</p>
-                    <p className="text-sm text-gray-600">TypeScript</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-blue-600">TailwindCSS</p>
-                    <p className="text-sm text-gray-600">Responsive</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-blue-600">Vite</p>
-                    <p className="text-sm text-gray-600">Fast Build</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-blue-600">TanStack</p>
-                    <p className="text-sm text-gray-600">Query</p>
-                  </div>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Easy to Use */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Smartphone className="w-8 h-8 text-white" />
               </div>
-
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mr-4">
-                    <Server className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Backend</h3>
-                    <p className="text-gray-600">Scalable server arxitekturası</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-green-600">Node.js</p>
-                    <p className="text-sm text-gray-600">Express.js</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-green-600">PostgreSQL</p>
-                    <p className="text-sm text-gray-600">Drizzle ORM</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-green-600">Replit Auth</p>
-                    <p className="text-sm text-gray-600">OpenID</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-green-600">RESTful</p>
-                    <p className="text-sm text-gray-600">APIs</p>
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Asan İstifadə</h3>
+              <p className="text-gray-600 mb-6">
+                Texniki biliyə ehtiyac yoxdur. Hər kəs asanlıqla istifadə edə bilər.
+              </p>
+              <ul className="text-left space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Sadə interfeys</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Mobil uyğunluq</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>24/7 giriş imkanı</span>
+                </li>
+              </ul>
             </div>
 
-            {/* Architecture Diagram */}
-            <div className="relative">
-              <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Sistem Arxitekturası</h3>
-                
-                {/* User Layer */}
-                <div className="mb-6">
-                  <div className="bg-blue-100 rounded-xl p-4 mb-4">
-                    <h4 className="font-semibold text-blue-800 mb-2">İstifadəçi Səviyyəsi</h4>
-                    <div className="flex justify-around">
-                      <div className="text-center">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-1">
-                          <Shield className="w-4 h-4 text-white" />
-                        </div>
-                        <p className="text-xs text-blue-700">Admin</p>
-                      </div>
-                      <div className="text-center">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-1">
-                          <Users className="w-4 h-4 text-white" />
-                        </div>
-                        <p className="text-xs text-blue-700">Müəllim</p>
-                      </div>
-                      <div className="text-center">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-1">
-                          <BookOpen className="w-4 h-4 text-white" />
-                        </div>
-                        <p className="text-xs text-blue-700">Tələbə</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Frontend Layer */}
-                <div className="mb-6">
-                  <div className="bg-green-100 rounded-xl p-4">
-                    <h4 className="font-semibold text-green-800 mb-2">Frontend Səviyyəsi</h4>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">React</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">UI/UX</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">Routing</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Backend Layer */}
-                <div className="mb-6">
-                  <div className="bg-purple-100 rounded-xl p-4">
-                    <h4 className="font-semibold text-purple-800 mb-2">Backend Səviyyəsi</h4>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">Express</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">Auth</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">APIs</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Database Layer */}
-                <div>
-                  <div className="bg-orange-100 rounded-xl p-4">
-                    <h4 className="font-semibold text-orange-800 mb-2">Məlumat Bazası</h4>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">PostgreSQL</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">Drizzle</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 text-center">
-                        <p className="text-xs font-medium">Session</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            {/* Secure & Reliable */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Shield className="w-8 h-8 text-white" />
               </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Təhlükəsiz və Etibarlı</h3>
+              <p className="text-gray-600 mb-6">
+                Məlumatlarınız tam təhlükəsizlik altındadır. Sistem həmişə işləyir.
+              </p>
+              <ul className="text-left space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Məlumat təhlükəsizliyi</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Avtomatik yedəkləmə</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>99.9% işləmə vaxtı</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Cost Effective */}
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Sərfəli və Effektiv</h3>
+              <p className="text-gray-600 mb-6">
+                Əlavə xərc yoxdur. Bir dəfə quraşdırın, həmişə istifadə edin.
+              </p>
+              <ul className="text-left space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Birdəfəlik ödəniş</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Limitsiz istifadə</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Pulsuz dəstək</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -263,11 +187,10 @@ export default function DevCodeLMS() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Əsas Funksiyalar
+              DevCode LMS İmkanları
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Tam avtomatlaşdırılmış kurs idarəetməsi, real zamanda analitika və 
-              professional sertifikat sistemi
+              Təhsil müəssisənizin ehtiyac duyduğu bütün funksiyalar bir platformada
             </p>
           </div>
 

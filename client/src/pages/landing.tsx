@@ -619,11 +619,11 @@ export default function Landing() {
               DevCode LMS Platform
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Peşəkar Öyrənmə İdarəetmə Sistemi
+              DevCode LMS - Təhsil Platforması
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              25+ məlumat cədvəli, tam avtomatlaşdırılmış kurs idarəetməsi və real zamanda analitika ilə 
-              institutunuz üçün enterprise səviyyəli LMS həlli
+              Təhsil müəssisələri üçün hazır platform. Kurslar yaradın, tələbələri idarə edin, 
+              proqres izləyin və sertifikatlar verin. Hər şey bir yerdə!
             </p>
           </div>
 
@@ -631,10 +631,10 @@ export default function Landing() {
           <div className="mb-20">
             <div className="text-center mb-12">
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                Sistem Arxitekturası və Texniki Üstünlüklər
+                Nə üçün DevCode LMS?
               </h3>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Modern TypeScript/React/PostgreSQL texnologiyaları əsasında qurulmuş, tam avtomatlaşdırılmış və scalable həll
+                Təhsil müəssisənizi rəqəmsallaşdırmaq üçün hazır həll. Sadə, rahat və effektiv!
               </p>
             </div>
 
@@ -644,29 +644,29 @@ export default function Landing() {
                 <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
                   <div className="flex items-center mb-6">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4">
-                      <Database className="w-6 h-6 text-white" />
+                      <Users className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-gray-900">Məlumat Bazası İnfruktukturu</h4>
-                      <p className="text-gray-600">PostgreSQL əsaslı enterprise həll</p>
+                      <h4 className="text-xl font-bold text-gray-900">İstifadəçi Dostluğu</h4>
+                      <p className="text-gray-600">Hamı üçün asan və sadə istifadə</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="text-2xl font-bold text-blue-600">25+</p>
-                      <p className="text-sm text-gray-600">Məlumat Cədvəli</p>
+                      <p className="text-2xl font-bold text-blue-600">3</p>
+                      <p className="text-sm text-gray-600">İstifadəçi Növü</p>
                     </div>
                     <div className="bg-green-50 rounded-lg p-4">
-                      <p className="text-2xl font-bold text-green-600">100%</p>
-                      <p className="text-sm text-gray-600">Type Safety</p>
+                      <p className="text-2xl font-bold text-green-600">∞</p>
+                      <p className="text-sm text-gray-600">Kurs Sayı</p>
                     </div>
                     <div className="bg-purple-50 rounded-lg p-4">
-                      <p className="text-2xl font-bold text-purple-600">3</p>
-                      <p className="text-sm text-gray-600">İstifadəçi Rolu</p>
+                      <p className="text-2xl font-bold text-purple-600">24/7</p>
+                      <p className="text-sm text-gray-600">Giriş İmkanı</p>
                     </div>
                     <div className="bg-orange-50 rounded-lg p-4">
-                      <p className="text-2xl font-bold text-orange-600">∞</p>
-                      <p className="text-sm text-gray-600">Scalability</p>
+                      <p className="text-2xl font-bold text-orange-600">✓</p>
+                      <p className="text-sm text-gray-600">Mobil Dəstək</p>
                     </div>
                   </div>
                 </div>
@@ -674,29 +674,29 @@ export default function Landing() {
                 <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
                   <div className="flex items-center mb-6">
                     <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center mr-4">
-                      <Zap className="w-6 h-6 text-white" />
+                      <BookOpen className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-gray-900">Real-time Funksiyalar</h4>
-                      <p className="text-gray-600">Canlı izləmə və avtomatlaşdırma</p>
+                      <h4 className="text-xl font-bold text-gray-900">Əsas Imkanlar</h4>
+                      <p className="text-gray-600">Tähsil üçün lazım olan hər şey</p>
                     </div>
                   </div>
                   <ul className="space-y-3">
                     <li className="flex items-center text-gray-700">
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Live lesson sessions və attendance tracking</span>
+                      <span>Video dərslər və materiallar</span>
                     </li>
                     <li className="flex items-center text-gray-700">
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Real-time progress monitoring və analytics</span>
+                      <span>Tapşırıq və qiymətləndirmə sistemi</span>
                     </li>
                     <li className="flex items-center text-gray-700">
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Automated certificate generation</span>
+                      <span>Avtomatik sertifikat verme</span>
                     </li>
                     <li className="flex items-center text-gray-700">
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Instant assignment feedback system</span>
+                      <span>Tələbə proqresini izləmə</span>
                     </li>
                   </ul>
                 </div>
@@ -790,10 +790,10 @@ export default function Landing() {
           <div className="mb-16">
             <div className="text-center mb-12">
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                Enterprise-level LMS Funksiyalar
+                DevCode LMS Imkanları
               </h3>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Tam avtomatlaşdırılmış kurs idarəetməsi, real zamanda analitika və professional sertifikat sistemi
+                Təhsil müəssisənizin ehtiyac duyduğu bütün funksiyalar bir platformada
               </p>
             </div>
 
@@ -803,12 +803,12 @@ export default function Landing() {
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6">
                   <BookOpen className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">Kurs Engine</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Kurs Yaratma</h4>
                 <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Unlimited course creation</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Video streaming integration</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Rich content editor (CKEditor)</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Hierarchical lesson structure</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />İstədiyiniz qədər kurs yaradın</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Video və materiallar əlavə edin</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Dərsleri nizamlayın</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Məzmunu asanlıqla redaktə edin</li>
                 </ul>
               </div>
 
@@ -817,12 +817,12 @@ export default function Landing() {
                 <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mb-6">
                   <PenTool className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">Assignment Engine</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Tapşırıq Sistemi</h4>
                 <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Rich text assignments</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />File upload support</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />GitHub integration</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Automated grading workflow</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Tapşırıqlar yaradın və verin</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Fayl göndərmə imkanı</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Avtomatik yoxlama</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Qiymət və rəy sistemi</li>
                 </ul>
               </div>
 
@@ -831,12 +831,12 @@ export default function Landing() {
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
                   <BarChart3 className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">Real-time Analytics</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Proqres İzləmə</h4>
                 <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Student progress tracking</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Performance dashboards</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Attendance monitoring</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Comprehensive reporting</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Tələbə proqresini izləyin</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Performans hesabatları</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Davamiyyət qeydiyyatı</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Ətraflı statistikalar</li>
                 </ul>
               </div>
 
@@ -845,12 +845,12 @@ export default function Landing() {
                 <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
                   <Award className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">Certificate System</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Sertifikat Sistemi</h4>
                 <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Automatic generation</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Unique ID verification</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Public verification portal</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Digital signatures</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Avtomatik sertifikat yaratma</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Unikal nömrə ilə yoxlama</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />İnternetdə yoxlama portalı</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Rəqəmsal imza sistemi</li>
                 </ul>
               </div>
 
@@ -859,12 +859,12 @@ export default function Landing() {
                 <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">User Management</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">İstifadəçi İdarəetməsi</h4>
                 <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />3-level role system</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Replit Auth integration</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Session management</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Access control</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Admin, müəllim, tələbə rolları</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Təhlükəsiz giriş sistemi</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />İstifadəçi hüquqları</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Giriş nəzarəti</li>
                 </ul>
               </div>
 
@@ -873,12 +873,12 @@ export default function Landing() {
                 <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-6">
                   <Globe className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">Content Management</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Məzmun İdarəetməsi</h4>
                 <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Blog system integration</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Material organization</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Media management</li>
-                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Version control</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Blog və xəbərlər sistemi</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Material təşkilatı</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Şəkil və video idarəetməsi</li>
+                  <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Məzmun yeniləmə</li>
                 </ul>
               </div>
             </div>
