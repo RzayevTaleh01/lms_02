@@ -15,7 +15,6 @@ import CourseDetail from "@/pages/course-detail";
 import Blog from "@/pages/blog";
 import VerifyCertificate from "@/pages/verify-certificate";
 import Contact from "@/pages/contact";
-import DevCodeLMS from "@/pages/devcode-lms";
 
 // Dashboard pages
 import AdminDashboard from "@/pages/admin-dashboard";
@@ -154,11 +153,6 @@ function Router() {
       <Route path="/contact">
         <PublicLayout>
           <Contact />
-        </PublicLayout>
-      </Route>
-      <Route path="/lms">
-        <PublicLayout>
-          <DevCodeLMS />
         </PublicLayout>
       </Route>
 
