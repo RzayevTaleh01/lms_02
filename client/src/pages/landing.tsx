@@ -1,36 +1,35 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
-  BookOpen, 
-  Award, 
-  TrendingUp, 
-  Star, 
-  ChevronRight,
-  CheckCircle,
-  PlayCircle,
-  Clock,
-  FileText,
-  Calendar,
-  MessageCircle,
-  Code,
-  Palette,
-  Sparkles,
-  BarChart3,
-  Video,
-  Globe,
-  Monitor,
-  Database,
-  Smartphone,
-  PenTool,
-  Server,
-  User,
-  Zap,
-  Shield
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
+import { 
+  ArrowRight, 
+  Play, 
+  CheckCircle, 
+  Monitor, 
+  Smartphone, 
+  Users, 
+  Clock, 
+  Award, 
+  BookOpen, 
+  Star,
+  Code,
+  Database,
+  Globe,
+  Zap,
+  Heart,
+  MessageSquare,
+  Target,
+  TrendingUp,
+  Shield,
+  Lightbulb,
+  Calendar,
+  Mail,
+  Phone,
+  MapPin
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 interface Course {
@@ -386,9 +385,11 @@ export default function Landing() {
                     <span className="text-xl md:text-2xl font-bold text-gray-900">4</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
-                  <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 px-4 md:px-6 py-2 rounded-xl text-sm md:text-base">
-                    Başla
-                  </Button>
+                   <Link href="/program-detail">
+                    <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 px-4 md:px-6 py-2 rounded-xl text-sm md:text-base">
+                      Başla
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -440,9 +441,11 @@ export default function Landing() {
                     <span className="text-2xl font-bold text-gray-900">4</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
-                  <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white hover:from-cyan-500 hover:to-blue-600 px-6 py-2 rounded-xl">
-                    Başla
-                  </Button>
+                 <Link href="/program-detail">
+                    <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white hover:from-cyan-500 hover:to-blue-600 px-6 py-2 rounded-xl">
+                      Başla
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -493,9 +496,11 @@ export default function Landing() {
                     <span className="text-2xl font-bold text-gray-900">4</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
-                  <Button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 px-6 py-2 rounded-xl">
-                    Başla
-                  </Button>
+                   <Link href="/program-detail">
+                    <Button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 px-6 py-2 rounded-xl">
+                      Başla
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -547,13 +552,15 @@ export default function Landing() {
                     <span className="text-2xl font-bold text-gray-900">8</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
-                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 px-6 py-2 rounded-xl">
-                    Başla
-                  </Button>
+                   <Link href="/program-detail">
+                    <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 px-6 py-2 rounded-xl">
+                      Başla
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
-            
+
             {/* Mobile Development Course */}
             <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -577,7 +584,7 @@ export default function Landing() {
                 <p className="text-gray-600 mb-6 leading-relaxed">
                   Cross-platform mobile development. iOS və Android üçün app yaradın.
                 </p>
-                
+
                 {/* Course Features */}
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center text-sm text-gray-600">
@@ -600,14 +607,16 @@ export default function Landing() {
                     <span className="text-2xl font-bold text-gray-900">6</span>
                     <span className="text-gray-500 text-sm ml-1">/ay</span>
                   </div>
-                  <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 px-6 py-2 rounded-xl">
-                    Başla
-                  </Button>
+                 <Link href="/program-detail">
+                    <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 px-6 py-2 rounded-xl">
+                      Başla
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
-    
+
         </div>
       </section>
 
@@ -781,7 +790,7 @@ export default function Landing() {
                   </div>
                 </div>
 
-            
+
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">

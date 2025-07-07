@@ -59,10 +59,11 @@ export default function Navbar() {
     },
     { 
       label: "Tədris proqramları", 
-      href: "/courses",
+      href: "/program/1",
       dropdown: [
-        { label: "Frontend Proqramlaşdırma", href: "/courses?category=frontend" },
-        { label: "FullStack Proqramlaşdırma", href: "/courses?category=fullstack" }
+        { label: "Frontend Proqramlaşdırma", href: "/program/1" },
+        { label: "FullStack Proqramlaşdırma", href: "/program/2" },
+        { label: "Mobile Development", href: "/program/3" }
       ]
     },
     { label: "Təhsil modeli", href: "/education-model" },
