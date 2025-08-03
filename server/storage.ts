@@ -798,8 +798,10 @@ export class DatabaseStorage implements IStorage {
         id: attendance.id,
         studentId: attendance.studentId,
         sessionId: attendance.sessionId,
-        isPresent: attendance.isPresent,
+        courseId: attendance.courseId,
+        status: attendance.status,
         markedAt: attendance.markedAt,
+        markedBy: attendance.markedBy,
         student: {
           id: users.id,
           firstName: users.firstName,
@@ -819,8 +821,10 @@ export class DatabaseStorage implements IStorage {
         id: attendance.id,
         studentId: attendance.studentId,
         sessionId: attendance.sessionId,
-        isPresent: attendance.isPresent,
+        courseId: attendance.courseId,
+        status: attendance.status,
         markedAt: attendance.markedAt,
+        markedBy: attendance.markedBy,
         session: {
           id: lessonSessions.id,
           sessionName: lessonSessions.sessionName,

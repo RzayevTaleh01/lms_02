@@ -55,6 +55,7 @@ export default function CourseManagement() {
   // Attendance State
   const [isAttendanceActive, setIsAttendanceActive] = useState(false);
   const [attendanceStudents, setAttendanceStudents] = useState<any[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
 
   // Fetch courses
   const { data: courses = [], isLoading } = useQuery({
@@ -191,13 +192,54 @@ export default function CourseManagement() {
     createAssignmentMutation.mutate(assignmentData);
   };
 
-  const handleStartAttendance = () => {
-    setIsAttendanceActive(true);
-    setAttendanceStudents(students.map((student: any) => ({ ...student, present: false })));
-    toast({ title: "Davamiyyət başladıldı!" });
+  const handleStartAttendance = async () => {
+    if (!selectedCourse?.id) {
+      toast({ title: "Xəta", description: "Kurs seçilməyib", variant: "destructive" });
+      return;
+    }
+
+    try {
+      // Start a lesson session first
+      const sessionResponse = await fetch(`/api/courses/${selectedCourse.id}/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionName: `${selectedCourse.title} - ${new Date().toLocaleDateString('az-AZ')}`,
+          courseId: selectedCourse.id
+        }),
+      });
+
+      if (sessionResponse.ok) {
+        const session = await sessionResponse.json();
+        setCurrentSessionId(session.id);
+        setIsAttendanceActive(true);
+        setAttendanceStudents(students.map((student: any) => ({ ...student, present: false })));
+        toast({ title: "Davamiyyət başladıldı!" });
+      } else {
+        // Check if there's already an active session
+        const activeSessionResponse = await fetch(`/api/courses/${selectedCourse.id}/active-session`);
+        if (activeSessionResponse.ok) {
+          const activeSession = await activeSessionResponse.json();
+          if (activeSession) {
+            setCurrentSessionId(activeSession.id);
+            setIsAttendanceActive(true);
+            setAttendanceStudents(students.map((student: any) => ({ ...student, present: false })));
+            toast({ title: "Davamiyyət başladıldı! (mövcud sessiyanı istifadə edir)" });
+          } else {
+            toast({ title: "Xəta", description: "Dərs sessiyası yaradıla bilmədi", variant: "destructive" });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error starting attendance:', error);
+      toast({ title: "Xəta", description: "Davamiyyət başladıla bilmədi", variant: "destructive" });
+    }
   };
 
-  const toggleStudentAttendance = (studentId: string) => {
+  const toggleStudentAttendance = async (studentId: string) => {
+    // Update the local state first
     setAttendanceStudents(prev => 
       prev.map(student => 
         student.id === studentId 
@@ -205,6 +247,38 @@ export default function CourseManagement() {
           : student
       )
     );
+
+    // Find the updated student to get their attendance status
+    const updatedStudent = attendanceStudents.find(s => s.id === studentId);
+    const newStatus = updatedStudent ? !updatedStudent.present : true;
+
+    // Save to backend if we have an active session
+    if (currentSessionId) {
+      try {
+        await fetch(`/api/sessions/${currentSessionId}/attendance`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            studentId: studentId,
+            courseId: selectedCourse?.id,
+            status: newStatus ? 'present' : 'absent'
+          }),
+        });
+        
+        toast({ 
+          title: newStatus ? "Tələbə iştirak olaraq qeyd edildi" : "Tələbə iştirak etmədi olaraq qeyd edildi"
+        });
+      } catch (error) {
+        console.error('Error saving attendance:', error);
+        toast({ 
+          title: "Xəta", 
+          description: "Davamiyyət yadda saxlanmadı", 
+          variant: "destructive" 
+        });
+      }
+    }
   };
 
   if (isLoading) {
@@ -607,34 +681,73 @@ export default function CourseManagement() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    {attendanceStudents.map((student: any) => (
-                      <Card key={student.id}>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-10 h-10 bg-devcode-orange rounded-full flex items-center justify-center text-white font-semibold">
-                                {student.firstName?.charAt(0)}{student.lastName?.charAt(0)}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      {attendanceStudents.map((student: any) => (
+                        <Card key={student.id}>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-devcode-orange rounded-full flex items-center justify-center text-white font-semibold">
+                                  {student.firstName?.charAt(0)}{student.lastName?.charAt(0)}
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-devcode-dark">{student.firstName} {student.lastName}</h4>
+                                  <p className="text-sm text-devcode-gray">{student.email}</p>
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="font-medium text-devcode-dark">{student.firstName} {student.lastName}</h4>
-                                <p className="text-sm text-devcode-gray">{student.email}</p>
+                              <div className="flex space-x-2">
+                                <Button 
+                                  variant={student.present ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => toggleStudentAttendance(student.id)}
+                                  className={student.present ? "bg-green-600 hover:bg-green-700" : ""}
+                                >
+                                  {student.present ? "İştirak Edir" : "Qeyd Et"}
+                                </Button>
                               </div>
                             </div>
-                            <div className="flex space-x-2">
-                              <Button 
-                                variant={student.present ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => toggleStudentAttendance(student.id)}
-                                className={student.present ? "bg-green-600 hover:bg-green-700" : ""}
-                              >
-                                {student.present ? "İştirak Edir" : "Qeyd Et"}
-                              </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                    
+                    {/* Show attendance summary */}
+                    {currentSessionId && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Davamiyyət Cədvəli</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div className="flex justify-between">
+                                <span>İştirak edən:</span>
+                                <span className="font-semibold text-green-600">
+                                  {attendanceStudents.filter(s => s.present).length}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>İştirak etməyən:</span>
+                                <span className="font-semibold text-red-600">
+                                  {attendanceStudents.filter(s => !s.present).length}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="pt-2 border-t">
+                              <div className="flex justify-between text-sm">
+                                <span>Ümumi davamiyyət:</span>
+                                <span className="font-semibold">
+                                  {attendanceStudents.length > 0 
+                                    ? Math.round((attendanceStudents.filter(s => s.present).length / attendanceStudents.length) * 100)
+                                    : 0}%
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                    )}
                   </div>
                 )}
               </TabsContent>
