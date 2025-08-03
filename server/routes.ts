@@ -181,10 +181,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Course routes
-  app.get('/api/courses', async (req, res) => {
+  // Course routes - role-based filtering
+  app.get('/api/courses', async (req: any, res) => {
     try {
-      const courses = await storage.getAllCourses();
+      let courses;
+      
+      // If user is authenticated, filter based on role
+      if (req.user) {
+        if (req.user.role === 'teacher') {
+          // Teachers only see their own courses
+          courses = await storage.getCoursesByInstructor(req.user.id);
+        } else if (req.user.role === 'student') {
+          // Students only see courses they're enrolled in
+          const enrollments = await storage.getStudentEnrollments(req.user.id);
+          courses = enrollments.map(enrollment => enrollment.course);
+        } else if (req.user.role === 'admin') {
+          // Admins see all courses
+          courses = await storage.getAllCourses();
+        } else {
+          courses = await storage.getAllCourses();
+        }
+      } else {
+        // Public users see all courses for browsing
+        courses = await storage.getAllCourses();
+      }
+      
       res.json(courses);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -263,10 +284,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Lesson routes
-  app.get('/api/courses/:courseId/lessons', async (req, res) => {
+  // Lesson routes - with access control
+  app.get('/api/courses/:courseId/lessons', async (req: any, res) => {
     try {
       const courseId = parseInt(req.params.courseId);
+      
+      // Check access: only allow if user is teacher of the course, enrolled student, or admin
+      if (req.user) {
+        const course = await storage.getCourse(courseId);
+        if (!course) {
+          return res.status(404).json({ message: "Course not found" });
+        }
+        
+        let hasAccess = false;
+        
+        if (req.user.role === 'admin') {
+          hasAccess = true;
+        } else if (req.user.role === 'teacher' && course.instructorId === req.user.id) {
+          hasAccess = true;
+        } else if (req.user.role === 'student') {
+          // Check if student is enrolled
+          const enrollments = await storage.getStudentEnrollments(req.user.id);
+          hasAccess = enrollments.some(enrollment => enrollment.courseId === courseId);
+        }
+        
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this course" });
+        }
+      }
+      
       const lessons = await storage.getLessonsByCourse(courseId);
       res.json(lessons);
     } catch (error) {
@@ -372,10 +418,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Assignment routes
-  app.get('/api/courses/:courseId/assignments', async (req, res) => {
+  // Assignment routes - with access control
+  app.get('/api/courses/:courseId/assignments', async (req: any, res) => {
     try {
       const courseId = parseInt(req.params.courseId);
+      
+      // Check access: only allow if user is teacher of the course, enrolled student, or admin
+      if (req.user) {
+        const course = await storage.getCourse(courseId);
+        if (!course) {
+          return res.status(404).json({ message: "Course not found" });
+        }
+        
+        let hasAccess = false;
+        
+        if (req.user.role === 'admin') {
+          hasAccess = true;
+        } else if (req.user.role === 'teacher' && course.instructorId === req.user.id) {
+          hasAccess = true;
+        } else if (req.user.role === 'student') {
+          // Check if student is enrolled
+          const enrollments = await storage.getStudentEnrollments(req.user.id);
+          hasAccess = enrollments.some(enrollment => enrollment.courseId === courseId);
+        }
+        
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this course" });
+        }
+      }
+      
       const assignments = await storage.getAssignmentsByCourse(courseId);
       res.json(assignments);
     } catch (error) {
@@ -490,14 +561,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Lesson API routes
-  app.get('/api/lessons/:id', async (req, res) => {
+  // Lesson API routes - with access control
+  app.get('/api/lessons/:id', async (req: any, res) => {
     try {
       const lessonId = parseInt(req.params.id);
       const lesson = await storage.getLesson(lessonId);
       if (!lesson) {
         return res.status(404).json({ message: "Lesson not found" });
       }
+      
+      // Check access for lesson based on course access
+      if (req.user) {
+        const course = await storage.getCourse(lesson.courseId);
+        if (!course) {
+          return res.status(404).json({ message: "Course not found" });
+        }
+        
+        let hasAccess = false;
+        
+        if (req.user.role === 'admin') {
+          hasAccess = true;
+        } else if (req.user.role === 'teacher' && course.instructorId === req.user.id) {
+          hasAccess = true;
+        } else if (req.user.role === 'student') {
+          // Check if student is enrolled in the course
+          const enrollments = await storage.getStudentEnrollments(req.user.id);
+          hasAccess = enrollments.some(enrollment => enrollment.courseId === lesson.courseId);
+        }
+        
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this lesson" });
+        }
+      }
+      
       res.json(lesson);
     } catch (error) {
       console.error("Error fetching lesson:", error);
@@ -505,9 +601,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/lessons/:lessonId/materials', async (req, res) => {
+  app.get('/api/lessons/:lessonId/materials', async (req: any, res) => {
     try {
       const lessonId = parseInt(req.params.lessonId);
+      
+      // Get lesson to check course access
+      const lesson = await storage.getLesson(lessonId);
+      if (!lesson) {
+        return res.status(404).json({ message: "Lesson not found" });
+      }
+      
+      // Check access based on course ownership/enrollment
+      if (req.user) {
+        const course = await storage.getCourse(lesson.courseId);
+        if (!course) {
+          return res.status(404).json({ message: "Course not found" });
+        }
+        
+        let hasAccess = false;
+        
+        if (req.user.role === 'admin') {
+          hasAccess = true;
+        } else if (req.user.role === 'teacher' && course.instructorId === req.user.id) {
+          hasAccess = true;
+        } else if (req.user.role === 'student') {
+          // Check if student is enrolled
+          const enrollments = await storage.getStudentEnrollments(req.user.id);
+          hasAccess = enrollments.some(enrollment => enrollment.courseId === lesson.courseId);
+        }
+        
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to lesson materials" });
+        }
+      }
+      
       const materials = await storage.getLessonMaterials(lessonId);
       res.json(materials);
     } catch (error) {
@@ -516,9 +643,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/lessons/:lessonId/assignments', async (req, res) => {
+  app.get('/api/lessons/:lessonId/assignments', async (req: any, res) => {
     try {
       const lessonId = parseInt(req.params.lessonId);
+      
+      // Get lesson to check course access
+      const lesson = await storage.getLesson(lessonId);
+      if (!lesson) {
+        return res.status(404).json({ message: "Lesson not found" });
+      }
+      
+      // Check access based on course ownership/enrollment
+      if (req.user) {
+        const course = await storage.getCourse(lesson.courseId);
+        if (!course) {
+          return res.status(404).json({ message: "Course not found" });
+        }
+        
+        let hasAccess = false;
+        
+        if (req.user.role === 'admin') {
+          hasAccess = true;
+        } else if (req.user.role === 'teacher' && course.instructorId === req.user.id) {
+          hasAccess = true;
+        } else if (req.user.role === 'student') {
+          // Check if student is enrolled
+          const enrollments = await storage.getStudentEnrollments(req.user.id);
+          hasAccess = enrollments.some(enrollment => enrollment.courseId === lesson.courseId);
+        }
+        
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to lesson assignments" });
+        }
+      }
+      
       const assignments = await storage.getLessonAssignments(lessonId);
       res.json(assignments);
     } catch (error) {
