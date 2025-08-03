@@ -50,13 +50,21 @@ export function useAuth() {
         const response = await apiRequest('GET', '/api/auth/user');
         return await response.json();
       } catch (error: any) {
-        if (error.message?.includes('401')) {
+        if (error.message?.includes('401') || error.message?.includes('404')) {
+          // Clear session and logout user if not found or not authenticated
+          queryClient.setQueryData(['/api/auth/user'], null);
           return null;
         }
         throw error;
       }
     },
     retry: false,
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    enabled: true,
   });
 
   const loginMutation = useMutation({
