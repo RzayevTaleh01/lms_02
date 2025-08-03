@@ -41,7 +41,6 @@ import {
   type InsertLessonAssignment,
 } from "@shared/schema";
 import { db } from "./db";
-import { courses, lessons, enrollments, assignments, submissions, users, blogPosts, certificates, contactSubmissions, lessonSessions, attendance, lessonMaterials, lessonAssignments } from "@shared/schema";
 import { eq, and, desc, asc, sql, count, inArray, isNotNull } from "drizzle-orm";
 
 export interface IStorage {
